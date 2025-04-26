@@ -1,9 +1,13 @@
 package org.example;
 
 import dao.EquipeDAO;
+import dao.RecompenseDAO;
+import dao.RecompenseDAOImpl;
 import dao.UtilisateurDAO;
 import enums.Role;
+import enums.TypeRecompense;
 import models.Equipe;
+import models.Recompense;
 import models.Utilisateur;
 
 import utils.DatabaseConnection;
@@ -11,23 +15,9 @@ import utils.DatabaseConnection;
 import java.sql.*;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         try {
             // Initialize DAO
-            UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
-
-            // Create a new user
-            Utilisateur nouvelUtilisateur = new Utilisateur(
-                    0, // ID (auto-generated)
-                    "hazem@example.com", // Email
-                    "hashedPassword", // Password hash
-                    Role.ADMIN // Role
-            );
-
-            // Add the user to the database
-            utilisateurDAO.ajouter(nouvelUtilisateur);
-
-
             EquipeDAO equipeDAO = new EquipeDAO();
 
             // Create a new team
@@ -36,20 +26,20 @@ public class Main {
 
             System.out.println("Team added successfully! ID: " + nouvelleEquipe.getId());
 
-            // Retrieve the user by ID
-            Utilisateur utilisateur = utilisateurDAO.lire(1);
-            System.out.println("User Found: " + utilisateur.getEmail());
+            // Retrieve the team by ID
+            Equipe equipe = equipeDAO.lire(nouvelleEquipe.getId());
+            System.out.println("Team Found: " + equipe.getNom());
 
-            // Update the user
-            utilisateur.setEmail("updated@example.com");
-            utilisateurDAO.modifier(utilisateur);
+            // Update the team
+            equipe.setNom("Les Phoenix");
+            equipeDAO.modifier(equipe);
 
-            // Delete the user
-            utilisateurDAO.supprimer(1);
+            // Retrieve all teams
+            System.out.println("All Teams:");
+            equipeDAO.lireTous().forEach(e -> System.out.println(e.getNom()));
 
-            // Retrieve all users
-            System.out.println("All Users:");
-            utilisateurDAO.lireTous().forEach(u -> System.out.println(u.getEmail()));
+            // Delete the team
+            equipeDAO.supprimer(equipe.getId());
 
         } catch (SQLException e) {
             e.printStackTrace();
