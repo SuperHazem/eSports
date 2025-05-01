@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.RecompenseController"
+            prefHeight="600.0" prefWidth="800.0"
+            styleClass="root">
+
+    <!-- Header -->
+    <top>
+        <VBox styleClass="header-container">
+            <Label text="Gestion des Récompenses" styleClass="title"/>
+            <Label text="Assignez et gérez les récompenses pour les équipes surperformantes" styleClass="subtitle"/>
+        </VBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <VBox spacing="20">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Search Section -->
+            <HBox styleClass="search-container" spacing="15" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Rechercher par équipe..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
+                <ComboBox fx:id="typeFilterComboBox" promptText="Filtrer par type" styleClass="role-combo"/>
+                <Button text="Rechercher" onAction="#handleSearch" styleClass="search-button"/>
+                <Button text="Réinitialiser le filtre" onAction="#handleResetFilter" styleClass="cancel-button"/>
+            </HBox>
+
+            <!-- Table Section -->
+            <VBox styleClass="table-container" VBox.vgrow="ALWAYS">
+                <TableView fx:id="recompenseTable" styleClass="user-table" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="equipeColumn" text="Équipe"/>
+                        <TableColumn fx:id="coachColumn" text="Coach"/>
+                        <TableColumn fx:id="typeColumn" text="Type"/>
+                        <TableColumn fx:id="valeurColumn" text="Valeur"/>
+                        <TableColumn fx:id="actionsColumn" text="Actions"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
+    </center>
+
+    <!-- Footer with Add Button -->
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="footer-container">
+            <padding>
+                <Insets top="10" right="20" bottom="20" left="20"/>
+            </padding>
+            <Button fx:id="addButton" text="Ajouter Récompense" onAction="#handleAddRecompense" styleClass="primary-button"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

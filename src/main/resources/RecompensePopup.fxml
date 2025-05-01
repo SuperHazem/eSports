@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.RecompensePopupController"
+            prefWidth="500.0"
+            styleClass="popup-container">
+
+    <top>
+        <VBox spacing="5">
+            <Label text="Attribuer une Récompense à une Équipe" styleClass="popup-title"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="15">
+            <padding>
+                <Insets top="20" right="0" bottom="20" left="0"/>
+            </padding>
+
+            <!-- Équipe -->
+            <VBox spacing="5">
+                <Label text="Équipe" styleClass="field-label"/>
+                <ComboBox fx:id="equipeComboBox" promptText="Sélectionner une équipe" styleClass="role-combo" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- Type de Récompense -->
+            <VBox spacing="5">
+                <Label text="Type de Récompense" styleClass="field-label"/>
+                <ComboBox fx:id="typeComboBox" promptText="Sélectionner un type" styleClass="role-combo" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- Valeur de la Récompense -->
+            <VBox spacing="5">
+                <Label text="Valeur de la Récompense" styleClass="field-label"/>
+                <TextField fx:id="valeurField" promptText="Entrer une valeur" styleClass="input-field"/>
+            </VBox>
+
+            <!-- Date d'attribution -->
+            <VBox spacing="5">
+                <Label text="Date d'attribution" styleClass="field-label"/>
+                <DatePicker fx:id="dateAttribution" promptText="Sélectionner une date" styleClass="input-field" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- Description -->
+            <VBox spacing="5" VBox.vgrow="ALWAYS">
+                <Label text="Description" styleClass="field-label"/>
+                <TextArea fx:id="descriptionArea" promptText="Entrer une description (optionnel)" styleClass="input-field" wrapText="true" prefRowCount="4"/>
+            </VBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="10" right="0" bottom="0" left="0"/>
+            </padding>
+            <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancel" styleClass="cancel-button"/>
+            <Button fx:id="saveButton" text="Sauvegarder" onAction="#handleSave" styleClass="primary-button"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

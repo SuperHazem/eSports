@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.AuthenticationController"
+      prefWidth="1000" prefHeight="600"
+      styleClass="auth-container">
+
+    <!-- Left Panel - Logo and App Info -->
+    <VBox styleClass="left-panel" alignment="CENTER" spacing="15" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets top="40" bottom="40" left="40" right="40" />
+        </padding>
+
+        <ImageView fx:id="logoImage" fitWidth="150" fitHeight="150" preserveRatio="true" />
+
+        <Label text="eSports Arena Manager" styleClass="app-title" />
+
+        <Label text="Votre plateforme de gestion eSports professionnelle"
+               styleClass="app-subtitle" wrapText="true" textAlignment="CENTER" />
+
+        <Region VBox.vgrow="ALWAYS" />
+    </VBox>
+
+    <!-- Right Panel - Authentication Forms -->
+    <StackPane styleClass="right-panel" HBox.hgrow="ALWAYS">
+        <!-- Login Form -->
+        <VBox fx:id="loginForm" alignment="CENTER" spacing="20" visible="true" managed="true">
+            <padding>
+                <Insets top="40" bottom="40" left="60" right="60" />
+            </padding>
+
+            <Label text="Connexion" styleClass="form-title" />
+            <Label text="Bienvenue sur votre espace" styleClass="form-subtitle" />
+
+            <Region VBox.vgrow="ALWAYS" maxHeight="30" />
+
+            <VBox spacing="5">
+                <Label text="Email" styleClass="field-label" />
+                <TextField fx:id="loginEmail" promptText="Entrez votre email" styleClass="input-field" />
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Mot de passe" styleClass="field-label" />
+                <PasswordField fx:id="loginPassword" promptText="Entrez votre mot de passe" styleClass="input-field" />
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" maxHeight="30" />
+
+            <Button text="Se Connecter" onAction="#handleLogin" styleClass="primary-button" maxWidth="Infinity" />
+
+            <HBox alignment="CENTER" spacing="5">
+                <Label text="Pas encore de compte ?" styleClass="text-muted" />
+                <Hyperlink text="S'inscrire" onAction="#showRegisterForm" styleClass="text-link" />
+            </HBox>
+
+            <Hyperlink text="Mot de passe oublié ?" onAction="#handleForgotPassword"
+                       styleClass="text-link" alignment="CENTER" />
+        </VBox>
+
+        <!-- Register Form -->
+        <VBox fx:id="registerForm" alignment="CENTER" spacing="15" visible="false" managed="false">
+            <padding>
+                <Insets top="30" bottom="30" left="60" right="60" />
+            </padding>
+
+            <Label text="Inscription" styleClass="form-title" />
+            <Label text="Créez votre compte" styleClass="form-subtitle" />
+
+            <ScrollPane fitToWidth="true" styleClass="transparent-scroll-pane" VBox.vgrow="ALWAYS">
+                <VBox spacing="15">
+                    <HBox spacing="10">
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Label text="Prénom" styleClass="field-label" />
+                            <TextField fx:id="registerFirstName" promptText="Entrez votre prénom" styleClass="input-field" />
+                        </VBox>
+
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Label text="Nom" styleClass="field-label" />
+                            <TextField fx:id="registerLastName" promptText="Entrez votre nom" styleClass="input-field" />
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="5">
+                        <Label text="Email" styleClass="field-label" />
+                        <TextField fx:id="registerEmail" promptText="Entrez votre email" styleClass="input-field" />
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Mot de passe" styleClass="field-label" />
+                        <PasswordField fx:id="registerPassword" promptText="Entrez votre mot de passe" styleClass="input-field" />
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Confirmer le mot de passe" styleClass="field-label" />
+                        <PasswordField fx:id="registerConfirmPassword" promptText="Confirmez votre mot de passe" styleClass="input-field" />
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Rôle" styleClass="field-label" />
+                        <ComboBox fx:id="registerRole" promptText="Sélectionnez votre rôle" styleClass="role-combo" maxWidth="Infinity" />
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <Button text="S'inscrire" onAction="#handleRegister" styleClass="primary-button" maxWidth="Infinity" />
+
+            <HBox alignment="CENTER" spacing="5">
+                <Label text="Déjà un compte ?" styleClass="text-muted" />
+                <Hyperlink text="Se connecter" onAction="#showLoginForm" styleClass="text-link" />
+            </HBox>
+        </VBox>
+    </StackPane>
+</HBox>
