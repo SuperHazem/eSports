@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.AddEditTeamController"
+      styleClass="popup-container"
+      spacing="15"
+      maxWidth="400"
+      maxHeight="300">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label fx:id="popupTitle" text="Ajouter Équipe" styleClass="popup-title"/>
+    <Label text="Remplissez les détails ci-dessous pour ajouter ou modifier une équipe" styleClass="popup-subtitle"/>
+
+    <GridPane vgap="10" hgap="10">
+        <Label text="Nom" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="field-label"/>
+        <TextField fx:id="teamNameField" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field"/>
+
+        <Label text="Coach ID" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="field-label"/>
+        <TextField fx:id="coachIdField" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="text-field"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancel" styleClass="cancel-button"/>
+        <Button fx:id="calculateWinRateButton" text="Calculer Win Rate" onAction="#handleCalculateWinRate" styleClass="player-list-button"/>
+        <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSave" styleClass="primary-button"/>
+    </HBox>
+</VBox>

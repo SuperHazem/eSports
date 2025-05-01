@@ -4,5 +4,12 @@ public enum Role {
     ADMIN,
     COACH,
     JOUEUR,
-    SPECTATEUR
+    SPECTATEUR;
+
+    public void set(String role) {
+    }
+
+    public String get() {
+        return null;
+    }
 }
