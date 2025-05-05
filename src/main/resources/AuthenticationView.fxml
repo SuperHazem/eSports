@@ -54,6 +54,11 @@
 
             <Button text="Se Connecter" onAction="#handleLogin" styleClass="primary-button" maxWidth="Infinity" />
 
+            <!-- Add this inside your login form, typically after the regular login button -->
+            <HBox alignment="CENTER" spacing="10" styleClass="auth-button-container">
+                <Button text="Se connecter avec Google" onAction="#handleGoogleLogin" styleClass="google-button" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+            </HBox>
+
             <HBox alignment="CENTER" spacing="5">
                 <Label text="Pas encore de compte ?" styleClass="text-muted" />
                 <Hyperlink text="S'inscrire" onAction="#showRegisterForm" styleClass="text-link" />
@@ -113,6 +118,10 @@
             <HBox alignment="CENTER" spacing="5">
                 <Label text="Déjà un compte ?" styleClass="text-muted" />
                 <Hyperlink text="Se connecter" onAction="#showLoginForm" styleClass="text-link" />
+            </HBox>
+            <!-- Add this inside your registration form, typically at the bottom -->
+            <HBox alignment="CENTER" spacing="10" styleClass="auth-button-container">
+                <Button text="S'inscrire avec Google" onAction="#handleGoogleLogin" styleClass="google-button" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
             </HBox>
         </VBox>
     </StackPane>
