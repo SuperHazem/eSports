@@ -346,8 +346,14 @@ public class RecompenseController {
         // Set the column resize policy to constrained resize
         recompenseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Make the table fill its parent container
-        recompenseTable.prefWidthProperty().bind(recompenseTable.getParent().layoutBoundsProperty().map(bounds -> bounds.getWidth() - 40));
+        // Alternative approach using a listener instead of binding
+        if (recompenseTable.getParent() != null) {
+            recompenseTable.setPrefWidth(recompenseTable.getParent().getBoundsInLocal().getWidth() - 40);
+            
+            recompenseTable.getParent().layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+                recompenseTable.setPrefWidth(newValue.getWidth() - 40);
+            });
+        }
 
         // Set custom column widths (Equipe: 25%, Coach: 20%, Type: 20%, Valeur: 15%, Actions: 20%)
         double[] columnPercentages = {25, 20, 20, 15, 20};

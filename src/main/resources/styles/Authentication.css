@@ -836,3 +836,15 @@
 .radio-button:selected .dot {
     -fx-background-color: black;
 }
+
+/* Google button styles */
+.google-button {
+    -fx-background-color: #4285F4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.google-button:hover {
+    -fx-background-color: #357ae8;
+}
