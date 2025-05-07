@@ -181,6 +181,10 @@ public class RecompenseController {
             }
 
             Equipe equipe = recompense.getEquipe();
+            if (equipe == null) {
+                return new javafx.beans.property.SimpleStringProperty("N/A");
+            }
+
             String coachName = getCoachNameFromCache(equipe);
             System.out.println("Coach for reward " + recompense.getId() + ": " + coachName);
             return new javafx.beans.property.SimpleStringProperty(coachName);
@@ -289,6 +293,9 @@ public class RecompenseController {
             }
         });
 
+        // Ensure the table has a placeholder message when empty
+        recompenseTable.setPlaceholder(new Label("Aucune récompense trouvée"));
+
         System.out.println("Table columns setup complete.");
     }
 
@@ -302,6 +309,9 @@ public class RecompenseController {
         }
 
         int coachId = equipe.getCoachId();
+        if (coachId <= 0) {
+            return "Coach non assigné";
+        }
 
         // Check if coach name is in cache
         if (coachNameCache.containsKey(coachId)) {
@@ -346,30 +356,19 @@ public class RecompenseController {
         // Set the column resize policy to constrained resize
         recompenseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Alternative approach using a listener instead of binding
-        if (recompenseTable.getParent() != null) {
-            recompenseTable.setPrefWidth(recompenseTable.getParent().getBoundsInLocal().getWidth() - 40);
-            
-            recompenseTable.getParent().layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
-                recompenseTable.setPrefWidth(newValue.getWidth() - 40);
-            });
-        }
+        // Set column widths directly instead of binding
+        equipeColumn.setPrefWidth(200);
+        coachColumn.setPrefWidth(150);
+        typeColumn.setPrefWidth(150);
+        valeurColumn.setPrefWidth(100);
+        actionsColumn.setPrefWidth(150);
 
-        // Set custom column widths (Equipe: 25%, Coach: 20%, Type: 20%, Valeur: 15%, Actions: 20%)
-        double[] columnPercentages = {25, 20, 20, 15, 20};
-
-        TableColumn<?, ?>[] columns = {equipeColumn, coachColumn, typeColumn, valeurColumn, actionsColumn};
-
-        for (int i = 0; i < columns.length; i++) {
-            TableColumn<?, ?> column = columns[i];
-            double percentage = columnPercentages[i] / 100.0;
-
-            // Set minimum width to prevent columns from disappearing
-            column.setMinWidth(50);
-
-            // Bind the column width to a percentage of the table width
-            column.prefWidthProperty().bind(recompenseTable.widthProperty().multiply(percentage));
-        }
+        // Ensure minimum widths
+        equipeColumn.setMinWidth(100);
+        coachColumn.setMinWidth(100);
+        typeColumn.setMinWidth(100);
+        valeurColumn.setMinWidth(80);
+        actionsColumn.setMinWidth(120);
 
         System.out.println("Table columns made responsive.");
     }
@@ -415,6 +414,9 @@ public class RecompenseController {
 
             // Set items to table
             recompenseTable.setItems(recompenses);
+
+            // Force refresh the table
+            recompenseTable.refresh();
 
             System.out.println("Table data loaded successfully.");
 

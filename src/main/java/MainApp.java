@@ -15,7 +15,7 @@ public class MainApp extends Application {
         Scene scene = new Scene(root, 1000, 600);
 
         // Add the CSS file to the scene
-        scene.getStylesheets().add(getClass().getResource("/styles/authentication.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
 
         // Set up the stage
         primaryStage.setTitle("eSports Arena Manager - Authentification");

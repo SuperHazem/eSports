@@ -16,7 +16,7 @@
       <padding>
          <Insets top="20" right="20" bottom="20" left="20"/>
       </padding>
-      <VBox alignment="CENTER" spacing="5">
+      <VBox spacing="5">
          <Label text="Gestion des Utilisateurs" styleClass="title" />
          <Label text="Ajouter, modifier ou supprimer des utilisateurs dans le système." styleClass="subtitle" />
       </VBox>
