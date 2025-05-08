@@ -17,6 +17,11 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
+    // Add this method to expose the connection
+    public Connection getConnection() {
+        return this.connection;
+    }
+
     @Override
     public void ajouter(Utilisateur utilisateur) {
         String query = "INSERT INTO utilisateur (email, motDePasseHash, role, nom, prenom) VALUES (?, ?, ?, ?, ?)";

@@ -29,6 +29,8 @@ import utils.PasswordHasher;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,23 +50,39 @@ public class AuthenticationController {
     @FXML private PasswordField registerPassword;
     @FXML private PasswordField registerConfirmPassword;
     @FXML private ComboBox<String> registerRole;
+    @FXML private Button googleLoginButton;
 
     private UtilisateurDAO utilisateurDAO;
     private Utilisateur authenticatedUser;
     private GoogleAuthService googleAuthService;
+    private Connection dbConnection;
 
     @FXML
     public void initialize() {
         try {
             // Initialize DAO
             utilisateurDAO = new UtilisateurDAO();
-            
-            // Initialize Google Auth Service
+
+            // Get the database connection from the DAO
             try {
-                googleAuthService = new GoogleAuthService();
+                // Get the connection from the DAO
+                dbConnection = utilisateurDAO.getConnection();
+
+                // Initialize Google Auth Service with the connection
+                googleAuthService = new GoogleAuthService(dbConnection);
+
+                // Enable Google login button if service initialized successfully
+                if (googleLoginButton != null) {
+                    googleLoginButton.setDisable(false);
+                }
             } catch (Exception e) {
                 System.err.println("Failed to initialize Google Auth Service: " + e.getMessage());
                 e.printStackTrace();
+                // Disable Google login button if service failed to initialize
+                if (googleLoginButton != null) {
+                    googleLoginButton.setDisable(true);
+                    googleLoginButton.setTooltip(new Tooltip("Google authentication service unavailable"));
+                }
             }
 
             // Load and style the logo
@@ -269,7 +287,7 @@ public class AuthenticationController {
 
         // Style the alert dialog
         DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/styles/authentication.css").toExternalForm());
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
         dialogPane.getStyleClass().add("alert-dialog");
 
         alert.showAndWait();
@@ -433,75 +451,89 @@ public class AuthenticationController {
     @FXML
     public void handleGoogleLogin() {
         if (googleAuthService == null) {
-            showAlert(Alert.AlertType.ERROR, "Service non disponible", 
+            showAlert(Alert.AlertType.ERROR, "Service non disponible",
                     "Le service d'authentification Google n'est pas disponible.");
             return;
         }
-        
-        showAlert(Alert.AlertType.INFORMATION, "Connexion en cours", 
-                "Veuillez vous authentifier dans la fenêtre du navigateur qui va s'ouvrir.");
-        
-        googleAuthService.startGoogleAuthFlow(new GoogleAuthService.GoogleAuthCallback() {
-            @Override
-            public void onAuthCompleted(Utilisateur user) {
-                if (user != null) {
-                    try {
-                        // Check if user already exists
-                        List<Utilisateur> allUsers = utilisateurDAO.lireTous();
-                        boolean userExists = false;
-                        Utilisateur existingUser = null;
-                        
-                        for (Utilisateur u : allUsers) {
-                            if (u.getEmail().equals(user.getEmail())) {
-                                userExists = true;
-                                existingUser = u;
-                                break;
+
+        // Show more informative message about account selection
+        showAlert(Alert.AlertType.INFORMATION, "Connexion avec Google",
+                "Une fenêtre de navigateur va s'ouvrir pour vous permettre de sélectionner votre compte Google. " +
+                        "Veuillez choisir le compte que vous souhaitez utiliser pour vous connecter à l'application.");
+
+        // Disable the Google login button to prevent multiple clicks
+        if (googleLoginButton != null) {
+            googleLoginButton.setDisable(true);
+        }
+
+        try {
+            googleAuthService.startGoogleAuthFlow(new GoogleAuthService.GoogleAuthCallback() {
+                @Override
+                public void onAuthCompleted(Utilisateur user) {
+                    Platform.runLater(() -> {
+                        try {
+                            // Re-enable the Google login button
+                            if (googleLoginButton != null) {
+                                googleLoginButton.setDisable(false);
                             }
+
+                            if (user != null) {
+                                // Debug the user object
+                                System.out.println("Google auth completed. User: " + user.getEmail() +
+                                        ", Role: " + user.getRole() +
+                                        " (name: " + user.getRole().name() + ")");
+
+                                // Set the authenticated user
+                                authenticatedUser = user;
+
+                                // Close any open dialogs
+                                closeAlerts();
+
+                                showAlert(Alert.AlertType.INFORMATION, "Connexion réussie",
+                                        "Vous êtes maintenant connecté avec le compte: " + user.getEmail());
+
+                                // Load main application
+                                loadMainApplication();
+                            } else {
+                                showAlert(Alert.AlertType.ERROR, "Échec de connexion",
+                                        "Impossible de récupérer les informations utilisateur.");
+                            }
+                        } catch (Exception e) {
+                            showAlert(Alert.AlertType.ERROR, "Erreur de connexion",
+                                    "Une erreur est survenue lors de la connexion: " + e.getMessage());
+                            e.printStackTrace();
                         }
-                        
-                        if (userExists) {
-                            // User exists, log them in
-                            authenticatedUser = existingUser;
-                            
-                            // Close any open dialogs
-                            closeAlerts();
-                            
-                            showAlert(Alert.AlertType.INFORMATION, "Connexion réussie", 
-                                    "Vous êtes maintenant connecté!");
-                            
-                            // Load main application
-                            loadMainApplication();
-                        } else {
-                            // User doesn't exist, add them to the database
-                            utilisateurDAO.ajouter(user);
-                            authenticatedUser = user;
-                            
-                            // Close any open dialogs
-                            closeAlerts();
-                            
-                            showAlert(Alert.AlertType.INFORMATION, "Compte créé et connecté", 
-                                    "Un nouveau compte a été créé avec vos informations Google et vous êtes maintenant connecté!");
-                            
-                            // Load main application
-                            loadMainApplication();
-                        }
-                    } catch (Exception e) {
-                        showAlert(Alert.AlertType.ERROR, "Erreur de connexion", 
-                                "Une erreur est survenue lors de la connexion: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Échec de connexion", 
-                            "Impossible de récupérer les informations utilisateur.");
+                    });
                 }
+
+                @Override
+                public void onAuthFailed(String errorMessage) {
+                    Platform.runLater(() -> {
+                        // Re-enable the Google login button
+                        if (googleLoginButton != null) {
+                            googleLoginButton.setDisable(false);
+                        }
+
+                        if (errorMessage == null) {
+                            showAlert(Alert.AlertType.ERROR, "Échec de connexion",
+                                    "Erreur d'authentification Google: Une erreur inconnue s'est produite");
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Échec de connexion",
+                                    "Erreur d'authentification Google: " + errorMessage);
+                        }
+                    });
+                }
+            });
+        } catch (Exception e) {
+            // Re-enable the Google login button
+            if (googleLoginButton != null) {
+                googleLoginButton.setDisable(false);
             }
-            
-            @Override
-            public void onAuthFailed(String errorMessage) {
-                showAlert(Alert.AlertType.ERROR, "Échec de connexion", 
-                        "Erreur d'authentification Google: " + errorMessage);
-            }
-        });
+
+            showAlert(Alert.AlertType.ERROR, "Erreur de connexion",
+                    "Une erreur est survenue lors de la connexion Google: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // Helper method to close any open alerts
