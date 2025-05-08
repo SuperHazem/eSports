@@ -375,8 +375,14 @@ public class AuthenticationController {
 
     @FXML
     public void handleForgotPassword() {
-        showAlert(Alert.AlertType.INFORMATION, "Réinitialisation du mot de passe",
-                "Un email de réinitialisation a été envoyé à votre adresse email.");
+        try {
+            // Navigate to the forgot password screen
+            SceneController.loadPage("/ForgotPasswordView.fxml");
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Show error alert
+            showAlert("Error", "Failed to load password recovery page: " + e.getMessage());
+        }
     }
 
     private void fadeTransition(VBox fromNode, VBox toNode) {
