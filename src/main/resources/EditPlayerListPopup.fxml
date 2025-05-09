@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.EditPlayerListController"
+      styleClass="popup-container"
+      spacing="15"
+      maxWidth="500"
+      maxHeight="400">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Éditer Liste Joueurs" styleClass="popup-title"/>
+    <Label text="Sélectionnez les joueurs pour cette équipe" styleClass="popup-subtitle"/>
+
+    <VBox spacing="10">
+        <Label text="Joueurs disponibles:" styleClass="field-label"/>
+        <ListView fx:id="availablePlayersList" VBox.vgrow="ALWAYS" styleClass="player-list"/>
+
+        <Label text="Joueurs sélectionnés:" styleClass="field-label"/>
+        <ListView fx:id="selectedPlayersList" VBox.vgrow="ALWAYS" styleClass="player-list"/>
+
+        <HBox spacing="10">
+            <Button fx:id="addPlayerButton" text="Ajouter ➡" onAction="#handleAddPlayer" styleClass="action-button"/>
+            <Button fx:id="removePlayerButton" text="⬅ Retirer" onAction="#handleRemovePlayer" styleClass="action-button"/>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancel" styleClass="cancel-button"/>
+        <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSave" styleClass="primary-button"/>
+    </HBox>
+</VBox>

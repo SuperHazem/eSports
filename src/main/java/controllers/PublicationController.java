@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.Publication;
@@ -14,10 +16,12 @@ import dao.PublicationDAO;
 import dao.CommentaireDAO;
 import dao.PublicationDAOImpl;
 import dao.CommentaireDAOImpl;
+import utils.BadWordsAPI;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.beans.property.SimpleStringProperty;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -27,7 +31,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class PublicationController {
-    private static final int CURRENT_USER_ID = 2;
+    private static final int CURRENT_USER_ID = 1;
     private final PublicationDAO publicationDAO = new PublicationDAOImpl();
     private final CommentaireDAO commentaireDAO = new CommentaireDAOImpl();
     private Publication publicationSelectionnee;
@@ -35,6 +39,7 @@ public class PublicationController {
     private FilteredList<Publication> publicationsFiltered;
 
     @FXML private TableView<Publication> publicationTable;
+    @FXML private TableColumn<Publication, Void> imageCol;
     @FXML private TableColumn<Publication, String> titreCol;
     @FXML private TableColumn<Publication, String> contenuCol;
     @FXML private TableColumn<Publication, String> dateCol;
@@ -114,6 +119,38 @@ public class PublicationController {
     }
 
     private void configurerColonnesPublication() {
+        // Configuration de la colonne image
+        imageCol.setCellFactory(param -> new TableCell<>() {
+            private final ImageView imageView = new ImageView();
+            {
+                imageView.setFitWidth(80);
+                imageView.setFitHeight(80);
+                imageView.setPreserveRatio(true);
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Publication publication = getTableView().getItems().get(getIndex());
+                    String imagePath = publication.getImage();
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        try {
+                            Image image = new Image(new File(imagePath).toURI().toString());
+                            imageView.setImage(image);
+                            setGraphic(imageView);
+                        } catch (Exception e) {
+                            setGraphic(null);
+                        }
+                    } else {
+                        setGraphic(null);
+                    }
+                }
+            }
+        });
+
         titreCol.setCellValueFactory(cellData -> cellData.getValue().titreProperty());
         contenuCol.setCellValueFactory(cellData -> cellData.getValue().contenuProperty());
         dateCol.setCellValueFactory(cellData -> {
@@ -298,6 +335,12 @@ public class PublicationController {
         String contenu = nouveauCommentaireField.getText().trim();
         if (contenu.isEmpty()) {
             afficherAlerte("Erreur", "Le commentaire ne peut pas être vide.");
+            return;
+        }
+
+        // Vérifier le contenu avec l'API Bad Words
+        if (BadWordsAPI.containsBadWords(contenu)) {
+            afficherAlerte("Erreur", "Le commentaire contient des mots inappropriés. Veuillez modifier votre commentaire.");
             return;
         }
 

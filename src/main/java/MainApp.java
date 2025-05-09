@@ -18,7 +18,7 @@ public class MainApp extends Application {
         scene.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
 
         // Set up the stage
-        primaryStage.setTitle("eSports Arena Manager ");
+        primaryStage.setTitle("eSports Arena Manager - Authentification");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);

@@ -20,12 +20,13 @@ public class PublicationDAOImpl implements PublicationDAO {
 
     @Override
     public void ajouter(Publication publication) {
-        String sql = "INSERT INTO publication (titre, contenu, date_publication, auteur) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO publication (titre, contenu, date_publication, auteur, image) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, publication.getTitre());
             statement.setString(2, publication.getContenu());
             statement.setTimestamp(3, new Timestamp(publication.getDatePublication().getTime()));
             statement.setInt(4, Publication.getAuteur());
+            statement.setString(5, publication.getImage());
             
             int affectedRows = statement.executeUpdate();
             
@@ -78,12 +79,13 @@ public class PublicationDAOImpl implements PublicationDAO {
 
     @Override
     public void modifier(Publication publication) {
-        String sql = "UPDATE publication SET titre = ?, contenu = ? WHERE id = ? AND auteur = ?";
+        String sql = "UPDATE publication SET titre = ?, contenu = ?, image = ? WHERE id = ? AND auteur = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, publication.getTitre());
             statement.setString(2, publication.getContenu());
-            statement.setInt(3, publication.getId());
-            statement.setInt(4, Publication.getAuteur());
+            statement.setString(3, publication.getImage());
+            statement.setInt(4, publication.getId());
+            statement.setInt(5, Publication.getAuteur());
             
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected == 0) {
@@ -133,6 +135,7 @@ public class PublicationDAOImpl implements PublicationDAO {
         publication.setTitre(resultSet.getString("titre"));
         publication.setContenu(resultSet.getString("contenu"));
         publication.setDatePublication(resultSet.getTimestamp("date_publication"));
+        publication.setImage(resultSet.getString("image"));
         return publication;
     }
 } 

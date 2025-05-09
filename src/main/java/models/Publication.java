@@ -8,16 +8,18 @@ public class Publication {
     private final StringProperty titre = new SimpleStringProperty();
     private final StringProperty contenu = new SimpleStringProperty();
     private final ObjectProperty<Date> datePublication = new SimpleObjectProperty<>();
-    private static final int auteur = 2; // Utilisateur statique pour le développement
+    private final StringProperty image = new SimpleStringProperty();
+    private static final int auteur = 1; // Utilisateur statique pour le développement
 
     public Publication() {
         this.datePublication.set(new Date()); // Set current date by default
     }
 
-    public Publication(String titre, String contenu) {
+    public Publication(String titre, String contenu, String image) {
         this();
         this.titre.set(titre);
         this.contenu.set(contenu);
+        this.image.set(image);
     }
 
     // ID
@@ -70,6 +72,19 @@ public class Publication {
 
     public ObjectProperty<Date> datePublicationProperty() {
         return datePublication;
+    }
+
+    // Image
+    public String getImage() {
+        return image.get();
+    }
+
+    public void setImage(String image) {
+        this.image.set(image);
+    }
+
+    public StringProperty imageProperty() {
+        return image;
     }
 
     // Auteur (static)

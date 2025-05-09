@@ -1,6 +1,9 @@
 package org.example;
 
-
+import dao.EquipeDAO;
+import dao.RecompenseDAO;
+import dao.RecompenseDAOImpl;
+import dao.UtilisateurDAO;
 import enums.Role;
 import enums.TypeRecompense;
 import models.*;

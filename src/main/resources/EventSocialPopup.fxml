@@ -3,9 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.web.WebView?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.EventSocialPopupController"
       spacing="15" alignment="CENTER"
       stylesheets="@styles/application.css"
@@ -27,24 +26,16 @@
     <!-- Date Field -->
     <VBox spacing="5">
         <Label text="Date:" styleClass="field-label" />
-        <DatePicker fx:id="datePicker" styleClass="date-picker" />
+        <DatePicker fx:id="dateField" styleClass="date-picker" />
     </VBox>
 
-    <!-- Location Field -->
+    <!-- Location Fields -->
     <VBox spacing="5">
-        <Label text="Lieu:" styleClass="field-label" />
-        <HBox spacing="5">
-            <TextField fx:id="lieuField" promptText="Entrez le lieu" styleClass="input-field" HBox.hgrow="ALWAYS" />
-            <Button text="Sélectionner sur la carte" onAction="#openMap" styleClass="map-button" />
-        </HBox>
-    </VBox>
-
-    <!-- Map View (initially hidden) -->
-    <VBox fx:id="mapContainer" spacing="5" visible="false" managed="false">
-        <HBox alignment="CENTER_RIGHT" spacing="5">
-            <Button text="Fermer la carte" onAction="#closeMap" styleClass="cancel-button" />
-        </HBox>
-        <WebView fx:id="mapView" prefHeight="300" />
+        <Label text="Gouvernorat:" styleClass="field-label" />
+        <ComboBox fx:id="gouvernoratComboBox" promptText="Sélectionnez un gouvernorat" styleClass="input-field" />
+        
+        <Label text="Ville:" styleClass="field-label" />
+        <ComboBox fx:id="villeComboBox" promptText="Sélectionnez une ville" styleClass="input-field" />
     </VBox>
 
     <!-- Description Field -->
@@ -61,7 +52,7 @@
 
     <!-- Action Buttons -->
     <HBox spacing="10" alignment="CENTER">
-        <Button text="Enregistrer" onAction="#save" styleClass="add-button" />
+        <Button text="Enregistrer" onAction="#enregistrer" styleClass="add-button" />
         <Button text="Annuler" onAction="#annuler" styleClass="cancel-button" />
     </HBox>
 </VBox> 

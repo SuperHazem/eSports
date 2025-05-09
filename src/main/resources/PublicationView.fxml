@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.geometry.Insets?>
 <?import java.net.URL?>
 
@@ -47,7 +48,8 @@
         <!-- Publications Table -->
         <TableView fx:id="publicationTable" VBox.vgrow="ALWAYS" styleClass="user-table">
             <columns>
-                <TableColumn fx:id="titreCol" text="Titre" prefWidth="250" styleClass="column"/>
+                <TableColumn fx:id="imageCol" text="Image" prefWidth="100" styleClass="column"/>
+                <TableColumn fx:id="titreCol" text="Titre" prefWidth="200" styleClass="column"/>
                 <TableColumn fx:id="contenuCol" text="Contenu" prefWidth="400" styleClass="column"/>
                 <TableColumn fx:id="dateCol" text="Date" prefWidth="150" styleClass="column"/>
                 <TableColumn fx:id="actionsCol" text="Actions" prefWidth="200" styleClass="column"/>

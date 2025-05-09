@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.Sponsor;
-import utils.validators.SponsorValidator;
 
 import java.io.IOException;
 import java.sql.SQLException;

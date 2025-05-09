@@ -65,12 +65,12 @@ public class MainController implements Initializable {
         styleLogoImage();
 
         // Set the initial active button
-        currentActiveButton = sponsorBtn;
+        currentActiveButton = utilisateurBtn;
         currentActiveButton.getStyleClass().add("active-nav-button");
 
         // Load the default view (Utilisateurs)
         try {
-            loadView("Sponsor");
+            loadView("utilisateur");
         } catch (IOException e) {
             System.err.println("Error loading default view: " + e.getMessage());
             e.printStackTrace();

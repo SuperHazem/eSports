@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.EventSocial;
-import utils.validators.EventSocialValidator;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -133,35 +132,21 @@ public class EventSocialController {
 
     private void openPopup(EventSocial event) {
         try {
-            // Get the resource URL
-            java.net.URL resource = getClass().getResource("/EventSocialPopup.fxml");
-            if (resource == null) {
-                throw new IOException("Cannot find EventSocialPopup.fxml");
-            }
-
-            // Create and configure the loader
-            FXMLLoader loader = new FXMLLoader(resource);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventSocialPopup.fxml"));
             VBox popupContent = loader.load();
 
-            // Get the controller and set up the event
             EventSocialPopupController popupController = loader.getController();
             if (event != null) {
                 popupController.setEvent(event);
             }
 
-            // Create and configure the popup stage
             Stage popupStage = new Stage();
             popupStage.initModality(Modality.APPLICATION_MODAL);
             popupStage.setTitle(event == null ? "Ajouter Événement" : "Modifier Événement");
-            
-            // Create scene with the loaded content
-            Scene scene = new Scene(popupContent);
-            popupStage.setScene(scene);
+            popupStage.setScene(new Scene(popupContent));
 
-            // Show the popup and wait for it to close
             popupStage.showAndWait();
 
-            // Handle the result
             EventSocial updatedEvent = popupController.getEvent();
             if (updatedEvent != null) {
                 if (event == null) {
@@ -173,10 +158,10 @@ public class EventSocialController {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Erreur de chargement", "Impossible de charger la fenêtre pop-up: " + e.getMessage());
+            showError("Erreur de chargement", "Impossible de charger la fenêtre pop-up.");
         } catch (Exception e) {
             e.printStackTrace();
-            showError("Erreur inattendue", "Une erreur inattendue est survenue: " + e.getMessage());
+            showError("Erreur inattendue", "Une erreur inattendue est survenue.");
         }
     }
 

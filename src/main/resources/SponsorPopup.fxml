@@ -53,7 +53,7 @@
 
     <!-- Action Buttons -->
     <HBox spacing="10" alignment="CENTER">
-        <Button fx:id="saveButton" text="Enregistrer" styleClass="add-button" />
+        <Button text="Enregistrer" onAction="#enregistrer" styleClass="add-button" />
         <Button text="Annuler" onAction="#annuler" styleClass="cancel-button" />
     </HBox>
 </VBox> 

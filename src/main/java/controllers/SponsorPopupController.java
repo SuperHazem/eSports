@@ -5,7 +5,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import models.Sponsor;
 import utils.validators.SponsorValidator;
-
 import java.util.List;
 
 public class SponsorPopupController {
@@ -16,15 +15,23 @@ public class SponsorPopupController {
     @FXML private TextField phoneField;
     @FXML private TextArea addressField;
     @FXML private TextField montantField;
-    @FXML private Button saveButton;
     @FXML private Label titleLabel;
 
     private Sponsor sponsor;
-    private boolean isEditMode;
+    private boolean isEditMode = false;
+
+    public void initialize() {
+        // Initialize any necessary components
+    }
 
     public void setSponsor(Sponsor sponsor) {
         this.sponsor = sponsor;
-        this.isEditMode = sponsor != null;
+        this.isEditMode = true;
+        populateFields();
+        titleLabel.setText("Modifier Sponsor");
+    }
+
+    private void populateFields() {
         if (sponsor != null) {
             fnameField.setText(sponsor.getFname());
             lnameField.setText(sponsor.getLname());
@@ -35,46 +42,59 @@ public class SponsorPopupController {
         }
     }
 
-    public Sponsor getSponsor() {
-        return sponsor;
+    @FXML
+    public void enregistrer() {
+        String fname = fnameField.getText().trim();
+        String lname = lnameField.getText().trim();
+        String email = emailField.getText().trim();
+        String phone = phoneField.getText().trim();
+        String address = addressField.getText().trim();
+        String montantStr = montantField.getText().trim();
+
+        // Créer un objet temporaire pour la validation
+        Sponsor tempSponsor = new Sponsor();
+        tempSponsor.setFname(fname);
+        tempSponsor.setLname(lname);
+        tempSponsor.setEmail(email);
+        tempSponsor.setPhone(phone);
+        tempSponsor.setAddress(address);
+        
+        try {
+            double montant = Double.parseDouble(montantStr);
+            tempSponsor.setMontant(montant);
+        } catch (NumberFormatException e) {
+            showAlert("Erreur", "Le montant doit être un nombre valide.");
+            return;
+        }
+
+        // Valider le sponsor
+        List<String> errors = SponsorValidator.validateSponsor(tempSponsor);
+        if (!errors.isEmpty()) {
+            showValidationErrors(errors);
+            return;
+        }
+
+        // Si la validation est réussie, procéder à l'enregistrement
+        if (isEditMode) {
+            sponsor.setFname(fname);
+            sponsor.setLname(lname);
+            sponsor.setEmail(email);
+            sponsor.setPhone(phone);
+            sponsor.setAddress(address);
+            sponsor.setMontant(tempSponsor.getMontant());
+        } else {
+            sponsor = new Sponsor(fname, lname, email, phone, address, tempSponsor.getMontant());
+        }
+
+        closeStage();
     }
 
-    @FXML
-    private void initialize() {
-        saveButton.setOnAction(e -> {
-            try {
-                String fname = fnameField.getText();
-                String lname = lnameField.getText();
-                String email = emailField.getText();
-                String phone = phoneField.getText();
-                String address = addressField.getText();
-                double montant = Double.parseDouble(montantField.getText());
-
-                Sponsor newSponsor = new Sponsor(fname, lname, address, email, phone, montant);
-                
-                // Validate the sponsor
-                List<String> errors = SponsorValidator.validateSponsor(newSponsor);
-                if (!errors.isEmpty()) {
-                    showError("Erreur de validation", String.join("\n", errors));
-                    return;
-                }
-
-                if (isEditMode) {
-                    this.sponsor.setFname(fname);
-                    this.sponsor.setLname(lname);
-                    this.sponsor.setEmail(email);
-                    this.sponsor.setPhone(phone);
-                    this.sponsor.setAddress(address);
-                    this.sponsor.setMontant(montant);
-                } else {
-                    this.sponsor = newSponsor;
-                }
-
-                closeStage();
-            } catch (NumberFormatException ex) {
-                showError("Erreur", "Le montant doit être un nombre valide");
-            }
-        });
+    private void showValidationErrors(List<String> errors) {
+        StringBuilder message = new StringBuilder("Veuillez corriger les erreurs suivantes :\n\n");
+        for (String error : errors) {
+            message.append("• ").append(error).append("\n");
+        }
+        showAlert("Erreurs de validation", message.toString());
     }
 
     @FXML
@@ -84,15 +104,19 @@ public class SponsorPopupController {
     }
 
     private void closeStage() {
-        Stage stage = (Stage) saveButton.getScene().getWindow();
+        Stage stage = (Stage) fnameField.getScene().getWindow();
         stage.close();
     }
 
-    private void showError(String title, String message) {
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public Sponsor getSponsor() {
+        return sponsor;
     }
 } 

@@ -1,158 +1,195 @@
 package controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import models.EventSocial;
 import utils.validators.EventSocialValidator;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EventSocialPopupController {
 
     @FXML private TextField nomField;
-    @FXML private DatePicker datePicker;
-    @FXML private TextField lieuField;
+    @FXML private DatePicker dateField;
+    @FXML private ComboBox<String> gouvernoratComboBox;
+    @FXML private ComboBox<String> villeComboBox;
     @FXML private TextArea descriptionField;
     @FXML private TextField capaciteField;
-    @FXML private Button saveButton;
     @FXML private Label titleLabel;
-    @FXML private VBox mapContainer;
-    @FXML private WebView mapView;
 
     private EventSocial event;
-    private boolean isEditMode;
+    private boolean isEditMode = false;
 
-    @FXML
     public void initialize() {
-        // Set default date to today
-        datePicker.setValue(LocalDate.now());
+        // Map des gouvernorats et leurs villes
+        Map<String, List<String>> gouvernoratsVilles = new HashMap<>();
         
-        // Initialize map
-        initializeMap();
-    }
+        // Gouvernorat de l'Ariana
+        gouvernoratsVilles.put("Ariana", Arrays.asList(
+            "Ariana Ville",
+            "Ettadhamen",
+            "Mnihla",
+            "Raoued",
+            "Sidi Thabet",
+            "La Soukra",
+            "Kalaat El Andalous",
+            "Borj El Amri"
+        ));
+        
+        // Gouvernorat de Tunis
+        gouvernoratsVilles.put("Tunis", Arrays.asList(
+            "Tunis Ville",
+            "Bab El Bhar",
+            "Bab Souika",
+            "Carthage",
+            "La Goulette",
+            "Le Bardo",
+            "La Marsa",
+            "Sidi Bou Said",
+            "Sidi Hassine"
+        ));
+        
+        // Gouvernorat de Ben Arous
+        gouvernoratsVilles.put("Ben Arous", Arrays.asList(
+            "Ben Arous Ville",
+            "El Mourouj",
+            "Hammam Lif",
+            "Hammam Chott",
+            "Mégrine",
+            "Mohamedia",
+            "Mornag",
+            "Radès"
+        ));
+        
+        // Gouvernorat de Manouba
+        gouvernoratsVilles.put("Manouba", Arrays.asList(
+            "Manouba Ville",
+            "Borj El Amri",
+            "Den Den",
+            "Douar Hicher",
+            "El Battan",
+            "Jdaida",
+            "Mornaguia",
+            "Oued Ellil",
+            "Tebourba"
+        ));
+        
+        // Gouvernorat de Nabeul
+        gouvernoratsVilles.put("Nabeul", Arrays.asList(
+            "Nabeul Ville",
+            "Béni Khiar",
+            "Béni Mtir",
+            "Bou Argoub",
+            "Dar Chaabane",
+            "El Haouaria",
+            "El Mida",
+            "Grombalia",
+            "Hammamet",
+            "Kélibia",
+            "Korba",
+            "Menzel Bouzelfa",
+            "Menzel Temime",
+            "Soliman",
+            "Takelsa"
+        ));
 
-    private void initializeMap() {
-        try {
-            // Simple OpenStreetMap implementation
-            String mapHtml = """
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Location Selector</title>
-                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
-                    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-                    <style>
-                        #map { height: 300px; width: 100%; }
-                    </style>
-                </head>
-                <body>
-                    <div id="map"></div>
-                    <script>
-                        var map = L.map('map').setView([36.8065, 10.1815], 13);
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            attribution: '© OpenStreetMap contributors'
-                        }).addTo(map);
-                        
-                        var marker = null;
-                        map.on('click', function(e) {
-                            if (marker) {
-                                map.removeLayer(marker);
-                            }
-                            marker = L.marker(e.latlng).addTo(map);
-                            // Send coordinates to Java
-                            window.location.href = 'java:updateLocation(' + e.latlng.lat + ',' + e.latlng.lng + ')';
-                        });
-                    </script>
-                </body>
-                </html>
-                """;
-            mapView.getEngine().loadContent(mapHtml);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur de carte", "Impossible de charger la carte. Veuillez entrer l'adresse manuellement.");
-        }
-    }
-
-    @FXML
-    private void openMap() {
-        try {
-            mapContainer.setVisible(true);
-            mapContainer.setManaged(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur", "Impossible d'ouvrir la carte. Veuillez entrer l'adresse manuellement.");
-        }
-    }
-
-    @FXML
-    private void closeMap() {
-        mapContainer.setVisible(false);
-        mapContainer.setManaged(false);
-    }
-
-    public void updateLocation(double lat, double lng) {
-        try {
-            // Simple reverse geocoding using OpenStreetMap Nominatim
-            String url = String.format("https://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f", lat, lng);
-            String address = "Lat: " + lat + ", Lng: " + lng; // Fallback address
-            lieuField.setText(address);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError("Erreur", "Impossible de récupérer l'adresse. Veuillez l'entrer manuellement.");
-        }
+        // Ajouter les gouvernorats au ComboBox
+        gouvernoratComboBox.setItems(FXCollections.observableArrayList(gouvernoratsVilles.keySet()));
+        
+        // Écouter les changements de sélection du gouvernorat
+        gouvernoratComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                villeComboBox.setItems(FXCollections.observableArrayList(gouvernoratsVilles.get(newVal)));
+                villeComboBox.setValue(null); // Réinitialiser la sélection de la ville
+            } else {
+                villeComboBox.setItems(FXCollections.observableArrayList());
+            }
+        });
     }
 
     public void setEvent(EventSocial event) {
         this.event = event;
-        this.isEditMode = event != null;
-        
-        if (isEditMode) {
-            titleLabel.setText("Modifier Événement Social");
-            nomField.setText(event.getNom());
-            datePicker.setValue(event.getDate());
-            lieuField.setText(event.getLieu());
-            descriptionField.setText(event.getDescription());
-            capaciteField.setText(String.valueOf(event.getCapacite()));
-        } else {
-            titleLabel.setText("Ajouter Événement Social");
-        }
+        this.isEditMode = true;
+        populateFields();
+        titleLabel.setText("Modifier Événement");
     }
 
-    public EventSocial getEvent() {
-        return event;
+    private void populateFields() {
+        if (event != null) {
+            nomField.setText(event.getNom());
+            dateField.setValue(event.getDate());
+            
+            // Pour le lieu, on doit séparer le gouvernorat et la ville
+            String lieu = event.getLieu();
+            if (lieu != null && lieu.contains(" - ")) {
+                String[] parts = lieu.split(" - ");
+                gouvernoratComboBox.setValue(parts[0]);
+                villeComboBox.setValue(parts[1]);
+            }
+            
+            descriptionField.setText(event.getDescription());
+            capaciteField.setText(String.valueOf(event.getCapacite()));
+        }
     }
 
     @FXML
-    private void save() {
+    public void enregistrer() {
+        String nom = nomField.getText().trim();
+        LocalDate date = dateField.getValue();
+        String gouvernorat = gouvernoratComboBox.getValue();
+        String ville = villeComboBox.getValue();
+        String description = descriptionField.getText().trim();
+        String capaciteStr = capaciteField.getText().trim();
+
+        // Créer un objet temporaire pour la validation
+        EventSocial tempEvent = new EventSocial();
+        tempEvent.setNom(nom);
+        tempEvent.setDate(date);
+        tempEvent.setLieu(gouvernorat != null && ville != null ? gouvernorat + " - " + ville : null);
+        tempEvent.setDescription(description);
+        
         try {
-            String nom = nomField.getText();
-            LocalDate date = datePicker.getValue();
-            String lieu = lieuField.getText();
-            String description = descriptionField.getText();
-            int capacite = Integer.parseInt(capaciteField.getText());
-
-            EventSocial newEvent = new EventSocial(nom, date, lieu, description, capacite);
-            
-            // Validate the event
-            List<String> errors = EventSocialValidator.validateEvent(newEvent);
-            if (!errors.isEmpty()) {
-                showError("Erreur de validation", String.join("\n", errors));
-                return;
-            }
-
-            if (isEditMode) {
-                newEvent.setId(event.getId());
-            }
-            
-            this.event = newEvent;
-            closeStage();
-        } catch (NumberFormatException ex) {
-            showError("Erreur", "La capacité doit être un nombre valide");
+            int capacite = Integer.parseInt(capaciteStr);
+            tempEvent.setCapacite(capacite);
+        } catch (NumberFormatException e) {
+            showAlert("Erreur", "La capacité doit être un nombre valide.");
+            return;
         }
+
+        // Valider l'événement
+        List<String> errors = EventSocialValidator.validateEvent(tempEvent);
+        if (!errors.isEmpty()) {
+            showValidationErrors(errors);
+            return;
+        }
+
+        // Si la validation est réussie, procéder à l'enregistrement
+        if (isEditMode) {
+            event.setNom(nom);
+            event.setDate(date);
+            event.setLieu(gouvernorat + " - " + ville);
+            event.setDescription(description);
+            event.setCapacite(tempEvent.getCapacite());
+        } else {
+            event = new EventSocial(nom, date, gouvernorat + " - " + ville, description, tempEvent.getCapacite());
+        }
+
+        closeStage();
+    }
+
+    private void showValidationErrors(List<String> errors) {
+        StringBuilder message = new StringBuilder("Veuillez corriger les erreurs suivantes :\n\n");
+        for (String error : errors) {
+            message.append("• ").append(error).append("\n");
+        }
+        showAlert("Erreurs de validation", message.toString());
     }
 
     @FXML
@@ -162,15 +199,19 @@ public class EventSocialPopupController {
     }
 
     private void closeStage() {
-        Stage stage = (Stage) saveButton.getScene().getWindow();
+        Stage stage = (Stage) nomField.getScene().getWindow();
         stage.close();
     }
 
-    private void showError(String title, String message) {
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public EventSocial getEvent() {
+        return event;
     }
 } 
