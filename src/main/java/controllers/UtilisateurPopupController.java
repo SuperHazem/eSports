@@ -329,23 +329,12 @@ public class UtilisateurPopupController {
                 }
             }
 
-            // Add this block to save the user to the database
-            UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
-            if (isEditMode) {
-                utilisateurDAO.modifier(utilisateur);
-            } else {
-                utilisateurDAO.creer(utilisateur);
-            }
-
             // Close the pop-up
             closeStage();
         } catch (IllegalArgumentException e) {
             showAlert("Erreur", "Rôle invalide: " + roleString);
         } catch (ClassCastException e) {
             showAlert("Erreur", "Erreur de type: " + e.getMessage());
-            e.printStackTrace();
-        } catch (SQLException e) {
-            showAlert("Erreur de base de données", "Impossible de sauvegarder l'utilisateur: " + e.getMessage());
             e.printStackTrace();
         }
     }

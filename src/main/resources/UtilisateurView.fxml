@@ -6,49 +6,31 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.UtilisateurController"
-      spacing="20" alignment="TOP_CENTER"
+      spacing="10" alignment="TOP_CENTER"
       stylesheets="@styles/application.css"
-      styleClass="main-container"
       prefWidth="1280" prefHeight="720">
 
-   <!-- Title Section with improved styling -->
+   <!-- Title Section -->
    <StackPane styleClass="header-container">
-      <padding>
-         <Insets top="20" right="20" bottom="20" left="20"/>
-      </padding>
-      <VBox spacing="5">
+      <VBox alignment="CENTER" spacing="5">
          <Label text="Gestion des Utilisateurs" styleClass="title" />
          <Label text="Ajouter, modifier ou supprimer des utilisateurs dans le système." styleClass="subtitle" />
       </VBox>
    </StackPane>
 
-   <!-- Search and Filter Section with improved layout -->
-   <HBox spacing="15" alignment="CENTER_LEFT" styleClass="search-container">
-      <padding>
-         <Insets top="0" right="20" bottom="0" left="20"/>
-      </padding>
-      <Label text="Rechercher:" styleClass="field-label" />
-      <TextField fx:id="searchNameField" promptText="Entrez le nom ou prénom" styleClass="search-field" HBox.hgrow="ALWAYS" />
-      <ComboBox fx:id="roleFilterComboBox" promptText="Filtrer par rôle" styleClass="role-combo" />
+   <!-- Search and Display Buttons -->
+   <HBox spacing="10" alignment="CENTER_LEFT">
+      <Label text="Rechercher par nom ou prénom:" styleClass="field-label" />
+      <TextField fx:id="searchNameField" promptText="Entrez le nom ou prénom" styleClass="input-field" HBox.hgrow="ALWAYS" />
       <Button text="Rechercher" onAction="#rechercherUtilisateur" styleClass="search-button" />
-      <Button text="Réinitialiser" onAction="#afficherTousUtilisateurs" styleClass="display-button" />
+      <Button text="Afficher Tous" onAction="#afficherTousUtilisateurs" styleClass="display-button" />
    </HBox>
 
-   <!-- Table View with improved container -->
+   <!-- Table View -->
    <VBox VBox.vgrow="ALWAYS" styleClass="table-container">
-      <padding>
-         <Insets top="0" right="20" bottom="20" left="20"/>
-      </padding>
-      
-      <!-- Action buttons above table -->
       <HBox spacing="10" alignment="CENTER_RIGHT">
-         <padding>
-            <Insets top="0" right="0" bottom="10" left="0"/>
-         </padding>
-         <Button text="Ajouter Utilisateur" onAction="#ajouterUtilisateur" styleClass="primary-button" />
+         <Button text="Ajouter" onAction="#ajouterUtilisateur" styleClass="add-button" />
       </HBox>
-      
-      <!-- Enhanced table with better column sizing -->
       <TableView fx:id="utilisateurTable" VBox.vgrow="ALWAYS" styleClass="user-table">
          <columns>
             <TableColumn fx:id="nomPrenomColumn" text="Nom et Prénom" prefWidth="250" styleClass="column" />
@@ -57,9 +39,7 @@
             <TableColumn fx:id="roleSpecificColumn" text="Détails spécifiques" prefWidth="300" styleClass="column" />
             <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="240" styleClass="column" />
          </columns>
-         <placeholder>
-            <Label text="Aucun utilisateur trouvé" styleClass="placeholder-label"/>
-         </placeholder>
       </TableView>
    </VBox>
+
 </VBox>

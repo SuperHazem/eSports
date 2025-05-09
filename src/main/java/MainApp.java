@@ -9,7 +9,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Load the authentication view
-        Parent root = FXMLLoader.load(getClass().getResource("/AuthenticationView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/MainLayout.fxml"));
 
         // Create the scene
         Scene scene = new Scene(root, 1000, 600);

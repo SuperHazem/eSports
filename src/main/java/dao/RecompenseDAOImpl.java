@@ -14,7 +14,7 @@ public class RecompenseDAOImpl implements RecompenseDAO {
 
     private EquipeDAO equipeDAO;
 
-    public RecompenseDAOImpl() {
+    public RecompenseDAOImpl() throws SQLException {
         this.equipeDAO = new EquipeDAO();
     }
 
@@ -60,20 +60,17 @@ public class RecompenseDAOImpl implements RecompenseDAO {
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Recompense recompense = null;
 
         try {
             connection = DatabaseConnection.getInstance().getConnection();
-            String query = "SELECT r.*, e.nom as equipe_nom FROM Recompense r " +
-                    "LEFT JOIN Equipe e ON r.equipe_id = e.id " +
-                    "WHERE r.id = ?";
+            String query = "SELECT * FROM Recompense WHERE id = ?";
             stmt = connection.prepareStatement(query);
 
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                recompense = extractRecompenseFromResultSet(rs);
+                return extractRecompenseFromResultSet(rs);
             }
         } catch (SQLException e) {
             System.err.println("Error reading reward with ID " + id + ": " + e.getMessage());
@@ -81,7 +78,7 @@ public class RecompenseDAOImpl implements RecompenseDAO {
         } finally {
             closeResources(rs, stmt, null); // Don't close the connection
         }
-        return recompense;
+        return null;
     }
 
     @Override
@@ -93,23 +90,27 @@ public class RecompenseDAOImpl implements RecompenseDAO {
 
         try {
             connection = DatabaseConnection.getInstance().getConnection();
-            // Join with Equipe table to get team name directly
-            String query = "SELECT r.*, e.nom as equipe_nom, e.coach_id, e.win_rate FROM Recompense r " +
-                    "LEFT JOIN Equipe e ON r.equipe_id = e.id";
+            String query = "SELECT * FROM Recompense";
             stmt = connection.createStatement();
             rs = stmt.executeQuery(query);
 
             System.out.println("Executing query: " + query);
+            int count = 0;
 
             while (rs.next()) {
+                count++;
+                System.out.println("Processing result set row " + count);
+
                 Recompense recompense = extractRecompenseFromResultSet(rs);
                 if (recompense != null) {
                     recompenses.add(recompense);
                     System.out.println("Added reward: " + recompense);
+                } else {
+                    System.err.println("Failed to extract reward from row " + count);
                 }
             }
 
-            System.out.println("Loaded " + recompenses.size() + " rewards from database.");
+            System.out.println("Total rewards loaded: " + recompenses.size() + " out of " + count + " rows");
         } catch (SQLException e) {
             System.err.println("Error reading all rewards: " + e.getMessage());
             e.printStackTrace();
@@ -128,9 +129,7 @@ public class RecompenseDAOImpl implements RecompenseDAO {
 
         try {
             connection = DatabaseConnection.getInstance().getConnection();
-            String query = "SELECT r.*, e.nom as equipe_nom, e.coach_id, e.win_rate FROM Recompense r " +
-                    "LEFT JOIN Equipe e ON r.equipe_id = e.id " +
-                    "WHERE r.equipe_id = ?";
+            String query = "SELECT * FROM Recompense WHERE equipe_id = ?";
             stmt = connection.prepareStatement(query);
 
             stmt.setInt(1, equipeId);
@@ -160,9 +159,7 @@ public class RecompenseDAOImpl implements RecompenseDAO {
 
         try {
             connection = DatabaseConnection.getInstance().getConnection();
-            String query = "SELECT r.*, e.nom as equipe_nom, e.coach_id, e.win_rate FROM Recompense r " +
-                    "LEFT JOIN Equipe e ON r.equipe_id = e.id " +
-                    "WHERE r.type = ?";
+            String query = "SELECT * FROM Recompense WHERE type = ?";
             stmt = connection.prepareStatement(query);
 
             stmt.setString(1, type.toString());
@@ -247,32 +244,20 @@ public class RecompenseDAOImpl implements RecompenseDAO {
 
             System.out.println("Extracting reward ID " + id + " with equipe_id " + equipeId);
 
-            // Create a basic Equipe object with data from the join
-            Equipe equipe;
-            try {
-                String equipeName = rs.getString("equipe_nom");
-                // If we have the team name from the join, use it
-                if (equipeName != null) {
-                    int coachId = rs.getInt("coach_id");
-                    double winRate = rs.getDouble("win_rate");
-                    equipe = new Equipe(equipeId, equipeName, coachId, winRate, "Active");
-                    System.out.println("Created equipe from join: " + equipeName + " (ID: " + equipeId + ")");
-                } else {
-                    // If not, try to load from EquipeDAO
-                    equipe = equipeDAO.lire(equipeId);
-                    if (equipe == null) {
-                        // Create a placeholder if all else fails
-                        equipe = new Equipe(equipeId, "Équipe " + equipeId, 0, 0.0);
-                        System.out.println("Created placeholder equipe for ID: " + equipeId);
-                    }
-                }
-            } catch (Exception e) {
-                System.err.println("Error getting team data for reward " + id + ": " + e.getMessage());
+            // Load the associated Equipe
+            Equipe equipe = equipeDAO.lire(equipeId);
+
+            // Make sure equipe is not null before creating the Recompense
+            if (equipe != null) {
+                System.out.println("Found equipe: " + equipe.getNom() + " (ID: " + equipe.getId() + ")");
+                return new Recompense(id, type, valeur, equipe, description, dateAttribution);
+            } else {
+                System.err.println("Warning: Could not load Equipe with ID " + equipeId + " for Recompense " + id);
+
                 // Create a placeholder Equipe to avoid null pointer exceptions
                 equipe = new Equipe(equipeId, "Équipe inconnue", 0, 0.0);
+                return new Recompense(id, type, valeur, equipe, description, dateAttribution);
             }
-
-            return new Recompense(id, type, valeur, equipe, description, dateAttribution);
         } catch (Exception e) {
             System.err.println("Error extracting reward from ResultSet: " + e.getMessage());
             e.printStackTrace();

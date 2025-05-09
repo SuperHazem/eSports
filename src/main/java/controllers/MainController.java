@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 
 public class MainController implements Initializable {
 
@@ -49,6 +50,10 @@ public class MainController implements Initializable {
     private Button recompenseBtn;
     @FXML
     private Button sponsorBtn;
+    @FXML
+    private Button eventSocialBtn;
+    @FXML
+    private Button publicationBtn;
 
     private Map<String, Parent> cachedViews = new HashMap<>();
     private Button currentActiveButton;
@@ -61,6 +66,7 @@ public class MainController implements Initializable {
 
         // Set the initial active button
         currentActiveButton = utilisateurBtn;
+        currentActiveButton.getStyleClass().add("active-nav-button");
 
         // Load the default view (Utilisateurs)
         try {
@@ -83,8 +89,9 @@ public class MainController implements Initializable {
 
             // Add a glow effect
             DropShadow glow = new DropShadow();
-            glow.setColor(Color.rgb(0, 247, 255, 0.7));
-            glow.setRadius(15);
+            glow.setColor(Color.CYAN);
+            glow.setRadius(10);
+            glow.setSpread(0.5);
             logoImageView.setEffect(glow);
 
             // Center the logo
@@ -100,14 +107,15 @@ public class MainController implements Initializable {
     public void setCurrentUser(Utilisateur user) {
         this.currentUser = user;
         if (user != null) {
-            userNameLabel.setText(user.getPrenom() + " " + user.getNom());
+            userNameLabel.setText(user.getNom() + " " + user.getPrenom());
             userRoleLabel.setText(user.getRole().toString());
         }
     }
 
     @FXML
-    private void handleNavigation() throws IOException {
-        Button clickedButton = (Button) mainBorderPane.getScene().getFocusOwner();
+    private void handleNavigation(ActionEvent event) {
+        Button clickedButton = (Button) event.getSource();
+        String viewName = clickedButton.getId().replace("Btn", "").toLowerCase();
 
         // Update active button styling
         if (currentActiveButton != null) {
@@ -116,72 +124,31 @@ public class MainController implements Initializable {
         clickedButton.getStyleClass().add("active-nav-button");
         currentActiveButton = clickedButton;
 
-        // Determine which view to load
-        String viewName = "";
-
-        if (clickedButton == tournoiBtn) {
-            viewName = "tournoi";
-        } else if (clickedButton == equipeBtn) {
-            viewName = "equipe";
-        } else if (clickedButton == utilisateurBtn) {
-            viewName = "utilisateur";
-        } else if (clickedButton == recompenseBtn) {
-            viewName = "recompense";
-        } else if (clickedButton == sponsorBtn) {
-            viewName = "sponsor";
+        try {
+            loadView(viewName);
+        } catch (IOException e) {
+            System.err.println("Error loading view: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        loadView(viewName);
     }
 
     private void loadView(String viewName) throws IOException {
-        System.out.println("Loading view: " + viewName);
-
-        // Check if the view is already cached
+        // Check if view is already cached
         if (cachedViews.containsKey(viewName)) {
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(cachedViews.get(viewName));
+            contentArea.getChildren().setAll(cachedViews.get(viewName));
             return;
         }
 
-        // Try multiple possible paths for the FXML file
-        String[] possiblePaths = {
-                "/views/" + viewName + "View.fxml",
-                "/fxml/" + viewName + "View.fxml",
-                "/" + viewName + "View.fxml",
-                "/views/" + viewName + ".fxml",
-                "/fxml/" + viewName + ".fxml",
-                "/" + viewName + ".fxml"
-        };
+        // Load the view
+        String viewPath = "/" + viewName.substring(0, 1).toUpperCase() + viewName.substring(1) + "View.fxml";
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(viewPath));
+        Parent view = loader.load();
 
-        FXMLLoader loader = null;
-        Parent view = null;
-
-        for (String path : possiblePaths) {
-            try {
-                System.out.println("Trying to load FXML from: " + path);
-                loader = new FXMLLoader(getClass().getResource(path));
-                view = loader.load();
-                System.out.println("Successfully loaded FXML from: " + path);
-
-
-                break;
-            } catch (Exception e) {
-                // Continue to next path
-                System.out.println("Failed to load from " + path + ": " + e.getMessage());
-            }
-        }
-
-        if (view == null) {
-            throw new IOException("Could not find FXML file for view: " + viewName);
-        }
-
-        // Cache the view for future use
+        // Cache the view
         cachedViews.put(viewName, view);
 
-        // Display the view
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(view);
+        // Set the view in the content area
+        contentArea.getChildren().setAll(view);
     }
 }
 

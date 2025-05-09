@@ -1,9 +1,6 @@
 package dao;
 
-import enums.Role;
-import models.Coach;
 import models.Equipe;
-import models.Joueur;
 import utils.DatabaseConnection;
 
 import java.sql.*;
@@ -11,22 +8,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EquipeDAO {
-    public EquipeDAO() {
-        // Pas besoin de stocker la connexion en tant que champ
+
+    public EquipeDAO() throws SQLException {
+        // No need to store connection as a field anymore
     }
 
     // Méthode utilitaire pour vérifier si un utilisateur a un rôle spécifique
     private boolean verifierRole(int utilisateurId, String roleAttendu) throws SQLException {
-        String query = "SELECT role FROM Utilisateur WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseConnection.getInstance().getConnection();
+            String query = "SELECT role FROM Utilisateur WHERE id = ?";
+            statement = connection.prepareStatement(query);
             statement.setInt(1, utilisateurId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    String role = resultSet.getString("role");
-                    return role.equalsIgnoreCase(roleAttendu);
-                }
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String role = resultSet.getString("role");
+                return role.equalsIgnoreCase(roleAttendu);
             }
+        } finally {
+            closeResources(resultSet, statement, null); // Don't close the connection
         }
         return false; // L'utilisateur n'existe pas ou n'a pas le rôle attendu
     }
@@ -50,36 +55,49 @@ public class EquipeDAO {
         equipe.setWinRate(winRateEquipe);
 
         // Insertion de l'équipe
-        String query = "INSERT INTO Equipe (nom, coach_id, liste_joueurs, win_rate, statut) VALUES (?, ?, ?, ?, ?)";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet generatedKeys = null;
+
+        try {
+            connection = DatabaseConnection.getInstance().getConnection();
+            String query = "INSERT INTO Equipe (nom, coach_id, liste_joueurs, win_rate) VALUES (?, ?, ?, ?)";
+            statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
             statement.setString(1, equipe.getNom());
             statement.setInt(2, equipe.getCoachId());
             statement.setString(3, convertListToJson(equipe.getListeJoueurs())); // Convertir la liste en JSON
             statement.setDouble(4, equipe.getWinRate());
-            statement.setString(5, equipe.getStatus());
             statement.executeUpdate();
 
             // Récupérer l'ID auto-généré
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    equipe.setId(generatedKeys.getInt(1));
-                }
+            generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                equipe.setId(generatedKeys.getInt(1));
             }
+        } finally {
+            closeResources(generatedKeys, statement, null); // Don't close the connection
         }
     }
 
     // Lire une équipe par son ID
     public Equipe lire(int id) throws SQLException {
-        String query = "SELECT * FROM Equipe WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseConnection.getInstance().getConnection();
+            String query = "SELECT * FROM Equipe WHERE id = ?";
+            statement = connection.prepareStatement(query);
             statement.setInt(1, id);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return extractEquipeFromResultSet(resultSet);
-                }
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return extractEquipeFromResultSet(resultSet);
             }
+        } finally {
+            closeResources(resultSet, statement, null); // Don't close the connection
         }
         return null;
     }
@@ -103,26 +121,38 @@ public class EquipeDAO {
         equipe.setWinRate(winRateEquipe);
 
         // Mise à jour de l'équipe
-        String query = "UPDATE Equipe SET nom = ?, coach_id = ?, liste_joueurs = ?, win_rate = ?, statut = ? WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DatabaseConnection.getInstance().getConnection();
+            String query = "UPDATE Equipe SET nom = ?, coach_id = ?, liste_joueurs = ?, win_rate = ? WHERE id = ?";
+            statement = connection.prepareStatement(query);
+
             statement.setString(1, equipe.getNom());
             statement.setInt(2, equipe.getCoachId());
             statement.setString(3, convertListToJson(equipe.getListeJoueurs())); // Convertir la liste en JSON
             statement.setDouble(4, equipe.getWinRate());
-            statement.setString(5, equipe.getStatus());
-            statement.setInt(6, equipe.getId());
+            statement.setInt(5, equipe.getId());
             statement.executeUpdate();
+        } finally {
+            closeResources(null, statement, null); // Don't close the connection
         }
     }
 
     // Supprimer une équipe
     public void supprimer(int id) throws SQLException {
-        String query = "DELETE FROM Equipe WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DatabaseConnection.getInstance().getConnection();
+            String query = "DELETE FROM Equipe WHERE id = ?";
+            statement = connection.prepareStatement(query);
             statement.setInt(1, id);
             statement.executeUpdate();
+        } finally {
+            closeResources(null, statement, null); // Don't close the connection
         }
     }
 
@@ -130,20 +160,26 @@ public class EquipeDAO {
     public double calculerWinRateEquipe(List<Integer> listeJoueurs) throws SQLException {
         double totalWinRate = 0.0;
         int nombreJoueurs = 0;
-        String query = "SELECT win_rate FROM Joueur WHERE utilisateur_id = ?";
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
 
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        try {
+            connection = DatabaseConnection.getInstance().getConnection();
+            String query = "SELECT win_rate FROM Joueur WHERE utilisateur_id = ?";
+            statement = connection.prepareStatement(query);
 
             for (int joueurId : listeJoueurs) {
                 statement.setInt(1, joueurId);
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    if (resultSet.next()) {
-                        totalWinRate += resultSet.getDouble("win_rate");
-                        nombreJoueurs++;
-                    }
+                resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    totalWinRate += resultSet.getDouble("win_rate");
+                    nombreJoueurs++;
                 }
+                resultSet.close(); // Close the result set for each iteration
             }
+        } finally {
+            closeResources(resultSet, statement, null); // Don't close the connection
         }
 
         // Calculer la moyenne
@@ -152,12 +188,32 @@ public class EquipeDAO {
 
     // Réinitialiser les stats d'une équipe (en cas de triche)
     public void reinitialiserStatsEquipe(int equipeId) throws SQLException {
-        String query = "UPDATE Equipe SET win_rate = 0.0 WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DatabaseConnection.getInstance().getConnection();
+            String query = "UPDATE Equipe SET win_rate = 0.0 WHERE id = ?";
+            statement = connection.prepareStatement(query);
             statement.setInt(1, equipeId);
             statement.executeUpdate();
+        } finally {
+            closeResources(null, statement, null); // Don't close the connection
         }
+    }
+
+    // Méthode utilitaire pour mapper un ResultSet à un objet Equipe
+    private Equipe extractEquipeFromResultSet(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id");
+        String nom = resultSet.getString("nom");
+        int coachId = resultSet.getInt("coach_id");
+        double winRate = resultSet.getDouble("win_rate");
+
+        // Get liste_joueurs as JSON string and convert to List
+        String listeJoueursJson = resultSet.getString("liste_joueurs");
+        List<Integer> listeJoueurs = convertJsonToList(listeJoueursJson);
+
+        return new Equipe(id, nom, coachId, listeJoueurs, winRate);
     }
 
     // Méthode pour convertir une liste en JSON (String)
@@ -192,132 +248,42 @@ public class EquipeDAO {
         return liste;
     }
 
-    // Méthode utilitaire pour mapper un ResultSet à un objet Equipe
-    private Equipe extractEquipeFromResultSet(ResultSet resultSet) throws SQLException {
-        int id = resultSet.getInt("id");
-        String nom = resultSet.getString("nom");
-        int coachId = resultSet.getInt("coach_id");
-        double winRate = resultSet.getDouble("win_rate");
-        String statut = resultSet.getString("statut");
-        // Get liste_joueurs as JSON string and convert to List
-        String listeJoueursJson = resultSet.getString("liste_joueurs");
-        List<Integer> listeJoueurs = convertJsonToList(listeJoueursJson);
-        return new Equipe(id, nom, coachId, listeJoueurs, winRate, statut);
-    }
-// Dans EquipeDAO.java
-
-    // Méthode surchargée pour recherche par pseudo uniquement
-    public List<Joueur> chercherJoueurs(int i, String pseudo) throws SQLException {
-        return chercherJoueurs(-1, pseudo);
-    }
     /**
      * Lire toutes les équipes
      * @return Liste de toutes les équipes
      */
     public List<Equipe> lireTous() {
         List<Equipe> equipes = new ArrayList<>();
-        String query = "SELECT * FROM Equipe";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseConnection.getInstance().getConnection();
+            String query = "SELECT * FROM Equipe";
+            statement = connection.prepareStatement(query);
+            resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 equipes.add(extractEquipeFromResultSet(resultSet));
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            closeResources(resultSet, statement, null); // Don't close the connection
         }
         return equipes;
     }
 
-    // Méthode pour rechercher des coaches par nom et prénom (utilise le bon constructeur de Coach)
-    public List<Coach> chercherCoaches(String nom, String prenom) throws SQLException {
-        List<Coach> resultats = new ArrayList<>();
-
-        StringBuilder query = new StringBuilder("""
-        SELECT u.id, u.email, u.mot_de_passe_hash, u.role,
-               u.nom, u.prenom, c.strategie
-        FROM Utilisateur u
-        JOIN Coach c ON u.id = c.utilisateur_id
-        WHERE u.role = 'COACH'
-    """);
-
-        if (nom != null && !nom.isEmpty())
-            query.append(" AND u.nom ILIKE ?");
-
-        if (prenom != null && !prenom.isEmpty())
-            query.append(" AND u.prenom ILIKE ?");
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query.toString())) {
-
-            int paramIndex = 1;
-            if (nom != null && !nom.isEmpty())
-                stmt.setString(paramIndex++, "%" + nom + "%");
-
-            if (prenom != null && !prenom.isEmpty())
-                stmt.setString(paramIndex++, "%" + prenom + "%");
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    // Utilisation du constructeur principal de Coach
-                    Coach coach = new Coach(
-                            Role.valueOf(rs.getString("role")), // role
-                            rs.getString("mot_de_passe_hash"),  // motDePasseHash
-                            rs.getString("email"),              // email
-                            rs.getInt("id"),                    // id
-                            rs.getString("nom"),                // nom
-                            rs.getString("prenom"),             // prenom
-                            rs.getString("strategie")           // strategie
-                    );
-                    resultats.add(coach);
-                }
-            }
+    // Helper method to close resources
+    private void closeResources(ResultSet rs, Statement stmt, Connection conn) {
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            System.err.println("Error closing resources: " + e.getMessage());
+            e.printStackTrace();
         }
-        return resultats;
     }
-
-    // Méthode pour rechercher des joueurs par pseudo_jeu (utilise le bon constructeur de Joueur)
-    public List<Joueur> chercherJoueurs(String pseudo) throws SQLException {
-        List<Joueur> resultats = new ArrayList<>();
-
-        if (pseudo == null || pseudo.isEmpty())
-            return resultats;
-
-        String query = """
-        SELECT u.id, u.email, u.mot_de_passe_hash, u.role,
-               u.nom, u.prenom, j.pseudo_jeu, j.rank, j.win_rate
-        FROM Utilisateur u
-        JOIN Joueur j ON u.id = j.utilisateur_id
-        WHERE u.role = 'JOUEUR'
-          AND j.pseudo_jeu ILIKE ?
-    """;
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, "%" + pseudo + "%");
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    // Utilisation du constructeur principal de Joueur
-                    Joueur joueur = new Joueur(
-                            Role.valueOf(rs.getString("role")),      // role
-                            rs.getString("mot_de_passe_hash"),       // motDePasseHash
-                            rs.getString("email"),                   // email
-                            rs.getInt("id"),                         // id
-                            rs.getString("nom"),                     // nom
-                            rs.getString("prenom"),                  // prenom
-                            rs.getString("pseudo_jeu"),              // pseudoJeu
-                            rs.getDouble("win_rate"),                // winRate
-                            rs.getString("rank")                     // rank
-                    );
-                    resultats.add(joueur);
-                }
-            }
-        }
-        return resultats;
-    }
-
-
 }

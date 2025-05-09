@@ -25,7 +25,7 @@ public class Recompense {
         this.id = id;
         this.type = type;
         this.valeur = valeur;
-        this.equipe = equipe != null ? equipe : new Equipe(-1, "Équipe inconnue", 0, 0.0);
+        this.equipe = equipe;
         this.description = description;
         this.dateAttribution = dateAttribution;
     }
@@ -55,7 +55,7 @@ public class Recompense {
                 "id=" + id +
                 ", type=" + type +
                 ", valeur=" + valeur +
-                ", equipe=" + (equipe != null ? equipe.getNom() : "null") +
+                ", equipe=" + (equipe != null ? equipe.getNom() : "N/A") +
                 ", description='" + description + '\'' +
                 ", dateAttribution=" + dateAttribution +
                 '}';

@@ -52,7 +52,7 @@
                     </graphic>
                 </Button>
 
-                <Button fx:id="utilisateurBtn" styleClass="nav-button, active-nav-button" onAction="#handleNavigation" text="Utilisateurs" maxWidth="Infinity">
+                <Button fx:id="utilisateurBtn" styleClass="nav-button" onAction="#handleNavigation" text="Utilisateurs" maxWidth="Infinity">
                     <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                             <Image url="@../images/user.png" />
@@ -72,6 +72,22 @@
                     <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                             <Image url="@../images/sponsor.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="eventSocialBtn" styleClass="nav-button" onAction="#handleNavigation" text="Événements Sociaux" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/event.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="publicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Publications" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/post.png" />
                         </ImageView>
                     </graphic>
                 </Button>

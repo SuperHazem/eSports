@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.SponsorController"
+      spacing="10" alignment="TOP_CENTER"
+      stylesheets="@styles/application.css"
+      prefWidth="1280" prefHeight="720">
+
+   <!-- Title Section -->
+   <StackPane styleClass="header-container">
+      <VBox alignment="CENTER" spacing="5">
+         <Label text="Gestion des Sponsors" styleClass="title" />
+         <Label text="Ajouter, modifier ou supprimer des sponsors dans le système." styleClass="subtitle" />
+      </VBox>
+   </StackPane>
+
+   <!-- Search and Display Buttons -->
+   <HBox spacing="10" alignment="CENTER_LEFT">
+      <Label text="Rechercher par nom:" styleClass="field-label" />
+      <TextField fx:id="searchNameField" promptText="Entrez le nom" styleClass="input-field" HBox.hgrow="ALWAYS" />
+      <Label text="Montant minimum:" styleClass="field-label" />
+      <TextField fx:id="searchAmountField" promptText="Entrez le montant minimum" styleClass="input-field" />
+      <Button text="Rechercher" onAction="#rechercherSponsor" styleClass="search-button" />
+      <Button text="Afficher Tous" onAction="#afficherTousSponsors" styleClass="display-button" />
+   </HBox>
+
+   <!-- Table View -->
+   <VBox VBox.vgrow="ALWAYS" styleClass="table-container">
+      <HBox spacing="10" alignment="CENTER_RIGHT">
+         <Button text="Ajouter" onAction="#ajouterSponsor" styleClass="add-button" />
+      </HBox>
+      <TableView fx:id="sponsorTable" VBox.vgrow="ALWAYS" styleClass="user-table">
+         <columns>
+            <TableColumn fx:id="nomColumn" text="Nom et Prénom" prefWidth="250" styleClass="column" />
+            <TableColumn fx:id="emailColumn" text="Email" prefWidth="200" styleClass="column" />
+            <TableColumn fx:id="phoneColumn" text="Téléphone" prefWidth="150" styleClass="column" />
+            <TableColumn fx:id="addressColumn" text="Adresse" prefWidth="250" styleClass="column" />
+            <TableColumn fx:id="montantColumn" text="Montant" prefWidth="150" styleClass="column" />
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="240" styleClass="column" />
+         </columns>
+      </TableView>
+   </VBox>
+</VBox> 

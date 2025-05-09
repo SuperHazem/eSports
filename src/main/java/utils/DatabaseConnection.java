@@ -9,7 +9,7 @@ public class DatabaseConnection {
     private Connection connection;
 
     private DatabaseConnection() throws SQLException {
-        String url = "jdbc:mysql://localhost:3306/esports";
+        String url = "jdbc:mysql://localhost:3306/jdid";
         String user = "root";
         String password = "";
         connection = DriverManager.getConnection(url, user, password);

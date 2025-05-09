@@ -6,13 +6,6 @@ public enum Role {
     JOUEUR,
     SPECTATEUR;
 
-    // Override toString to return a value compatible with the database
-    @Override
-    public String toString() {
-        // Return the name of the enum constant
-        return this.name();
-    }
-
     public void set(String role) {
     }
 
