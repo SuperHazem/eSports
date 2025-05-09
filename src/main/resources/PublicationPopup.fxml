@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.PublicationPopupController"
+      spacing="10" prefWidth="400">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label fx:id="titleLabel" text="Nouvelle Publication" styleClass="title-label"/>
+
+    <VBox spacing="10">
+        <Label text="Titre:"/>
+        <TextField fx:id="titreField"/>
+        
+        <Label text="Contenu:"/>
+        <TextArea fx:id="contenuField" prefRowCount="5" wrapText="true"/>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Enregistrer" onAction="#enregistrer" styleClass="button"/>
+        <Button text="Annuler" onAction="#annuler" styleClass="button"/>
+    </HBox>
+
+    <stylesheets>
+        <URL value="@styles/application.css"/>
+    </stylesheets>
+</VBox> 

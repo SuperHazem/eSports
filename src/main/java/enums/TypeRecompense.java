@@ -1,7 +1,8 @@
 package enums;
 
 public enum TypeRecompense {
-    ARGENT,
-    TROPHÉE,
-    CONTRAT
+    PRIX,
+    BONUS_FINANCIER,
+    TROPHEE,
+    AUTRE
 }

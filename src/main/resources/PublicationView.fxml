@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.PublicationController"
+      spacing="10" alignment="TOP_CENTER"
+      stylesheets="@styles/application.css"
+      prefWidth="1280" prefHeight="720">
+
+    <!-- Title Section -->
+    <StackPane styleClass="header-container">
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="Publications" styleClass="title"/>
+            <Label text="Gérer les publications et leurs commentaires" styleClass="subtitle"/>
+        </VBox>
+    </StackPane>
+
+    <!-- Search and Filter Section -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <padding>
+            <Insets left="10" right="10"/>
+        </padding>
+        <Label text="Rechercher:" styleClass="field-label"/>
+        <TextField fx:id="searchField" promptText="Rechercher dans les titres et contenus" 
+                  styleClass="input-field" HBox.hgrow="ALWAYS"/>
+        <Label text="Du:" styleClass="field-label"/>
+        <DatePicker fx:id="dateDebutPicker" styleClass="date-picker"/>
+        <Label text="Au:" styleClass="field-label"/>
+        <DatePicker fx:id="dateFinPicker" styleClass="date-picker"/>
+        <Button text="Rechercher" onAction="#rechercherPublications" styleClass="search-button"/>
+        <Button text="Réinitialiser" onAction="#reinitialiserRecherche" styleClass="display-button"/>
+    </HBox>
+
+    <!-- Publications Section -->
+    <VBox VBox.vgrow="ALWAYS" styleClass="table-container">
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets right="10"/>
+            </padding>
+            <Button text="Nouvelle Publication" onAction="#ajouterPublication" styleClass="add-button"/>
+        </HBox>
+
+        <!-- Publications Table -->
+        <TableView fx:id="publicationTable" VBox.vgrow="ALWAYS" styleClass="user-table">
+            <columns>
+                <TableColumn fx:id="titreCol" text="Titre" prefWidth="250" styleClass="column"/>
+                <TableColumn fx:id="contenuCol" text="Contenu" prefWidth="400" styleClass="column"/>
+                <TableColumn fx:id="dateCol" text="Date" prefWidth="150" styleClass="column"/>
+                <TableColumn fx:id="actionsCol" text="Actions" prefWidth="200" styleClass="column"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <!-- Comments Section -->
+    <VBox spacing="10" styleClass="comments-section">
+        <padding>
+            <Insets left="10" right="10" bottom="10"/>
+        </padding>
+        <Label text="Commentaires" styleClass="section-title"/>
+        <TableView fx:id="commentaireTable" prefHeight="200" styleClass="user-table">
+            <columns>
+                <TableColumn fx:id="commentaireContenuCol" text="Contenu" prefWidth="500" styleClass="column"/>
+                <TableColumn fx:id="commentaireNoteCol" text="Note" prefWidth="100" styleClass="column"/>
+                <TableColumn fx:id="commentaireDateCol" text="Date" prefWidth="150" styleClass="column"/>
+                <TableColumn fx:id="commentaireActionsCol" text="Actions" prefWidth="200" styleClass="column"/>
+            </columns>
+        </TableView>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <TextField fx:id="nouveauCommentaireField" promptText="Ajouter un commentaire..." 
+                      styleClass="input-field" HBox.hgrow="ALWAYS"/>
+            <Spinner fx:id="noteSpinner" min="0" max="5" initialValue="3" prefWidth="80" 
+                    styleClass="note-spinner"/>
+            <Button text="Commenter" onAction="#ajouterCommentaire" styleClass="add-button"/>
+        </HBox>
+    </VBox>
+</VBox> 

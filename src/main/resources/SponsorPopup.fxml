@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.SponsorPopupController"
+      spacing="15" alignment="CENTER"
+      stylesheets="@styles/application.css"
+      prefWidth="500" prefHeight="600">
+
+    <padding>
+        <Insets top="20" bottom="20" left="20" right="20" />
+    </padding>
+
+    <!-- Title -->
+    <Label fx:id="titleLabel" text="Ajouter Sponsor" styleClass="form-title" />
+
+    <!-- Name Fields -->
+    <HBox spacing="10">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Prénom:" styleClass="field-label" />
+            <TextField fx:id="fnameField" promptText="Entrez le prénom" styleClass="input-field" />
+        </VBox>
+
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Nom:" styleClass="field-label" />
+            <TextField fx:id="lnameField" promptText="Entrez le nom" styleClass="input-field" />
+        </VBox>
+    </HBox>
+
+    <!-- Contact Fields -->
+    <VBox spacing="5">
+        <Label text="Email:" styleClass="field-label" />
+        <TextField fx:id="emailField" promptText="Entrez l'email" styleClass="input-field" />
+    </VBox>
+
+    <VBox spacing="5">
+        <Label text="Téléphone:" styleClass="field-label" />
+        <TextField fx:id="phoneField" promptText="Entrez le numéro de téléphone" styleClass="input-field" />
+    </VBox>
+
+    <VBox spacing="5">
+        <Label text="Adresse:" styleClass="field-label" />
+        <TextArea fx:id="addressField" promptText="Entrez l'adresse" styleClass="input-field" prefRowCount="3" />
+    </VBox>
+
+    <VBox spacing="5">
+        <Label text="Montant:" styleClass="field-label" />
+        <TextField fx:id="montantField" promptText="Entrez le montant" styleClass="input-field" />
+    </VBox>
+
+    <!-- Action Buttons -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="saveButton" text="Enregistrer" styleClass="add-button" />
+        <Button text="Annuler" onAction="#annuler" styleClass="cancel-button" />
+    </HBox>
+</VBox> 

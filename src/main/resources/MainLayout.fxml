@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
+    <stylesheets>
+        <URL value="@../styles/application.css" />
+    </stylesheets>
+
+    <left>
+        <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="225.0">
+            <!-- App Logo and Title -->
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-header">
+                <padding>
+                    <Insets top="15" right="15" bottom="15" left="15" />
+                </padding>
+                <ImageView fx:id="logoImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/logo.png" />
+                </ImageView>
+                <Label text="eSportsArena" styleClass="sidebar-title">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+            </HBox>
+
+            <!-- Navigation Items -->
+            <VBox spacing="5" VBox.vgrow="ALWAYS">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10" />
+                </padding>
+
+                <Button fx:id="tournoiBtn" styleClass="nav-button" onAction="#handleNavigation" text="Tournois" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/tournament.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="equipeBtn" styleClass="nav-button" onAction="#handleNavigation" text="Équipes" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/team.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="utilisateurBtn" styleClass="nav-button" onAction="#handleNavigation" text="Utilisateurs" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/user.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="recompenseBtn" styleClass="nav-button" onAction="#handleNavigation" text="Récompenses" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/reward.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="sponsorBtn" styleClass="nav-button" onAction="#handleNavigation" text="Sponsors" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/sponsor.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="eventSocialBtn" styleClass="nav-button" onAction="#handleNavigation" text="Événements Sociaux" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/event.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="publicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Publications" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/post.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </VBox>
+
+            <!-- User Profile Section -->
+            <VBox styleClass="sidebar-footer">
+                <padding>
+                    <Insets top="10" right="15" bottom="15" left="15" />
+                </padding>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" styleClass="user-avatar">
+                        <Image url="@../images/logo.png" />
+                    </ImageView>
+                    <VBox>
+                        <Label fx:id="userNameLabel" text="Admin" styleClass="user-name" />
+                        <Label fx:id="userRoleLabel" text="Administrateur" styleClass="user-role" />
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea">
+            <!-- Content will be loaded here dynamically -->
+        </StackPane>
+    </center>
+</BorderPane>
