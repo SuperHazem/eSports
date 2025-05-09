@@ -1,17 +1,25 @@
 package controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import models.EventSocial;
+import utils.validators.EventSocialValidator;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EventSocialPopupController {
 
     @FXML private TextField nomField;
     @FXML private DatePicker dateField;
-    @FXML private TextField lieuField;
+    @FXML private ComboBox<String> gouvernoratComboBox;
+    @FXML private ComboBox<String> villeComboBox;
     @FXML private TextArea descriptionField;
     @FXML private TextField capaciteField;
     @FXML private Label titleLabel;
@@ -20,7 +28,90 @@ public class EventSocialPopupController {
     private boolean isEditMode = false;
 
     public void initialize() {
-        // Initialize any necessary components
+        // Map des gouvernorats et leurs villes
+        Map<String, List<String>> gouvernoratsVilles = new HashMap<>();
+        
+        // Gouvernorat de l'Ariana
+        gouvernoratsVilles.put("Ariana", Arrays.asList(
+            "Ariana Ville",
+            "Ettadhamen",
+            "Mnihla",
+            "Raoued",
+            "Sidi Thabet",
+            "La Soukra",
+            "Kalaat El Andalous",
+            "Borj El Amri"
+        ));
+        
+        // Gouvernorat de Tunis
+        gouvernoratsVilles.put("Tunis", Arrays.asList(
+            "Tunis Ville",
+            "Bab El Bhar",
+            "Bab Souika",
+            "Carthage",
+            "La Goulette",
+            "Le Bardo",
+            "La Marsa",
+            "Sidi Bou Said",
+            "Sidi Hassine"
+        ));
+        
+        // Gouvernorat de Ben Arous
+        gouvernoratsVilles.put("Ben Arous", Arrays.asList(
+            "Ben Arous Ville",
+            "El Mourouj",
+            "Hammam Lif",
+            "Hammam Chott",
+            "Mégrine",
+            "Mohamedia",
+            "Mornag",
+            "Radès"
+        ));
+        
+        // Gouvernorat de Manouba
+        gouvernoratsVilles.put("Manouba", Arrays.asList(
+            "Manouba Ville",
+            "Borj El Amri",
+            "Den Den",
+            "Douar Hicher",
+            "El Battan",
+            "Jdaida",
+            "Mornaguia",
+            "Oued Ellil",
+            "Tebourba"
+        ));
+        
+        // Gouvernorat de Nabeul
+        gouvernoratsVilles.put("Nabeul", Arrays.asList(
+            "Nabeul Ville",
+            "Béni Khiar",
+            "Béni Mtir",
+            "Bou Argoub",
+            "Dar Chaabane",
+            "El Haouaria",
+            "El Mida",
+            "Grombalia",
+            "Hammamet",
+            "Kélibia",
+            "Korba",
+            "Menzel Bouzelfa",
+            "Menzel Temime",
+            "Soliman",
+            "Takelsa"
+        ));
+
+        // Ajouter les gouvernorats au ComboBox
+        gouvernoratComboBox.setItems(FXCollections.observableArrayList(gouvernoratsVilles.keySet()));
+        
+        // Écouter les changements de sélection du gouvernorat
+        gouvernoratComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                villeComboBox.setItems(FXCollections.observableArrayList(gouvernoratsVilles.get(newVal)));
+                villeComboBox.setValue(null); // Réinitialiser la sélection de la ville
+            } else {
+                villeComboBox.setItems(FXCollections.observableArrayList());
+            }
+        });
     }
 
     public void setEvent(EventSocial event) {
@@ -34,7 +125,15 @@ public class EventSocialPopupController {
         if (event != null) {
             nomField.setText(event.getNom());
             dateField.setValue(event.getDate());
-            lieuField.setText(event.getLieu());
+            
+            // Pour le lieu, on doit séparer le gouvernorat et la ville
+            String lieu = event.getLieu();
+            if (lieu != null && lieu.contains(" - ")) {
+                String[] parts = lieu.split(" - ");
+                gouvernoratComboBox.setValue(parts[0]);
+                villeComboBox.setValue(parts[1]);
+            }
+            
             descriptionField.setText(event.getDescription());
             capaciteField.setText(String.valueOf(event.getCapacite()));
         }
@@ -44,32 +143,53 @@ public class EventSocialPopupController {
     public void enregistrer() {
         String nom = nomField.getText().trim();
         LocalDate date = dateField.getValue();
-        String lieu = lieuField.getText().trim();
+        String gouvernorat = gouvernoratComboBox.getValue();
+        String ville = villeComboBox.getValue();
         String description = descriptionField.getText().trim();
         String capaciteStr = capaciteField.getText().trim();
 
-        if (nom.isEmpty() || date == null || lieu.isEmpty() || description.isEmpty() || capaciteStr.isEmpty()) {
-            showAlert("Erreur", "Veuillez remplir tous les champs obligatoires.");
+        // Créer un objet temporaire pour la validation
+        EventSocial tempEvent = new EventSocial();
+        tempEvent.setNom(nom);
+        tempEvent.setDate(date);
+        tempEvent.setLieu(gouvernorat != null && ville != null ? gouvernorat + " - " + ville : null);
+        tempEvent.setDescription(description);
+        
+        try {
+            int capacite = Integer.parseInt(capaciteStr);
+            tempEvent.setCapacite(capacite);
+        } catch (NumberFormatException e) {
+            showAlert("Erreur", "La capacité doit être un nombre valide.");
             return;
         }
 
-        try {
-            int capacite = Integer.parseInt(capaciteStr);
-
-            if (isEditMode) {
-                event.setNom(nom);
-                event.setDate(date);
-                event.setLieu(lieu);
-                event.setDescription(description);
-                event.setCapacite(capacite);
-            } else {
-                event = new EventSocial(nom, date, lieu, description, capacite);
-            }
-
-            closeStage();
-        } catch (NumberFormatException e) {
-            showAlert("Erreur", "La capacité doit être un nombre valide.");
+        // Valider l'événement
+        List<String> errors = EventSocialValidator.validateEvent(tempEvent);
+        if (!errors.isEmpty()) {
+            showValidationErrors(errors);
+            return;
         }
+
+        // Si la validation est réussie, procéder à l'enregistrement
+        if (isEditMode) {
+            event.setNom(nom);
+            event.setDate(date);
+            event.setLieu(gouvernorat + " - " + ville);
+            event.setDescription(description);
+            event.setCapacite(tempEvent.getCapacite());
+        } else {
+            event = new EventSocial(nom, date, gouvernorat + " - " + ville, description, tempEvent.getCapacite());
+        }
+
+        closeStage();
+    }
+
+    private void showValidationErrors(List<String> errors) {
+        StringBuilder message = new StringBuilder("Veuillez corriger les erreurs suivantes :\n\n");
+        for (String error : errors) {
+            message.append("• ").append(error).append("\n");
+        }
+        showAlert("Erreurs de validation", message.toString());
     }
 
     @FXML

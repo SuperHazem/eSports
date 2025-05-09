@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import models.Sponsor;
+import utils.validators.SponsorValidator;
+import java.util.List;
 
 public class SponsorPopupController {
 
@@ -49,29 +51,50 @@ public class SponsorPopupController {
         String address = addressField.getText().trim();
         String montantStr = montantField.getText().trim();
 
-        if (fname.isEmpty() || lname.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty() || montantStr.isEmpty()) {
-            showAlert("Erreur", "Veuillez remplir tous les champs obligatoires.");
+        // Créer un objet temporaire pour la validation
+        Sponsor tempSponsor = new Sponsor();
+        tempSponsor.setFname(fname);
+        tempSponsor.setLname(lname);
+        tempSponsor.setEmail(email);
+        tempSponsor.setPhone(phone);
+        tempSponsor.setAddress(address);
+        
+        try {
+            double montant = Double.parseDouble(montantStr);
+            tempSponsor.setMontant(montant);
+        } catch (NumberFormatException e) {
+            showAlert("Erreur", "Le montant doit être un nombre valide.");
             return;
         }
 
-        try {
-            double montant = Double.parseDouble(montantStr);
-
-            if (isEditMode) {
-                sponsor.setFname(fname);
-                sponsor.setLname(lname);
-                sponsor.setEmail(email);
-                sponsor.setPhone(phone);
-                sponsor.setAddress(address);
-                sponsor.setMontant(montant);
-            } else {
-                sponsor = new Sponsor(fname, lname, address, email, phone, montant);
-            }
-
-            closeStage();
-        } catch (NumberFormatException e) {
-            showAlert("Erreur", "Le montant doit être un nombre valide.");
+        // Valider le sponsor
+        List<String> errors = SponsorValidator.validateSponsor(tempSponsor);
+        if (!errors.isEmpty()) {
+            showValidationErrors(errors);
+            return;
         }
+
+        // Si la validation est réussie, procéder à l'enregistrement
+        if (isEditMode) {
+            sponsor.setFname(fname);
+            sponsor.setLname(lname);
+            sponsor.setEmail(email);
+            sponsor.setPhone(phone);
+            sponsor.setAddress(address);
+            sponsor.setMontant(tempSponsor.getMontant());
+        } else {
+            sponsor = new Sponsor(fname, lname, email, phone, address, tempSponsor.getMontant());
+        }
+
+        closeStage();
+    }
+
+    private void showValidationErrors(List<String> errors) {
+        StringBuilder message = new StringBuilder("Veuillez corriger les erreurs suivantes :\n\n");
+        for (String error : errors) {
+            message.append("• ").append(error).append("\n");
+        }
+        showAlert("Erreurs de validation", message.toString());
     }
 
     @FXML

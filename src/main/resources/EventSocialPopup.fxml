@@ -29,10 +29,13 @@
         <DatePicker fx:id="dateField" styleClass="date-picker" />
     </VBox>
 
-    <!-- Location Field -->
+    <!-- Location Fields -->
     <VBox spacing="5">
-        <Label text="Lieu:" styleClass="field-label" />
-        <TextField fx:id="lieuField" promptText="Entrez le lieu" styleClass="input-field" />
+        <Label text="Gouvernorat:" styleClass="field-label" />
+        <ComboBox fx:id="gouvernoratComboBox" promptText="Sélectionnez un gouvernorat" styleClass="input-field" />
+        
+        <Label text="Ville:" styleClass="field-label" />
+        <ComboBox fx:id="villeComboBox" promptText="Sélectionnez une ville" styleClass="input-field" />
     </VBox>
 
     <!-- Description Field -->
