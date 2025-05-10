@@ -24,6 +24,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-oauth2</artifactId>
+            <version>v2-rev157-1.25.0</version>
+        </dependency>
         
         <!-- JavaFX dependencies -->
         <dependency>
@@ -65,8 +71,15 @@
             <artifactId>google-oauth-client-java6</artifactId>
             <version>1.34.1</version>
         </dependency>
+        <!-- Add this to your dependencies section in pom.xml -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
         <!-- Add your other dependencies here -->
     </dependencies>
+
     
     <!-- Build section -->
     <build>
@@ -87,7 +100,7 @@
                     <target>15</target>
                 </configuration>
             </plugin>
-            <!-- Your other plugins here -->
+
         </plugins>
     </build>
 </project>

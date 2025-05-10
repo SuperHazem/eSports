@@ -80,49 +80,51 @@ public class GoogleAuthService {
         Task<GoogleUserInfo> task = new Task<>() {
             @Override
             protected GoogleUserInfo call() throws Exception {
-                System.out.println("Starting Google authentication flow...");
-
                 // Load client secrets
                 InputStream in = GoogleAuthService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
                 if (in == null) {
                     throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
                 }
                 GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-                System.out.println("Loaded Google OAuth client secrets");
 
-                // Configure the flow to revoke previous tokens to ensure a fresh login each time
-                // This ensures the account selection screen is always shown
+                // Build flow and trigger user authorization request
                 GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                         httpTransport, JSON_FACTORY, clientSecrets, SCOPES)
                         .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
                         .setAccessType("offline")
                         .build();
 
-                System.out.println("Configured GoogleAuthorizationCodeFlow");
+                // In the startGoogleAuthFlow method
+                LocalServerReceiver receiver = null;
+                int[] portsToTry = {8888, 8889, 8890, 8891, 8892};
+                boolean serverStarted = false;
 
-                // Start the server to receive the OAuth callback
-                LocalServerReceiver receiver = startLocalServerReceiver();
-                if (receiver == null) {
+                for (int port : portsToTry) {
+                    try {
+                        receiver = new LocalServerReceiver.Builder().setPort(port).build();
+                        // If we get here, the port is available
+                        serverStarted = true;
+                        System.out.println("Using port " + port + " for Google authentication");
+                        break;
+                    } catch (Exception e) {
+                        System.out.println("Port " + port + " is not available, trying next port...");
+                    }
+                }
+
+                if (!serverStarted) {
                     throw new IOException("Could not start local server on any of the attempted ports");
                 }
 
-                // Create our custom AuthorizationCodeInstalledApp that enforces account selection
-                ForceAccountSelectionApp app = new ForceAccountSelectionApp(flow, receiver);
-                System.out.println("Starting Google authentication process...");
+                // Then use the receiver
+                Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 
-                // Authorize and get credentials
-                System.out.println("Initiating authorization process...");
-                Credential credential = app.authorize("user");
-                System.out.println("Successfully obtained OAuth credentials");
-
-                // Use HttpRequestFactory to get user info
+                // Use HttpRequestFactory to get user info instead of Oauth2 service
                 HttpRequestFactory requestFactory = httpTransport.createRequestFactory(request -> {
                     request.setParser(new JsonObjectParser(JSON_FACTORY));
                     credential.initialize(request);
                 });
 
                 // Make a request to the userinfo endpoint
-                System.out.println("Fetching user information from Google...");
                 HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(USER_INFO_URL));
                 HttpResponse response = request.execute();
 
@@ -133,13 +135,9 @@ public class GoogleAuthService {
                 // Extract user information
                 String email = (String) userInfo.get("email");
                 String name = (String) userInfo.get("name");
-                String picture = (String) userInfo.get("picture");
 
                 // Add debug logging
                 System.out.println("Retrieved user info from Google: Email=" + email + ", Name=" + name);
-                if (picture != null) {
-                    System.out.println("User profile picture URL: " + picture);
-                }
 
                 // Split name into first and last name (if possible)
                 String firstName = name;
@@ -151,7 +149,7 @@ public class GoogleAuthService {
                 }
 
                 // Return user info for direct database insertion
-                return new GoogleUserInfo(email, firstName, lastName, picture);
+                return new GoogleUserInfo(email, firstName, lastName);
             }
         };
 
@@ -186,57 +184,6 @@ public class GoogleAuthService {
     }
 
     /**
-     * Starts a local server on an available port to receive the OAuth callback
-     */
-    private LocalServerReceiver startLocalServerReceiver() {
-        int[] portsToTry = {8888, 8889, 8890, 8891, 8892};
-
-        for (int port : portsToTry) {
-            try {
-                LocalServerReceiver receiver = new LocalServerReceiver.Builder()
-                        .setPort(port)
-                        .setCallbackPath("/oauth2callback")
-                        .build();
-                System.out.println("Using port " + port + " for Google authentication callback");
-                return receiver;
-            } catch (Exception e) {
-                System.out.println("Port " + port + " is not available, trying next port...");
-            }
-        }
-
-        System.err.println("Could not find an available port for the OAuth callback");
-        return null;
-    }
-
-    /**
-     * Custom AuthorizationCodeInstalledApp that forces the account selection screen
-     */
-    private static class ForceAccountSelectionApp extends AuthorizationCodeInstalledApp {
-        public ForceAccountSelectionApp(GoogleAuthorizationCodeFlow flow, LocalServerReceiver receiver) {
-            super(flow, receiver);
-        }
-
-        @Override
-        protected void onAuthorization(com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl authorizationUrl) throws IOException {
-            // Add parameters to force the account selection screen
-            authorizationUrl.set("prompt", "select_account");
-
-            // Add login_hint='' to clear any previous login hints
-            authorizationUrl.set("login_hint", "");
-
-            // Add include_granted_scopes=true to ensure a fresh consent screen
-            authorizationUrl.set("include_granted_scopes", "true");
-
-            // Log the authorization URL for debugging
-            System.out.println("Opening browser for user authorization with forced account selection");
-            System.out.println("Authorization URL parameters: prompt=select_account, login_hint='', include_granted_scopes=true");
-
-            // Open the browser with the modified URL
-            browse(authorizationUrl.build());
-        }
-    }
-
-    /**
      * Directly inserts a Google-authenticated user into the database
      * This method uses raw SQL to avoid issues with the Role enum
      */
@@ -266,21 +213,25 @@ public class GoogleAuthService {
             }
         }
 
-        // Check the database schema to understand the role format
-        String roleFormat = null;
+        // Check the database schema to understand the role column
+        String roleValue = "SPECTATEUR";  // Explicitly set the default role to SPECTATEUR
+        System.out.println("Using default role value: " + roleValue);
+
+        // The following code can be removed or commented out since we're explicitly setting the role
+        /*
         try {
             // First, try to get an existing role value from the database
             String roleSql = "SELECT role FROM utilisateur LIMIT 1";
             try (Statement stmt = dbConnection.createStatement();
                  ResultSet rs = stmt.executeQuery(roleSql)) {
                 if (rs.next()) {
-                    roleFormat = rs.getString("role");
-                    System.out.println("Found existing role value in database: " + roleFormat);
+                    roleValue = rs.getString("role");
+                    System.out.println("Found existing role value in database: " + roleValue);
                 }
             }
 
             // If we couldn't find an existing role, try to get the column definition
-            if (roleFormat == null) {
+            if (roleValue == null) {
                 String schemaSql = "SHOW COLUMNS FROM utilisateur WHERE Field = 'role'";
                 try (Statement stmt = dbConnection.createStatement();
                      ResultSet rs = stmt.executeQuery(schemaSql)) {
@@ -293,18 +244,12 @@ public class GoogleAuthService {
                             String values = type.substring(5, type.length() - 1);
                             System.out.println("Allowed role values: " + values);
 
-                            // Check if SPECTATEUR is in the allowed values
-                            if (values.contains("'SPECTATEUR'")) {
-                                roleFormat = "SPECTATEUR";
-                                System.out.println("SPECTATEUR is an allowed role value");
-                            } else {
-                                // Use the first value in the enum as a format reference
-                                String[] allowedValues = values.split(",");
-                                if (allowedValues.length > 0) {
-                                    // Remove quotes from the value
-                                    roleFormat = allowedValues[0].replace("'", "");
-                                    System.out.println("Using first allowed role value as format reference: " + roleFormat);
-                                }
+                            // Use the first value in the enum
+                            String[] allowedValues = values.split(",");
+                            if (allowedValues.length > 0) {
+                                // Remove quotes from the value
+                                roleValue = allowedValues[0].replace("'", "");
+                                System.out.println("Using first allowed role value: " + roleValue);
                             }
                         }
                     }
@@ -316,22 +261,13 @@ public class GoogleAuthService {
             System.out.println("Error checking database schema: " + e.getMessage());
         }
 
-        // Determine the role value to use
-        String roleValue;
-        if (roleFormat != null) {
-            // If we found ADMIN, use SPECTATEUR in the same format
-            if (roleFormat.equals("ADMIN")) {
-                roleValue = "SPECTATEUR";
-            } else {
-                // Otherwise, use the format we found but try to make it SPECTATEUR
-                roleValue = roleFormat;
-            }
-            System.out.println("Using role value: " + roleValue);
-        } else {
-            // If we couldn't determine the format, use a default
+        // If we still don't have a role value, use a default
+        if (roleValue == null) {
+            // Try different formats as a last resort
             roleValue = "SPECTATEUR";
             System.out.println("Using default role value: " + roleValue);
         }
+        */
 
         // Insert into utilisateur table
         String userSql = "INSERT INTO utilisateur (email, motDePasseHash, role, nom, prenom) VALUES (?, ?, ?, ?, ?)";
@@ -340,12 +276,12 @@ public class GoogleAuthService {
         try (PreparedStatement userStmt = dbConnection.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             userStmt.setString(1, email);
             userStmt.setString(2, "google-oauth");
-            userStmt.setString(3, roleValue);
+            userStmt.setString(3, "SPECTATEUR"); // Changed to uppercase to match enum
             userStmt.setString(4, lastName);
             userStmt.setString(5, firstName);
 
             System.out.println("Executing SQL: " + userSql);
-            System.out.println("With values: email=" + email + ", password=google-oauth, role=" + roleValue +
+            System.out.println("With values: email=" + email + ", password=google-oauth, role=SPECTATEUR" +
                     ", nom=" + lastName + ", prenom=" + firstName);
 
             int affectedRows = userStmt.executeUpdate();
@@ -376,30 +312,28 @@ public class GoogleAuthService {
 
         System.out.println("Successfully inserted Google user: " + email + " with ID: " + userId);
 
-        // Create and return a Spectateur object
-        Role role = Role.SPECTATEUR;
-        try {
-            role = Role.valueOf(roleValue);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Could not convert database role value to enum: " + e.getMessage());
-            // Keep the default SPECTATEUR
-        }
-
-        return new Spectateur(role, "google-oauth", email, userId, lastName, firstName, new Date());
+        // Create and return a new Spectateur object
+        return new Spectateur(
+                Role.SPECTATEUR,  // Explicitly use Role.SPECTATEUR enum
+                "google-oauth",
+                email,
+                userId,
+                lastName,
+                firstName,
+                new Date()  // Current date as registration date
+            );
     }
 
-    // Enhanced class to hold Google user information including profile picture
+    // Simple class to hold Google user information
     private static class GoogleUserInfo {
         public final String email;
         public final String firstName;
         public final String lastName;
-        public final String pictureUrl;
 
-        public GoogleUserInfo(String email, String firstName, String lastName, String pictureUrl) {
+        public GoogleUserInfo(String email, String firstName, String lastName) {
             this.email = email;
             this.firstName = firstName;
             this.lastName = lastName;
-            this.pictureUrl = pictureUrl;
         }
     }
 

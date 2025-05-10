@@ -26,6 +26,7 @@ import javafx.util.Duration;
 import models.*;
 import services.GoogleAuthService;
 import utils.PasswordHasher;
+import utils.SceneController;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -190,6 +191,8 @@ public class AuthenticationController {
         if (registerRole != null) {
             registerRole.getItems().clear();
             registerRole.getItems().addAll("JOUEUR", "COACH", "SPECTATEUR");
+            // Set SPECTATEUR as the default selected role
+            registerRole.setValue("SPECTATEUR");
         }
     }
 
@@ -347,10 +350,10 @@ public class AuthenticationController {
 
             // Prepare for email verification
             VerifyEmail.prepareForVerification(newUser, "REGISTER");
-            
+
             // Navigate to the verification page
             SceneController.loadPage("/VerifyEmailView.fxml");
-            
+
             // Clear registration form
             registerFirstName.clear();
             registerLastName.clear();
@@ -374,7 +377,7 @@ public class AuthenticationController {
         } catch (IOException e) {
             e.printStackTrace();
             // Show error alert
-            showAlert("Error", "Failed to load password recovery page: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR,"Error", "Failed to load password recovery page: " + e.getMessage());
         }
     }
 

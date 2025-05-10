@@ -1,11 +1,12 @@
 package controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,14 +15,18 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import models.Utilisateur;
 import utils.IconGenerator;
+import utils.SceneController;
+import utils.UserSession;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -191,32 +196,32 @@ public class MainController implements Initializable {
         alert.setTitle("Logout Confirmation");
         alert.setHeaderText("Are you sure you want to log out?");
         alert.setContentText("Any unsaved changes will be lost.");
-    
+
         // Customize buttons
         ButtonType yesButton = new ButtonType("Yes");
         ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(yesButton, noButton);
-    
+
         Optional<ButtonType> result = alert.showAndWait();
-    
+
         if (result.isPresent() && result.get() == yesButton) {
             // Get current stage
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-    
+
             // Clean user session
             UserSession session = UserSession.getInstance();
             session.cleanUserSession();
-    
+
             // Load login screen
             SceneController.loadPage("/AuthenticationView.fxml");
-            
+
             // Alternative approach if SceneController doesn't work:
             /*
             Parent root = FXMLLoader.load(getClass().getResource("/AuthenticationView.fxml"));
             Stage loginStage = new Stage();
             loginStage.setScene(new Scene(root));
             loginStage.show();
-            
+
             // Close current stage
             currentStage.close();
             */

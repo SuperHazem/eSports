@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 
 public class ForgotPasswordController {
-    @FXML 
+    @FXML
     private TextField email;
 
     static String userEmail = "";
@@ -36,7 +36,7 @@ public class ForgotPasswordController {
             EmailSender.sendEmail(
                     userEmail,
                     "Password Reset Request - Verification Code",
-                    "Your verification code is: " + code + 
+                    "Your verification code is: " + code +
                             "\n\nThis code will expire in 15 minutes."
             );
 
@@ -67,3 +67,5 @@ public class ForgotPasswordController {
         alert.showAndWait();
     }
 }
+
+

@@ -11,7 +11,7 @@
       styleClass="main-container"
       prefWidth="1280" prefHeight="720">
 
-   <!-- Title Section with improved styling -->
+
    <StackPane styleClass="header-container">
       <padding>
          <Insets top="20" right="20" bottom="20" left="20"/>
@@ -22,7 +22,7 @@
       </VBox>
    </StackPane>
 
-   <!-- Search and Filter Section with improved layout -->
+
    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="search-container">
       <padding>
          <Insets top="0" right="20" bottom="0" left="20"/>
@@ -34,13 +34,13 @@
       <Button text="Réinitialiser" onAction="#afficherTousUtilisateurs" styleClass="display-button" />
    </HBox>
 
-   <!-- Table View with improved container -->
+
    <VBox VBox.vgrow="ALWAYS" styleClass="table-container">
       <padding>
          <Insets top="0" right="20" bottom="20" left="20"/>
       </padding>
       
-      <!-- Action buttons above table -->
+
       <HBox spacing="10" alignment="CENTER_RIGHT">
          <padding>
             <Insets top="0" right="0" bottom="10" left="0"/>
@@ -48,7 +48,7 @@
          <Button text="Ajouter Utilisateur" onAction="#ajouterUtilisateur" styleClass="primary-button" />
       </HBox>
       
-      <!-- Enhanced table with better column sizing -->
+
       <TableView fx:id="utilisateurTable" VBox.vgrow="ALWAYS" styleClass="user-table">
          <columns>
             <TableColumn fx:id="nomPrenomColumn" text="Nom et Prénom" prefWidth="250" styleClass="column" />

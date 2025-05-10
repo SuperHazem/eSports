@@ -91,9 +91,9 @@
                         <Label fx:id="userRoleLabel" text="Administrateur" styleClass="user-role" />
                     </VBox>
                 </HBox>
-                
+
                 <!-- Logout Button -->
-                <Button text="Déconnexion" onAction="#logout" styleClass="logout-button" maxWidth="Infinity" 
+                <Button text="Déconnexion" onAction="#logout" styleClass="logout-button" maxWidth="Infinity"
                         alignment="CENTER" VBox.margin="$x1">
                     <VBox.margin>
                         <Insets top="15" />
