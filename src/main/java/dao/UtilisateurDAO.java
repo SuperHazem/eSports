@@ -16,7 +16,7 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
     public UtilisateurDAO() throws SQLException {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
-
+    
     // Add this method to expose the connection
     public Connection getConnection() {
         return this.connection;
@@ -281,5 +281,23 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
             }
         }
         return new Date();
+    }
+    // Add this method to your existing UtilisateurDAO class
+
+    public void updatePasswordByEmail(String email, String newPassword) {
+        String query = "UPDATE Utilisateur SET motDePasseHash = ? WHERE email = ?";
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, newPassword);
+            statement.setString(2, email);
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new SQLException("No user found with email: " + email);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update password: " + e.getMessage());
+        }
     }
 }

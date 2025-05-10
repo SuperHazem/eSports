@@ -1,5 +1,6 @@
 package controllers;
 
+import dao.UtilisateurDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -7,6 +8,7 @@ import javafx.stage.Stage;
 import models.*;
 import enums.Role;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -334,7 +336,7 @@ public class UtilisateurPopupController {
             if (isEditMode) {
                 utilisateurDAO.modifier(utilisateur);
             } else {
-                utilisateurDAO.creer(utilisateur);
+                utilisateurDAO.ajouter(utilisateur);
             }
 
             // Close the pop-up

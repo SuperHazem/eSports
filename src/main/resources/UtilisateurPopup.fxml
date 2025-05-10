@@ -14,10 +14,10 @@
         <Insets top="20" bottom="20" left="20" right="20" />
     </padding>
 
-    <!-- Common Fields -->
+
     <Label fx:id="titleLabel" text="Ajouter Utilisateur" styleClass="form-title" />
 
-    <!-- Nom Field -->
+
     <HBox spacing="10">
         <VBox spacing="5" HBox.hgrow="ALWAYS">
             <Label text="Nom:" styleClass="field-label" />
@@ -30,33 +30,33 @@
         </VBox>
     </HBox>
 
-    <!-- Email Field -->
+
     <VBox spacing="5">
         <Label text="Email:" styleClass="field-label" />
         <TextField fx:id="emailField" promptText="Entrez l'email" styleClass="input-field" />
     </VBox>
 
-    <!-- Password Field -->
+
     <VBox spacing="5">
         <Label text="Mot de passe:" styleClass="field-label" />
         <PasswordField fx:id="passwordField" promptText="Entrez le mot de passe" styleClass="input-field" />
     </VBox>
 
-    <!-- Role Field -->
+
     <VBox spacing="5">
         <Label text="Rôle:" styleClass="field-label" />
         <ComboBox fx:id="roleComboBox" promptText="Sélectionnez un rôle" styleClass="role-combo" maxWidth="Infinity" />
     </VBox>
 
-    <!-- Role-specific fields container -->
+
     <VBox fx:id="roleSpecificContainer" spacing="15">
-        <!-- Coach-specific fields -->
+
         <VBox fx:id="coachFields" spacing="5" visible="false" managed="false">
             <Label text="Stratégie:" styleClass="field-label" />
             <TextField fx:id="strategieField" promptText="Entrez la stratégie" styleClass="input-field" />
         </VBox>
 
-        <!-- Joueur-specific fields -->
+
         <VBox fx:id="joueurFields" spacing="5" visible="false" managed="false">
             <Label text="Pseudo de jeu:" styleClass="field-label" />
             <TextField fx:id="pseudoJeuField" promptText="Entrez le pseudo de jeu" styleClass="input-field" />
@@ -68,14 +68,14 @@
             <TextField fx:id="winRateField" promptText="Entrez le win rate" styleClass="input-field" />
         </VBox>
 
-        <!-- Spectateur-specific fields -->
+
         <VBox fx:id="spectateurFields" spacing="5" visible="false" managed="false">
             <Label text="Date d'inscription:" styleClass="field-label" />
             <DatePicker fx:id="dateInscriptionPicker" promptText="Sélectionnez la date d'inscription" styleClass="date-picker" maxWidth="Infinity" />
         </VBox>
     </VBox>
 
-    <!-- Action Buttons -->
+
     <HBox spacing="10" alignment="CENTER">
         <Button text="Enregistrer" onAction="#enregistrer" styleClass="add-button" />
         <Button text="Annuler" onAction="#annuler" styleClass="cancel-button" />

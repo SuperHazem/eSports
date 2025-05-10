@@ -29,7 +29,7 @@ public class ResetPasswordController {
             showAlert("Verification Failed", "The code you entered is incorrect. Please try again.");
         }
     }
-    
+
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
