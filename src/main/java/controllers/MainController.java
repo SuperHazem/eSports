@@ -183,6 +183,45 @@ public class MainController implements Initializable {
         contentArea.getChildren().clear();
         contentArea.getChildren().add(view);
     }
+
+    @FXML
+    void logout(ActionEvent event) throws IOException {
+        // Create confirmation alert
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Logout Confirmation");
+        alert.setHeaderText("Are you sure you want to log out?");
+        alert.setContentText("Any unsaved changes will be lost.");
+    
+        // Customize buttons
+        ButtonType yesButton = new ButtonType("Yes");
+        ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(yesButton, noButton);
+    
+        Optional<ButtonType> result = alert.showAndWait();
+    
+        if (result.isPresent() && result.get() == yesButton) {
+            // Get current stage
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+    
+            // Clean user session
+            UserSession session = UserSession.getInstance();
+            session.cleanUserSession();
+    
+            // Load login screen
+            SceneController.loadPage("/AuthenticationView.fxml");
+            
+            // Alternative approach if SceneController doesn't work:
+            /*
+            Parent root = FXMLLoader.load(getClass().getResource("/AuthenticationView.fxml"));
+            Stage loginStage = new Stage();
+            loginStage.setScene(new Scene(root));
+            loginStage.show();
+            
+            // Close current stage
+            currentStage.close();
+            */
+        }
+    }
 }
 
 
