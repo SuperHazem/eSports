@@ -316,9 +316,6 @@ public class AuthenticationController {
                 return;
             }
 
-            // Hash the password
-            String hashedPassword = PasswordHasher.hashPassword(password);
-
             // Create user based on role
             Role role = Role.valueOf(roleString);
             Utilisateur newUser;
@@ -326,19 +323,19 @@ public class AuthenticationController {
             switch (role) {
                 case JOUEUR:
                     // For simplicity, set default values for Joueur-specific fields
-                    newUser = new Joueur(role, hashedPassword, email, 0, lastName, firstName,
+                    newUser = new Joueur(role, password, email, 0, lastName, firstName,
                             "Player" + System.currentTimeMillis(), 0.0, "Débutant");
                     break;
 
                 case COACH:
                     // For simplicity, set default values for Coach-specific fields
-                    newUser = new Coach(role, hashedPassword, email, 0, lastName, firstName,
+                    newUser = new Coach(role, password, email, 0, lastName, firstName,
                             "Stratégie par défaut");
                     break;
 
                 case SPECTATEUR:
                     // For simplicity, use current date for Spectateur-specific fields
-                    newUser = new Spectateur(role, hashedPassword, email, 0, lastName, firstName,
+                    newUser = new Spectateur(role, password, email, 0, lastName, firstName,
                             new Date());
                     break;
 
@@ -348,16 +345,12 @@ public class AuthenticationController {
                     return;
             }
 
-            // Add user to database
-            utilisateurDAO.ajouter(newUser);
-
-            // Show success message
-            showAlert(Alert.AlertType.INFORMATION, "Inscription réussie",
-                    "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.");
-
-            // Switch to login form
-            showLoginForm();
-
+            // Prepare for email verification
+            VerifyEmail.prepareForVerification(newUser, "REGISTER");
+            
+            // Navigate to the verification page
+            SceneController.loadPage("/VerifyEmailView.fxml");
+            
             // Clear registration form
             registerFirstName.clear();
             registerLastName.clear();
