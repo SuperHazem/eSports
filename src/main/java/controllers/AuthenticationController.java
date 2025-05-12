@@ -15,6 +15,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.animation.FadeTransition;
 import javafx.scene.paint.Color;
@@ -27,6 +28,7 @@ import models.*;
 import services.GoogleAuthService;
 import utils.PasswordHasher;
 import utils.SceneController;
+import utils.UserSession;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,13 +47,25 @@ public class AuthenticationController {
     @FXML private VBox registerForm;
     @FXML private TextField loginEmail;
     @FXML private PasswordField loginPassword;
+    @FXML private TextField loginPasswordText; // Text field for visible password
     @FXML private TextField registerFirstName;
     @FXML private TextField registerLastName;
     @FXML private TextField registerEmail;
     @FXML private PasswordField registerPassword;
+    @FXML private TextField registerPasswordText; // Text field for visible password
     @FXML private PasswordField registerConfirmPassword;
+    @FXML private TextField registerConfirmPasswordText; // Text field for visible password
     @FXML private ComboBox<String> registerRole;
     @FXML private Button googleLoginButton;
+    @FXML private Label captchaQuestion;
+    @FXML private TextField captchaAnswer;
+    @FXML private Button refreshCaptchaButton;
+    
+    // Password toggle buttons
+    @FXML private Button loginPasswordToggle;
+    @FXML private Button registerPasswordToggle;
+    @FXML private Button registerConfirmPasswordToggle;
+    @FXML private CheckBox rememberPasswordCheckbox;
 
     private UtilisateurDAO utilisateurDAO;
     private Utilisateur authenticatedUser;
@@ -97,6 +111,15 @@ public class AuthenticationController {
             loginForm.setManaged(true);
             registerForm.setVisible(false);
             registerForm.setManaged(false);
+            
+            // Initialize password text fields
+            initializePasswordFields();
+            
+            // Initialize CAPTCHA
+            refreshCaptcha();
+            
+            // Load saved credentials if available
+            loadSavedCredentials();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur d'initialisation",
                     "Une erreur est survenue lors de l'initialisation: " + e.getMessage());
@@ -208,7 +231,24 @@ public class AuthenticationController {
         if (loginForm != null && registerForm != null) {
             fadeTransition(loginForm, registerForm);
             // Initialize the combo box when showing the register form
-            Platform.runLater(this::initializeRoleComboBox);
+            Platform.runLater(() -> {
+                initializeRoleComboBox();
+                refreshCaptcha(); // Generate a new CAPTCHA when showing the register form
+            });
+        }
+    }
+    
+    @FXML
+    public void refreshCaptcha() {
+        if (captchaQuestion != null) {
+            // Generate a new CAPTCHA question
+            String captchaText = utils.CaptchaGenerator.generateMathCaptcha();
+            captchaQuestion.setText(captchaText);
+            
+            // Clear any previous answer
+            if (captchaAnswer != null) {
+                captchaAnswer.clear();
+            }
         }
     }
 
@@ -251,6 +291,15 @@ public class AuthenticationController {
             if (password.equals(user.getMotDePasseHash())) {
                 // Authentication successful with direct comparison
                 authenticatedUser = user;
+                
+                // Save credentials if remember password is checked
+                if (rememberPasswordCheckbox.isSelected()) {
+                    utils.CredentialManager.saveCredentials(email, password);
+                } else {
+                    // Clear saved credentials if not checked
+                    utils.CredentialManager.clearCredentials();
+                }
+                
                 showInfo("Connexion réussie", "Bienvenue dans l'application eSports Arena Manager!");
                 loadMainApplication();
                 return;
@@ -269,6 +318,15 @@ public class AuthenticationController {
             if (passwordMatches) {
                 // Authentication successful
                 authenticatedUser = user;
+                
+                // Save credentials if remember password is checked
+                if (rememberPasswordCheckbox.isSelected()) {
+                    utils.CredentialManager.saveCredentials(email, password);
+                } else {
+                    // Clear saved credentials if not checked
+                    utils.CredentialManager.clearCredentials();
+                }
+                
                 showInfo("Connexion réussie", "Bienvenue dans l'application eSports Arena Manager!");
                 loadMainApplication();
             } else {
@@ -305,6 +363,7 @@ public class AuthenticationController {
             String password = registerPassword.getText().trim();
             String confirmPassword = registerConfirmPassword.getText().trim();
             String roleString = registerRole.getValue();
+            String captchaUserAnswer = captchaAnswer.getText().trim();
 
             if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() ||
                     password.isEmpty() || confirmPassword.isEmpty() || roleString == null) {
@@ -316,6 +375,20 @@ public class AuthenticationController {
             if (!password.equals(confirmPassword)) {
                 showAlert(Alert.AlertType.ERROR, "Erreur d'inscription",
                         "Les mots de passe ne correspondent pas.");
+                return;
+            }
+            
+            // Validate CAPTCHA
+            if (captchaUserAnswer.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Erreur d'inscription",
+                        "Veuillez répondre à la question CAPTCHA.");
+                return;
+            }
+            
+            if (!utils.CaptchaGenerator.validateCaptcha(captchaUserAnswer)) {
+                showAlert(Alert.AlertType.ERROR, "Erreur d'inscription",
+                        "La réponse CAPTCHA est incorrecte. Veuillez réessayer.");
+                refreshCaptcha(); // Generate a new CAPTCHA after failed attempt
                 return;
             }
 
@@ -361,6 +434,9 @@ public class AuthenticationController {
             registerPassword.clear();
             registerConfirmPassword.clear();
             registerRole.getSelectionModel().clearSelection();
+            
+            // Generate a new CAPTCHA for the next registration
+            refreshCaptcha();
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur d'inscription",
@@ -378,6 +454,175 @@ public class AuthenticationController {
             e.printStackTrace();
             // Show error alert
             showAlert(Alert.AlertType.ERROR,"Error", "Failed to load password recovery page: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Initialize password fields and their text field counterparts
+     */
+    private void initializePasswordFields() {
+        // Ensure text fields are initially not visible
+        if (loginPasswordText != null) {
+            loginPasswordText.setVisible(false);
+            loginPasswordText.setManaged(false);
+            // Copy styling from password field
+            loginPasswordText.getStyleClass().add("custom-password-field");
+        }
+        
+        if (registerPasswordText != null) {
+            registerPasswordText.setVisible(false);
+            registerPasswordText.setManaged(false);
+            registerPasswordText.getStyleClass().add("custom-password-field");
+        }
+        
+        if (registerConfirmPasswordText != null) {
+            registerConfirmPasswordText.setVisible(false);
+            registerConfirmPasswordText.setManaged(false);
+            registerConfirmPasswordText.getStyleClass().add("custom-password-field");
+        }
+        
+        // Sync password fields with text fields
+        if (loginPassword != null && loginPasswordText != null) {
+            syncPasswordFields(loginPassword, loginPasswordText);
+        }
+        
+        if (registerPassword != null && registerPasswordText != null) {
+            syncPasswordFields(registerPassword, registerPasswordText);
+        }
+        
+        if (registerConfirmPassword != null && registerConfirmPasswordText != null) {
+            syncPasswordFields(registerConfirmPassword, registerConfirmPasswordText);
+        }
+    }
+    
+    /**
+     * Sync password field with text field to keep content in sync
+     */
+    private void syncPasswordFields(PasswordField passwordField, TextField textField) {
+        // When password field changes, update text field
+        passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
+            textField.setText(newValue);
+        });
+        
+        // When text field changes, update password field
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            passwordField.setText(newValue);
+        });
+    }
+    
+    /**
+     * Toggles the visibility of password fields
+     * This method is called when the eye icon button is clicked
+     */
+    @FXML
+    public void togglePasswordVisibility(javafx.event.ActionEvent event) {
+        Button clickedButton = (Button) event.getSource();
+        
+        // Determine which password field to toggle based on the clicked button
+        if (clickedButton.equals(loginPasswordToggle)) {
+            togglePasswordField(loginPassword, loginPasswordText, loginPasswordToggle);
+        } else if (clickedButton.equals(registerPasswordToggle)) {
+            togglePasswordField(registerPassword, registerPasswordText, registerPasswordToggle);
+        } else if (clickedButton.equals(registerConfirmPasswordToggle)) {
+            togglePasswordField(registerConfirmPassword, registerConfirmPasswordText, registerConfirmPasswordToggle);
+        }
+    }
+    
+    /**
+     * Helper method to toggle between password field and text field
+     */
+    private void togglePasswordField(PasswordField passwordField, TextField textField, Button toggleButton) {
+        try {
+            // Get the parent container
+            HBox container = (HBox) passwordField.getParent();
+            
+            if (passwordField.isVisible()) {
+                // Switch from password to text (show password)
+                textField.setText(passwordField.getText());
+                
+                // First remove the text field if it's already in the container to avoid duplicates
+                if (container.getChildren().contains(textField)) {
+                    container.getChildren().remove(textField);
+                }
+                
+                // Get the index of the password field
+                int index = container.getChildren().indexOf(passwordField);
+                
+                // Add the text field at the same position
+                if (index >= 0) {
+                    container.getChildren().add(index, textField);
+                } else {
+                    // Fallback - add at the beginning
+                    container.getChildren().add(0, textField);
+                }
+                
+                // Update visibility after adding to container
+                passwordField.setVisible(false);
+                passwordField.setManaged(false);
+                textField.setVisible(true);
+                textField.setManaged(true);
+                
+                // Update the eye icon
+                try {
+                    ImageView imageView = (ImageView) toggleButton.getGraphic();
+                    if (imageView != null) {
+                        Image image = new Image(getClass().getResourceAsStream("/images/eye-open.png"));
+                        imageView.setImage(image);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error updating eye icon: " + e.getMessage());
+                }
+            } else {
+                // Switch from text to password (hide password)
+                passwordField.setText(textField.getText());
+                
+                // First remove the password field if it's already in the container to avoid duplicates
+                if (container.getChildren().contains(passwordField)) {
+                    container.getChildren().remove(passwordField);
+                }
+                
+                // Get the index of the text field
+                int index = container.getChildren().indexOf(textField);
+                
+                // Add the password field at the same position
+                if (index >= 0) {
+                    container.getChildren().add(index, passwordField);
+                } else {
+                    // Fallback - add at the beginning
+                    container.getChildren().add(0, passwordField);
+                }
+                
+                // Update visibility after adding to container
+                textField.setVisible(false);
+                textField.setManaged(false);
+                passwordField.setVisible(true);
+                passwordField.setManaged(true);
+                
+                // Update the eye icon
+                try {
+                    ImageView imageView = (ImageView) toggleButton.getGraphic();
+                    if (imageView != null) {
+                        Image image = new Image(getClass().getResourceAsStream("/images/eye-closed.png"));
+                        imageView.setImage(image);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error updating eye icon: " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error toggling password field: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Fallback approach - just toggle visibility without modifying the container
+            if (passwordField.isVisible()) {
+                textField.setText(passwordField.getText());
+                passwordField.setVisible(false);
+                textField.setVisible(true);
+            } else {
+                passwordField.setText(textField.getText());
+                textField.setVisible(false);
+                passwordField.setVisible(true);
+            }
         }
     }
 
@@ -415,6 +660,8 @@ public class AuthenticationController {
 
             // Get the controller and set the authenticated user
             MainController mainController = loader.getController();
+            // Set user in UserSession
+            UserSession.getInstance().setUser(authenticatedUser);
             mainController.setCurrentUser(authenticatedUser);
 
             // Get current stage
@@ -443,10 +690,34 @@ public class AuthenticationController {
 
         // Style the alert dialog
         DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/styles/authentication.css").toExternalForm());
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
         dialogPane.getStyleClass().add("alert-dialog");
 
         alert.showAndWait();
+    }
+    
+    /**
+     * Load saved credentials if available and populate the login form
+     */
+    private void loadSavedCredentials() {
+        try {
+            String[] credentials = utils.CredentialManager.loadCredentials();
+            if (credentials != null && credentials.length == 2) {
+                String email = credentials[0];
+                String password = credentials[1];
+                
+                // Populate the login form
+                if (loginEmail != null && loginPassword != null && rememberPasswordCheckbox != null) {
+                    loginEmail.setText(email);
+                    loginPassword.setText(password);
+                    rememberPasswordCheckbox.setSelected(true);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading saved credentials: " + e.getMessage());
+            e.printStackTrace();
+            // Don't show an error to the user, just log it
+        }
     }
 
     // Add this method to handle Google login

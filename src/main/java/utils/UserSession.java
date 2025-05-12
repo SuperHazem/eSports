@@ -24,6 +24,10 @@ public class UserSession {
     public Utilisateur getUser() {
         return currentUser;
     }
+    
+    public Utilisateur getCurrentUser() {
+        return currentUser;
+    }
 
     public boolean isLoggedIn() {
         return currentUser != null;

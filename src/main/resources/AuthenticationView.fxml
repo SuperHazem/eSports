@@ -47,11 +47,26 @@
 
             <VBox spacing="5">
                 <Label text="Mot de passe" styleClass="field-label" />
-                <PasswordField fx:id="loginPassword" promptText="Entrez votre mot de passe" styleClass="input-field" />
+                <HBox styleClass="password-field-container">
+                    <PasswordField fx:id="loginPassword" promptText="Entrez votre mot de passe" styleClass="custom-password-field" HBox.hgrow="ALWAYS" />
+                    <TextField fx:id="loginPasswordText" promptText="Entrez votre mot de passe" styleClass="custom-password-field" HBox.hgrow="ALWAYS" visible="false" managed="false" />
+                    <Button fx:id="loginPasswordToggle" styleClass="password-toggle-button" onAction="#togglePasswordVisibility">
+                        <graphic>
+                            <ImageView fitWidth="20" fitHeight="20">
+                                <Image url="@/images/eye-closed.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
             </VBox>
 
             <Region VBox.vgrow="ALWAYS" maxHeight="30" />
 
+            <!-- Remember Password Checkbox -->
+            <HBox alignment="CENTER_LEFT" spacing="5">
+                <CheckBox fx:id="rememberPasswordCheckbox" text="Se souvenir de moi" styleClass="remember-checkbox" />
+            </HBox>
+            
             <Button text="Se Connecter" onAction="#handleLogin" styleClass="primary-button" maxWidth="Infinity" />
 
             <!-- Add this inside your login form, typically after the regular login button -->
@@ -98,17 +113,48 @@
 
                     <VBox spacing="5">
                         <Label text="Mot de passe" styleClass="field-label" />
-                        <PasswordField fx:id="registerPassword" promptText="Entrez votre mot de passe" styleClass="input-field" />
+                        <HBox styleClass="password-field-container">
+                            <PasswordField fx:id="registerPassword" promptText="Entrez votre mot de passe" styleClass="custom-password-field" HBox.hgrow="ALWAYS" />
+                            <TextField fx:id="registerPasswordText" promptText="Entrez votre mot de passe" styleClass="custom-password-field" HBox.hgrow="ALWAYS" visible="false" managed="false" />
+                            <Button fx:id="registerPasswordToggle" styleClass="password-toggle-button" onAction="#togglePasswordVisibility">
+                                <graphic>
+                                    <ImageView fitWidth="20" fitHeight="20">
+                                        <Image url="@/images/eye-closed.png" />
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                        </HBox>
                     </VBox>
 
                     <VBox spacing="5">
                         <Label text="Confirmer le mot de passe" styleClass="field-label" />
-                        <PasswordField fx:id="registerConfirmPassword" promptText="Confirmez votre mot de passe" styleClass="input-field" />
+                        <HBox styleClass="password-field-container">
+                            <PasswordField fx:id="registerConfirmPassword" promptText="Confirmez votre mot de passe" styleClass="custom-password-field" HBox.hgrow="ALWAYS" />
+                            <TextField fx:id="registerConfirmPasswordText" promptText="Confirmez votre mot de passe" styleClass="custom-password-field" HBox.hgrow="ALWAYS" visible="false" managed="false" />
+                            <Button fx:id="registerConfirmPasswordToggle" styleClass="password-toggle-button" onAction="#togglePasswordVisibility">
+                                <graphic>
+                                    <ImageView fitWidth="20" fitHeight="20">
+                                        <Image url="@/images/eye-closed.png" />
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                        </HBox>
                     </VBox>
 
                     <VBox spacing="5">
                         <Label text="Rôle" styleClass="field-label" />
                         <ComboBox fx:id="registerRole" promptText="Sélectionnez votre rôle" styleClass="role-combo" maxWidth="Infinity" />
+                    </VBox>
+                    
+                    <!-- CAPTCHA Section -->
+                    <VBox spacing="5" styleClass="captcha-container">
+                        <Label text="Vérification CAPTCHA" styleClass="field-label" />
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label fx:id="captchaQuestion" text="Loading..." styleClass="captcha-question" />
+                            <Button fx:id="refreshCaptchaButton" text="↻" onAction="#refreshCaptcha" 
+                                    styleClass="refresh-button" minWidth="30" />
+                        </HBox>
+                        <TextField fx:id="captchaAnswer" promptText="Entrez votre réponse" styleClass="input-field" />                        
                     </VBox>
                 </VBox>
             </ScrollPane>

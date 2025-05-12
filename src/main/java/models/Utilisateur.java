@@ -1,6 +1,7 @@
 package models;
 
 import enums.Role;
+import java.time.LocalDate;
 
 public class Utilisateur {
     private int id;
@@ -9,6 +10,10 @@ public class Utilisateur {
     private Role role;
     private String nom; // Last name
     private String prenom; // First name
+    private String adresse;
+    private String telephone;
+    private LocalDate dateNaissance;
+    private String profilePicturePath; // Path to profile picture file
 
     public Utilisateur() {}
 
@@ -53,6 +58,18 @@ public class Utilisateur {
     public String getPrenom() { return prenom; }
     public void setPrenom(String prenom) { this.prenom = prenom; }
 
+    public String getAdresse() { return adresse; }
+    public void setAdresse(String adresse) { this.adresse = adresse; }
+
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
+
+    public LocalDate getDateNaissance() { return dateNaissance; }
+    public void setDateNaissance(LocalDate dateNaissance) { this.dateNaissance = dateNaissance; }
+
+    public String getProfilePicturePath() { return profilePicturePath; }
+    public void setProfilePicturePath(String profilePicturePath) { this.profilePicturePath = profilePicturePath; }
+
     @Override
     public String toString() {
         return "Utilisateur{" +
@@ -60,6 +77,9 @@ public class Utilisateur {
                 ", email='" + email + '\'' +
                 ", nom='" + nom + '\'' +
                 ", prenom='" + prenom + '\'' +
+                ", adresse='" + adresse + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", dateNaissance=" + dateNaissance +
                 ", role=" + role +
                 '}';
     }
