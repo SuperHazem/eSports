@@ -1189,3 +1189,35 @@
     -fx-clip: rect(0, 0, 0, 0);
     -fx-border-width: 0;
 }
+
+/* CAPTCHA Styling */
+.captcha-container {
+    -fx-background-color: #2c2c2c;
+    -fx-padding: 10px;
+    -fx-background-radius: 8px;
+    -fx-border-color: #444444;
+    -fx-border-radius: 8px;
+}
+
+.captcha-question {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.refresh-button {
+    -fx-background-color: #444444;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 50%;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 30px;
+    -fx-max-height: 30px;
+    -fx-padding: 0;
+}
+
+.refresh-button:hover {
+    -fx-background-color: #555555;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 0);
+}

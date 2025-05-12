@@ -10,7 +10,7 @@
 
 <BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
     <stylesheets>
-        <URL value="@../styles/application.css" />
+        <URL value="@styles/application.css" />
     </stylesheets>
 
     <left>
@@ -82,7 +82,7 @@
                 <padding>
                     <Insets top="10" right="15" bottom="15" left="15" />
                 </padding>
-                <HBox alignment="CENTER_LEFT" spacing="10">
+                <HBox fx:id="userProfileSection" alignment="CENTER_LEFT" spacing="10" styleClass="user-profile-section" onMouseClicked="#openProfileView">
                     <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" styleClass="user-avatar">
                         <Image url="@../images/logo.png" />
                     </ImageView>
@@ -94,7 +94,7 @@
 
                 <!-- Logout Button -->
                 <Button text="Déconnexion" onAction="#logout" styleClass="logout-button" maxWidth="Infinity"
-                        alignment="CENTER" VBox.margin="$x1">
+                        alignment="CENTER">
                     <VBox.margin>
                         <Insets top="15" />
                     </VBox.margin>

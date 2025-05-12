@@ -43,6 +43,8 @@ public class MainController implements Initializable {
     private Label userNameLabel;
     @FXML
     private Label userRoleLabel;
+    @FXML
+    private javafx.scene.layout.HBox userProfileSection;
 
     @FXML
     private Button tournoiBtn;
@@ -189,6 +191,30 @@ public class MainController implements Initializable {
         contentArea.getChildren().add(view);
     }
 
+    @FXML
+    void openProfileView() {
+        try {
+            // Load the profile view
+            loadView("profile");
+            
+            // Update the active button styling
+            if (currentActiveButton != null) {
+                currentActiveButton.getStyleClass().remove("active-nav-button");
+            }
+            // No button to set as active since profile is not in the main navigation
+        } catch (IOException e) {
+            System.err.println("Error loading profile view: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Show error alert
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Failed to load profile");
+            alert.setContentText("An error occurred while trying to load your profile. Please try again later.");
+            alert.showAndWait();
+        }
+    }
+    
     @FXML
     void logout(ActionEvent event) throws IOException {
         // Create confirmation alert

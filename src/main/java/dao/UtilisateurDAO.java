@@ -5,6 +5,7 @@ import enums.Role;
 import utils.DatabaseConnection;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,13 +25,17 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
 
     @Override
     public void ajouter(Utilisateur utilisateur) {
-        String query = "INSERT INTO utilisateur (email, motDePasseHash, role, nom, prenom) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO utilisateur (email, motDePasseHash, role, nom, prenom, adresse, telephone, date_naissance, profile_picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, utilisateur.getEmail());
             stmt.setString(2, utilisateur.getMotDePasseHash());
             stmt.setString(3, utilisateur.getRole().toString());
             stmt.setString(4, utilisateur.getNom());
             stmt.setString(5, utilisateur.getPrenom());
+            stmt.setString(6, utilisateur.getAdresse());
+            stmt.setString(7, utilisateur.getTelephone());
+            stmt.setDate(8, utilisateur.getDateNaissance() != null ? java.sql.Date.valueOf(utilisateur.getDateNaissance()) : null);
+            stmt.setString(9, utilisateur.getProfilePicturePath());
             stmt.executeUpdate();
 
             // Retrieve the generated ID and set it in the object
@@ -107,9 +112,21 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
                 Role role = Role.valueOf(rs.getString("role"));
                 String nom = rs.getString("nom");
                 String prenom = rs.getString("prenom");
-
-                // Make sure to create the Utilisateur with parameters in the correct order
-                return new Utilisateur(userId, email, motDePasseHash, role, nom, prenom);
+                String adresse = rs.getString("adresse");
+                String telephone = rs.getString("telephone");
+                Date dateNaissanceSQL = rs.getDate("date_naissance");
+                String profilePicturePath = rs.getString("profile_picture_path");
+                
+                // Create the basic Utilisateur with parameters in the correct order
+                Utilisateur utilisateur = new Utilisateur(userId, email, motDePasseHash, role, nom, prenom);
+                
+                // Set the additional fields
+                if (adresse != null) utilisateur.setAdresse(adresse);
+                if (telephone != null) utilisateur.setTelephone(telephone);
+                if (dateNaissanceSQL != null) utilisateur.setDateNaissance(((java.sql.Date) dateNaissanceSQL).toLocalDate());
+                if (profilePicturePath != null) utilisateur.setProfilePicturePath(profilePicturePath);
+                
+                return utilisateur;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -151,14 +168,18 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
 
     @Override
     public void modifier(Utilisateur utilisateur) {
-        String query = "UPDATE utilisateur SET email = ?, motDePasseHash = ?, role = ?, nom = ?, prenom = ? WHERE id = ?";
+        String query = "UPDATE utilisateur SET email = ?, motDePasseHash = ?, role = ?, nom = ?, prenom = ?, adresse = ?, telephone = ?, date_naissance = ?, profile_picture_path = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, utilisateur.getEmail());
             stmt.setString(2, utilisateur.getMotDePasseHash());
             stmt.setString(3, utilisateur.getRole().toString());
             stmt.setString(4, utilisateur.getNom());
             stmt.setString(5, utilisateur.getPrenom());
-            stmt.setInt(6, utilisateur.getId());
+            stmt.setString(6, utilisateur.getAdresse());
+            stmt.setString(7, utilisateur.getTelephone());
+            stmt.setDate(8, utilisateur.getDateNaissance() != null ? java.sql.Date.valueOf(utilisateur.getDateNaissance()) : null);
+            stmt.setString(9, utilisateur.getProfilePicturePath());
+            stmt.setInt(10, utilisateur.getId());
             stmt.executeUpdate();
 
             // Update role-specific data
@@ -213,6 +234,10 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
         Role role = Role.valueOf(rs.getString("role"));
         String nom = rs.getString("nom");
         String prenom = rs.getString("prenom");
+        String adresse = rs.getString("adresse");
+        String telephone = rs.getString("telephone");
+        Date dateNaissanceSQL = rs.getDate("date_naissance");
+        String profilePicturePath = rs.getString("profile_picture_path");
 
         Utilisateur utilisateur;
 
@@ -240,6 +265,12 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
             default:
                 utilisateur = new Utilisateur(id, email, motDePasseHash, role, nom, prenom);
         }
+        
+        // Set the additional fields for all user types
+        if (adresse != null) utilisateur.setAdresse(adresse);
+        if (telephone != null) utilisateur.setTelephone(telephone);
+        if (dateNaissanceSQL != null) utilisateur.setDateNaissance(((java.sql.Date) dateNaissanceSQL).toLocalDate());
+        if (profilePicturePath != null) utilisateur.setProfilePicturePath(profilePicturePath);
 
         return utilisateur;
     }
@@ -285,7 +316,7 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
     // Add this method to your existing UtilisateurDAO class
 
     public void updatePasswordByEmail(String email, String newPassword) {
-        String query = "UPDATE Utilisateur SET motDePasseHash = ? WHERE email = ?";
+        String query = "UPDATE utilisateur SET motDePasseHash = ? WHERE email = ?";
         try (Connection connection = DatabaseConnection.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, newPassword);
