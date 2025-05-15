@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.PublicationPopupController"
+      spacing="10" alignment="TOP_CENTER"
+      stylesheets="@styles/application.css"
+      prefWidth="600" prefHeight="700">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label fx:id="titleLabel" text="Nouvelle Publication" styleClass="title"/>
+
+    <GridPane vgap="10" hgap="10">
+        <Label text="Titre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="titreField" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"/>
+
+        <Label text="Contenu:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextArea fx:id="contenuField" prefRowCount="5" wrapText="true" 
+                 GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"/>
+
+        <Label text="Image:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <VBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="selectImageButton" text="Sélectionner une image" onAction="#selectImage"/>
+            </HBox>
+            <ImageView fx:id="imagePreview" fitWidth="200" fitHeight="200" preserveRatio="true"/>
+        </VBox>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#annuler" styleClass="cancel-button"/>
+        <Button text="Enregistrer" onAction="#enregistrer" styleClass="save-button"/>
+    </HBox>
+
+</VBox> 

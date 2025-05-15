@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.EventSocialPopupController"
+      spacing="15" alignment="CENTER"
+      stylesheets="@styles/application.css"
+      prefWidth="500" prefHeight="600">
+
+    <padding>
+        <Insets top="20" bottom="20" left="20" right="20" />
+    </padding>
+
+    <!-- Title -->
+    <Label fx:id="titleLabel" text="Ajouter Événement Social" styleClass="form-title" />
+
+    <!-- Name Field -->
+    <VBox spacing="5">
+        <Label text="Nom:" styleClass="field-label" />
+        <TextField fx:id="nomField" promptText="Entrez le nom de l'événement" styleClass="input-field" />
+    </VBox>
+
+    <!-- Date Field -->
+    <VBox spacing="5">
+        <Label text="Date:" styleClass="field-label" />
+        <DatePicker fx:id="dateField" styleClass="date-picker" />
+    </VBox>
+
+    <!-- Location Fields -->
+    <VBox spacing="5">
+        <Label text="Gouvernorat:" styleClass="field-label" />
+        <ComboBox fx:id="gouvernoratComboBox" promptText="Sélectionnez un gouvernorat" styleClass="input-field" />
+        
+        <Label text="Ville:" styleClass="field-label" />
+        <ComboBox fx:id="villeComboBox" promptText="Sélectionnez une ville" styleClass="input-field" />
+    </VBox>
+
+    <!-- Description Field -->
+    <VBox spacing="5">
+        <Label text="Description:" styleClass="field-label" />
+        <TextArea fx:id="descriptionField" promptText="Entrez la description" styleClass="input-field" prefRowCount="3" />
+    </VBox>
+
+    <!-- Capacity Field -->
+    <VBox spacing="5">
+        <Label text="Capacité:" styleClass="field-label" />
+        <TextField fx:id="capaciteField" promptText="Entrez la capacité" styleClass="input-field" />
+    </VBox>
+
+    <!-- Action Buttons -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Enregistrer" onAction="#enregistrer" styleClass="add-button" />
+        <Button text="Annuler" onAction="#annuler" styleClass="cancel-button" />
+    </HBox>
+</VBox> 
