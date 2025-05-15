@@ -257,7 +257,7 @@ public class MainController implements Initializable {
         } else if (clickedButton == gestionMatchBtn) {
             viewName = "GestionMatch";
         } else if (clickedButton == gestionAreneBtn) {
-            viewName = "GestionArene";
+            viewName = "GestionArenes";
         }
 
         loadView(viewName);
@@ -285,7 +285,7 @@ public class MainController implements Initializable {
                 "/views/AdminView.fxml",
                 "/views/SmartMatchmaking.fxml",
                 "/views/GestionMatch.fxml",
-                "/views/GestionArene.fxml"
+                "/views/GestionArenes.fxml"
         };
 
         FXMLLoader loader = null;
