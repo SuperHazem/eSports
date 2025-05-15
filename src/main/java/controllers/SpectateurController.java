@@ -1,5 +1,9 @@
 package controllers;
 
+import dao.*;
+import javafx.animation.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,20 +14,38 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import models.Utilisateur;
+import javafx.util.Duration;
+import models.*;
 import utils.IconGenerator;
 import utils.SceneController;
 import utils.UserSession;
+
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,36 +57,51 @@ import java.util.ResourceBundle;
 
 public class SpectateurController implements Initializable {
 
-    @FXML
-    private BorderPane spectateurBorderPane;
-    @FXML
-    private VBox sidebar;
-    @FXML
-    private StackPane contentArea;
-    @FXML
-    private ImageView logoImageView;
-    @FXML
-    private Label userNameLabel;
-    @FXML
-    private Label userRoleLabel;
-    @FXML
-    private ImageView userAvatarImage;
+    // Main layout components
+    @FXML private BorderPane spectateurBorderPane;
+    @FXML private VBox sidebar;
+    @FXML private StackPane contentArea;
+    @FXML private ImageView logoImageView;
+    @FXML private Label userNameLabel;
+    @FXML private Label userRoleLabel;
+    @FXML private ImageView userAvatarImage;
 
-    @FXML
-    private Button calendarBtn;
-    @FXML
-    private Button liveScoreBtn;
-    @FXML
-    private Button ticketsBtn;
-    @FXML
-    private Button reclamationsBtn;
+    // Navigation buttons
+    @FXML private Button calendarBtn;
+    @FXML private Button liveScoreBtn;
+    @FXML private Button ticketsBtn;
+    @FXML private Button reclamationsBtn;
+    @FXML private Button eventSocialBtn;
+    
+    // Event Social components
+    @FXML private TableView<EventSocial> eventTable;
+    @FXML private TableColumn<EventSocial, String> nomColumn;
+    @FXML private TableColumn<EventSocial, LocalDate> dateColumn;
+    @FXML private TableColumn<EventSocial, String> lieuColumn;
+    @FXML private TableColumn<EventSocial, String> descriptionColumn;
+    @FXML private TableColumn<EventSocial, String> participantsColumn;
+    @FXML private TableColumn<EventSocial, Void> actionsColumn;
+    @FXML private TextField searchNameField;
+    @FXML private DatePicker searchDateField;
+    @FXML private StackPane notifyArea;
+    @FXML private Label notifyLabel;
 
+    // Controller state
     private Map<String, Parent> cachedViews = new HashMap<>();
     private Button currentActiveButton;
     private Utilisateur currentUser;
+    
+    // Event Social state
+    private EventSocialDAO eventDAO;
+    private ParticipationEventDAO pDAO;
+    private ObservableList<EventSocial> eventData = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Initialize DAOs for event functionality
+        eventDAO = new EventSocialDAOImpl();
+        pDAO = new ParticipationEventDAOImpl();
+        
         styleLogoImage();
         styleUserAvatar();
 
@@ -190,11 +227,158 @@ public class SpectateurController implements Initializable {
             viewName = "ticketView";
         } else if (clickedButton == reclamationsBtn) {
             viewName = "ReclamationView";
+        } else if (clickedButton == eventSocialBtn) {
+            viewName = "SpectatorEventView";
         }
 
         if (!viewName.isEmpty()) {
             loadView(viewName);
         }
+    }
+    
+    // Event Social Methods
+    
+    private void initializeEventComponents() {
+        if (eventTable == null) {
+            System.err.println("Event table is null, cannot initialize components");
+            return;
+        }
+        
+        // Initialize table columns
+        nomColumn.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        lieuColumn.setCellValueFactory(new PropertyValueFactory<>("lieu"));
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+        
+        // Set up participants column to display count
+        participantsColumn.setCellValueFactory(cellData -> {
+            EventSocial event = cellData.getValue();
+            int count = pDAO.getParticipantCount(event.getId());
+            int capacity = event.getCapacite();
+            return new SimpleStringProperty(count + "/" + capacity);
+        });
+        
+        // Set up actions column with buttons
+        actionsColumn.setCellFactory(column -> new TableCell<EventSocial, Void>() {
+            private final Button participateButton = new Button("Participer");
+            private final Label joinedLabel = new Label("Déjà rejoint");
+            
+            {
+                participateButton.getStyleClass().add("participate-button");
+                joinedLabel.getStyleClass().add("joined-label");
+            }
+            
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+                
+                EventSocial event = getTableView().getItems().get(getIndex());
+                int userId = UserSession.getInstance().getCurrentUser().getId();
+                
+                if (pDAO.isUserParticipating(userId, event.getId())) {
+                    setGraphic(joinedLabel);
+                } else {
+                    participateButton.setOnAction(e -> joinEvent(event));
+                    setGraphic(participateButton);
+                }
+            }
+        });
+        
+        // Set up search functionality
+        searchNameField.textProperty().addListener((obs, oldVal, newVal) -> rechercherEvent());
+        searchDateField.valueProperty().addListener((obs, oldVal, newVal) -> rechercherEvent());
+        
+        // Load events
+        loadEvents();
+        
+        // Set up notification area
+        notifyArea.setVisible(false);
+    }
+    
+    private void loadEvents() {
+        try {
+            List<EventSocial> events = eventDAO.getAllEvents();
+            eventData.clear();
+            eventData.addAll(events);
+            eventTable.setItems(eventData);
+        } catch (Exception e) {
+            System.err.println("Error loading events: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    @FXML
+    private void rechercherEvent() {
+        String searchName = searchNameField.getText().toLowerCase();
+        LocalDate searchDate = searchDateField.getValue();
+        
+        List<EventSocial> allEvents = eventDAO.getAllEvents();
+        List<EventSocial> filteredEvents = allEvents.stream()
+                .filter(event -> {
+                    boolean nameMatch = searchName.isEmpty() || 
+                            event.getNom().toLowerCase().contains(searchName);
+                    boolean dateMatch = searchDate == null || 
+                            event.getDate().equals(searchDate);
+                    return nameMatch && dateMatch;
+                })
+                .collect(Collectors.toList());
+        
+        eventData.clear();
+        eventData.addAll(filteredEvents);
+        eventTable.setItems(eventData);
+    }
+    
+    private void joinEvent(EventSocial event) {
+        try {
+            int userId = UserSession.getInstance().getCurrentUser().getId();
+            int eventId = event.getId();
+            
+            // Check if user is already participating
+            if (pDAO.isUserParticipating(userId, eventId)) {
+                showNotification("Vous participez déjà à cet événement", "warning");
+                return;
+            }
+            
+            // Check if event is at capacity
+            int currentParticipants = pDAO.getParticipantCount(eventId);
+            if (currentParticipants >= event.getCapacite()) {
+                showNotification("Cet événement est complet", "error");
+                return;
+            }
+            
+            // Add participation
+            ParticipationEvent participation = new ParticipationEvent(0, userId, eventId, LocalDateTime.now());
+            pDAO.addParticipation(participation);
+            
+            // Show success notification
+            showNotification("Vous avez rejoint l'événement avec succès!", "success");
+            
+            // Refresh table to update UI
+            loadEvents();
+            
+        } catch (Exception e) {
+            showNotification("Erreur lors de la participation: " + e.getMessage(), "error");
+            e.printStackTrace();
+        }
+    }
+    
+    private void showNotification(String message, String type) {
+        notifyLabel.setText(message);
+        notifyArea.getStyleClass().clear();
+        notifyArea.getStyleClass().addAll("notification", "notification-" + type);
+        notifyArea.setVisible(true);
+        
+        // Create fade out animation
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(3), notifyArea);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setDelay(Duration.seconds(2));
+        fadeOut.setOnFinished(e -> notifyArea.setVisible(false));
+        fadeOut.play();
     }
 
     private void loadView(String viewName) throws IOException {
@@ -216,6 +400,20 @@ public class SpectateurController implements Initializable {
             fxmlPath = "/ReclamationView.fxml";
         } else if (viewName.equalsIgnoreCase("profile")) {
             fxmlPath = "/profile.fxml";
+        } else if (viewName.equalsIgnoreCase("SpectatorEventView")) {
+            fxmlPath = "/SpectatorEventView.fxml";
+            // For this view, we need to set the controller manually to this instance
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            loader.setController(this); // Use this controller instance
+            Parent view = loader.load();
+            
+            // Initialize event table components after loading
+            initializeEventComponents();
+            
+            cachedViews.put(viewName, view);
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(view);
+            return;
         } else {
             // Fallback for general views if specific paths are not matched
             fxmlPath = "/views/" + viewName + ".fxml";
