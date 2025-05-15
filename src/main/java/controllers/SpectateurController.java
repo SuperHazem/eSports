@@ -58,6 +58,8 @@ public class SpectateurController implements Initializable {
     private Button ticketsBtn;
     @FXML
     private Button reclamationsBtn;
+    @FXML
+    private Button eventSocialBtn;
 
     private Map<String, Parent> cachedViews = new HashMap<>();
     private Button currentActiveButton;
@@ -190,6 +192,8 @@ public class SpectateurController implements Initializable {
             viewName = "ticketView";
         } else if (clickedButton == reclamationsBtn) {
             viewName = "ReclamationView";
+        } else if (clickedButton == eventSocialBtn) {
+            viewName = "SpectatorEventView";
         }
 
         if (!viewName.isEmpty()) {
@@ -216,9 +220,10 @@ public class SpectateurController implements Initializable {
             fxmlPath = "/ReclamationView.fxml";
         } else if (viewName.equalsIgnoreCase("profile")) {
             fxmlPath = "/profile.fxml";
+
         } else {
             // Fallback for general views if specific paths are not matched
-            fxmlPath = "/views/" + viewName + ".fxml";
+            fxmlPath = "/" + viewName + ".fxml";
         }
         
         System.out.println("SpectateurController: Attempting to load FXML from: " + fxmlPath);

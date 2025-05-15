@@ -38,6 +38,7 @@
                     <Button fx:id="liveScoreBtn" mnemonicParsing="false" onAction="#handleNavigation" prefHeight="40.0" maxWidth="Infinity" styleClass="nav-button" text="Live Score" />
                     <Button fx:id="ticketsBtn" mnemonicParsing="false" onAction="#handleNavigation" prefHeight="40.0" maxWidth="Infinity" styleClass="nav-button" text="Tickets" />
                     <Button fx:id="reclamationsBtn" mnemonicParsing="false" onAction="#handleNavigation" prefHeight="40.0" maxWidth="Infinity" styleClass="nav-button" text="Réclamations" />
+                    <Button fx:id="eventSocialBtn" mnemonicParsing="false" onAction="#handleNavigation" prefHeight="40.0" maxWidth="Infinity" styleClass="nav-button" text="Event Social" />
                 </VBox>
 
                 <!-- User Profile Section and Logout (mimicking MainLayout footer) -->
