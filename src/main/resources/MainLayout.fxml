@@ -21,7 +21,7 @@
                     <Insets top="15" right="15" bottom="15" left="15" />
                 </padding>
                 <ImageView fx:id="logoImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@../images/logo.png" />
+                    <Image url="@/images/logo.png" />
                 </ImageView>
                 <Label text="eSportsArena" styleClass="sidebar-title">
                     <font>
@@ -37,111 +37,118 @@
                         <Insets top="10" right="10" bottom="10" left="10" />
                     </padding>
 
-                <Button fx:id="tournoiBtn" styleClass="nav-button" onAction="#handleNavigation" text="Tournois" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/tournament.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <!-- Dashboard Button -->
+                    <Button fx:id="dashboardBtn" styleClass="nav-button" onAction="#handleNavigation" text="Dashboard" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/dashboard.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="equipeBtn" styleClass="nav-button" onAction="#handleNavigation" text="Équipes" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/team.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="tournoiBtn" styleClass="nav-button" onAction="#handleNavigation" text="Tournois" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/tournament.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="utilisateurBtn" styleClass="nav-button, active-nav-button" onAction="#handleNavigation" text="Utilisateurs" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/user.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="equipeBtn" styleClass="nav-button" onAction="#handleNavigation" text="Équipes" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/team.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="recompenseBtn" styleClass="nav-button" onAction="#handleNavigation" text="Récompenses" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/reward.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="utilisateurBtn" styleClass="nav-button, active-nav-button" onAction="#handleNavigation" text="Utilisateurs" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/user.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="sponsorBtn" styleClass="nav-button" onAction="#handleNavigation" text="Sponsors" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/sponsor.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="recompenseBtn" styleClass="nav-button" onAction="#handleNavigation" text="Récompenses" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/reward.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="adminReponseBtn" styleClass="nav-button" onAction="#handleNavigation" text="Admin Réponses" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/user.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="sponsorBtn" styleClass="nav-button" onAction="#handleNavigation" text="Sponsors" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/sponsor.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="adminViewBtn" styleClass="nav-button" onAction="#handleNavigation" text="Admin Panel" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/user.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="adminReponseBtn" styleClass="nav-button" onAction="#handleNavigation" text="Admin Réponses" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/user.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="smartMatchmakingBtn" styleClass="nav-button" onAction="#handleNavigation" text="Smart Matchmaking" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/tournament.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="adminViewBtn" styleClass="nav-button" onAction="#handleNavigation" text="Admin Panel" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/user.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="gestionMatchBtn" styleClass="nav-button" onAction="#handleNavigation" text="Gestion Matchs" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/tournament.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="smartMatchmakingBtn" styleClass="nav-button" onAction="#handleNavigation" text="Smart Matchmaking" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/tournament.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="gestionAreneBtn" styleClass="nav-button" onAction="#handleNavigation" text="Gestion Arènes" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/sponsor.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="gestionMatchBtn" styleClass="nav-button" onAction="#handleNavigation" text="Gestion Matchs" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/tournament.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="publicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Publications" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/user.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="gestionAreneBtn" styleClass="nav-button" onAction="#handleNavigation" text="Gestion Arènes" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/sponsor.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="eventSocialBtn" styleClass="nav-button" onAction="#handleNavigation" text="Événements Sociaux" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/user.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="publicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Publications" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/user.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-                <Button fx:id="reportedPublicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Reported Publications" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/user.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+                    <Button fx:id="eventSocialBtn" styleClass="nav-button" onAction="#handleNavigation" text="Événements Sociaux" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/user.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
 
-
+                    <Button fx:id="reportedPublicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Reported Publications" maxWidth="Infinity">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/user.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
                 </VBox>
             </ScrollPane>
 
@@ -172,7 +179,7 @@
     </left>
 
     <center>
-        <StackPane fx:id="contentArea">
+        <StackPane fx:id="contentArea" styleClass="content-area">
             <!-- Content will be loaded here dynamically -->
         </StackPane>
     </center>
