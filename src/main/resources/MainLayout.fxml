@@ -141,13 +141,7 @@
                     </graphic>
                 </Button>
 
-                <Button fx:id="eventParticipantBtn" styleClass="nav-button" onAction="#handleNavigation" text="Event Participation" maxWidth="Infinity">
-                    <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/user.png" />
-                        </ImageView>
-                    </graphic>
-                </Button>
+
                 </VBox>
             </ScrollPane>
 

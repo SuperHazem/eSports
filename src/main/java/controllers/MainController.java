@@ -78,8 +78,7 @@ public class MainController implements Initializable {
     private Button eventSocialBtn;
     @FXML
     private Button reportedPublicationBtn;
-    @FXML
-    private Button eventParticipantBtn;
+
 
     private Map<String, Parent> cachedViews = new HashMap<>();
     private Button currentActiveButton;
@@ -272,8 +271,6 @@ public class MainController implements Initializable {
             viewName = "eventSocial";
         } else if (clickedButton == reportedPublicationBtn) {
             viewName = "ReportedPublicationsView";
-        } else if (clickedButton == eventParticipantBtn) {
-            viewName = "EventParticipationView";
         }
 
         loadView(viewName);
