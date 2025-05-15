@@ -1,0 +1,333 @@
+/* Styles généraux */
+.root {
+    -fx-background-color: #1a1a1a;
+    -fx-font-family: "System";
+}
+
+.main-title {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.title-label {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.subtitle-label {
+    -fx-text-fill: #00b8d4;
+    -fx-font-size: 16px;
+}
+.places-libres-label{
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+.categorie-value{
+    -fx-text-fill: #00b8d4;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.section-title {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* Styles pour les sièges */
+.siege-container {
+    -fx-background-color: #222222;
+    -fx-border-color: #333333;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+}
+
+.scene {
+    -fx-background-color: #333333;
+    -fx-min-width: 300px;
+    -fx-min-height: 50px;
+    -fx-background-radius: 5px;
+    -fx-margin-bottom: 30px;
+}
+
+.scene-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.siege-disponible {
+    -fx-background-color: #ffd54f;
+    -fx-text-fill: #333333;
+    -fx-font-weight: bold;
+    -fx-border-color: #ffc107;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.siege-disponible:hover {
+    -fx-background-color: #ffecb3;
+    -fx-cursor: hand;
+}
+
+.siege-indisponible {
+    -fx-background-color: #9e9e9e;
+    -fx-text-fill: #616161;
+    -fx-font-weight: bold;
+    -fx-border-color: #757575;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.siege-selectionne {
+    -fx-background-color: #4caf50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-color: #388e3c;
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 0);
+}
+
+/* Styles pour les catégories */
+.categorie-titre {
+    -fx-text-fill: #00b8d4;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 0 5px 0;
+}
+
+/* Styles pour les informations */
+.info-container {
+    -fx-background-color: black;
+    -fx-padding: 15px;
+    -fx-border-color: #444444;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+}
+
+.info-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.info-field {
+    -fx-background-color: #444444;
+    -fx-text-fill: white;
+    -fx-background-radius: 3px;
+}
+
+.categorie-label {
+    -fx-text-fill: #00b8d4;
+    -fx-font-weight: bold;
+}
+
+/* Styles pour les messages d'erreur */
+.error-label {
+    -fx-text-fill: #f44336;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* Styles pour les boutons */
+.confirm-button {
+    -fx-background-color: #00b8d4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+    -fx-font-size: 14px;
+}
+
+.confirm-button:hover {
+    -fx-background-color: #00b8d4;
+    -fx-cursor: hand;
+}
+
+.cancel-button {
+    -fx-background-color: #00b8d4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+    -fx-font-size: 14px;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #00b8d4;
+    -fx-cursor: hand;
+}
+
+.add-button {
+    -fx-background-color: #00b8d4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+}
+
+.add-button:hover {
+    -fx-background-color: #00b8d4;
+    -fx-cursor: hand;
+}
+
+.modifier-button {
+    -fx-background-color:#00b8d4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+}
+
+.modifier-button:hover {
+    -fx-background-color: #00b8d4;
+    -fx-cursor: hand;
+}
+
+.supprimer-button {
+    -fx-background-color: #00b8d4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+}
+
+.supprimer-button:hover {
+    -fx-background-color: #00b8d4;
+    -fx-cursor: hand;
+}
+
+.search-button {
+    -fx-background-color: #00b8d4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+}
+
+.search-button:hover {
+    -fx-background-color: #00b8d4;
+    -fx-cursor: hand;
+}
+
+.reset-button {
+    -fx-background-color: #9e9e9e;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+}
+
+.reset-button:hover {
+    -fx-background-color: #757575;
+    -fx-cursor: hand;
+}
+
+.reclamation-button {
+    -fx-background-color: #00b8d4;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+}
+
+.reclamation-button:hover {
+    -fx-background-color: #00b8d4;
+    -fx-cursor: hand;
+}
+
+/* Styles pour les tableaux */
+.table-view {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+}
+
+.table-view .column-header {
+    -fx-background-color: #444444;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #2a2a2a;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #00b8d4;
+}
+
+.table-cell {
+    -fx-text-fill: white;
+}
+
+/* Styles pour les champs de recherche */
+.search-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.date-picker {
+    -fx-background-color: #444444;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #00b8d4;
+}
+
+.date-picker .arrow-button:hover {
+    -fx-background-color: #00e5ff;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+.date-picker .cell {
+    -fx-background-color: #444444;
+    -fx-text-fill: white;
+}
+
+.date-picker .cell:hover {
+    -fx-background-color: #00b8d4;
+}
+
+.date-picker .cell:focused {
+    -fx-background-color: #00b8d4;
+}
+
+.date-picker .selected {
+    -fx-background-color: #00b8d4;
+    -fx-text-fill: white;
+}
+
+.date-picker .selected:focused {
+    -fx-background-color: #00b8d4;
+}
+
+.date-picker-popup {
+    -fx-background-color: #333333;
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #444444;
+}
+
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: white;
+}
+
+.date-picker-popup .week-number-cell {
+    -fx-text-fill: #00b8d4;
+}
+
+/* Styles pour le footer */
+.footer-container {
+    -fx-background-color: #222222;
+    -fx-border-color: #333333;
+    -fx-border-width: 1px 0 0 0;
+}

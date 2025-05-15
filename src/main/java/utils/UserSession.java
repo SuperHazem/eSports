@@ -20,6 +20,10 @@ public class UserSession {
     public void setUser(Utilisateur user) {
         this.currentUser = user;
     }
+    
+    public void setCurrentUser(Utilisateur user) {
+        this.currentUser = user;
+    }
 
     public Utilisateur getUser() {
         return currentUser;

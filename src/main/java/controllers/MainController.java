@@ -21,6 +21,8 @@ import utils.IconGenerator;
 import utils.SceneController;
 import utils.UserSession;
 
+import java.io.File;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
@@ -45,6 +47,8 @@ public class MainController implements Initializable {
     private Label userRoleLabel;
     @FXML
     private javafx.scene.layout.HBox userProfileSection;
+    @FXML
+    private ImageView userAvatarImage;
 
     @FXML
     private Button tournoiBtn;
@@ -56,6 +60,18 @@ public class MainController implements Initializable {
     private Button recompenseBtn;
     @FXML
     private Button sponsorBtn;
+    @FXML
+    private Button userAdminBtn; // Bouton pour la gestion des utilisateurs (bannissement, suspension)
+    @FXML
+    private Button adminReponseBtn;
+    @FXML
+    private Button adminViewBtn;
+    @FXML
+    private Button smartMatchmakingBtn;
+    @FXML
+    private Button gestionMatchBtn;
+    @FXML
+    private Button gestionAreneBtn;
 
     private Map<String, Parent> cachedViews = new HashMap<>();
     private Button currentActiveButton;
@@ -65,9 +81,18 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Style the logo
         styleLogoImage();
+        
+        // Style the user avatar
+        styleUserAvatar();
 
         // Set the initial active button
         currentActiveButton = utilisateurBtn;
+        
+        // Load user data from session if available
+        UserSession session = UserSession.getInstance();
+        if (session.isLoggedIn()) {
+            setCurrentUser(session.getCurrentUser());
+        }
 
         // Load the default view (Utilisateurs)
         try {
@@ -100,6 +125,23 @@ public class MainController implements Initializable {
             logoImageView.setCache(true);
         }
     }
+    
+    /**
+     * Apply styling to make the user avatar circular
+     */
+    private void styleUserAvatar() {
+        if (userAvatarImage != null) {
+            // Create a circle clip for the avatar
+            double radius = Math.min(userAvatarImage.getFitWidth(), userAvatarImage.getFitHeight()) / 2;
+            Circle clip = new Circle(radius, radius, radius);
+            userAvatarImage.setClip(clip);
+            
+            // Set image properties
+            userAvatarImage.setPreserveRatio(true);
+            userAvatarImage.setSmooth(true);
+            userAvatarImage.setCache(true);
+        }
+    }
 
     /**
      * Set the current user and update UI accordingly
@@ -109,6 +151,74 @@ public class MainController implements Initializable {
         if (user != null) {
             userNameLabel.setText(user.getPrenom() + " " + user.getNom());
             userRoleLabel.setText(user.getRole().toString());
+            
+            // Check if this is a Google-authenticated user
+            boolean isGoogleUser = user.getMotDePasseHash() != null && user.getMotDePasseHash().equals("google-oauth");
+            
+            System.out.println("User authentication type check: " + user.getEmail() + ", isGoogleUser=" + isGoogleUser + ", hash=" + user.getMotDePasseHash());
+            
+            // Load profile picture if available
+            if (user.getProfilePicturePath() != null && !user.getProfilePicturePath().isEmpty()) {
+                try {
+                    File imageFile = new File(user.getProfilePicturePath());
+                    if (imageFile.exists()) {
+                        Image image = new Image(imageFile.toURI().toString());
+                        userAvatarImage.setImage(image);
+                        System.out.println("Loaded profile picture from: " + user.getProfilePicturePath());
+                    } else if (isGoogleUser) {
+                        // For Google users, try to generate an icon if the profile picture file doesn't exist
+                        System.out.println("Profile picture file doesn't exist for Google user, generating icon");
+                        generateProfileIcon(user);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error loading profile image in sidebar: " + e.getMessage());
+                    if (isGoogleUser) {
+                        // For Google users, generate an icon if there's an error loading the profile picture
+                        System.out.println("Error loading profile image for Google user, generating icon");
+                        generateProfileIcon(user);
+                    }
+                }
+            } else if (isGoogleUser) {
+                // For Google users without a profile picture path, generate an icon
+                System.out.println("No profile picture path for Google user, generating icon");
+                generateProfileIcon(user);
+            } else {
+                // For non-Google users without a profile picture, also generate an icon
+                System.out.println("No profile picture for regular user, generating icon");
+                generateProfileIcon(user);
+            }
+        }
+    }
+    
+    /**
+     * Generate a profile icon for users without a profile picture
+     * This is especially useful for Google-authenticated users
+     */
+    private void generateProfileIcon(Utilisateur user) {
+        try {
+            // Use the IconGenerator utility to create an avatar based on user's initials
+            String initials = String.valueOf(user.getPrenom().charAt(0)) + 
+                             (user.getNom() != null && !user.getNom().isEmpty() ? 
+                              String.valueOf(user.getNom().charAt(0)) : "");
+            
+            // Generate a color based on the user's name for consistency
+            String fullName = user.getPrenom() + user.getNom();
+            int hash = fullName.hashCode();
+            // Generate a bright, saturated color (avoid dark colors for visibility)
+            Color avatarColor = Color.hsb(
+                (hash % 360), // Hue: 0-359 degrees
+                0.8,          // Saturation: 80%
+                0.9           // Brightness: 90%
+            );
+            
+            // Create the image and set it to the avatar
+            Image generatedIcon = IconGenerator.createTextIcon(initials.toUpperCase(), avatarColor);
+            userAvatarImage.setImage(generatedIcon);
+            
+            System.out.println("Generated profile icon for Google user: " + user.getEmail());
+        } catch (Exception e) {
+            System.err.println("Error generating profile icon: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -132,10 +242,22 @@ public class MainController implements Initializable {
             viewName = "equipe";
         } else if (clickedButton == utilisateurBtn) {
             viewName = "utilisateur";
+        } else if (clickedButton == userAdminBtn) {
+            viewName = "userAdmin";
         } else if (clickedButton == recompenseBtn) {
             viewName = "recompense";
         } else if (clickedButton == sponsorBtn) {
             viewName = "sponsor";
+        } else if (clickedButton == adminReponseBtn) {
+            viewName = "AdminReponseView";
+        } else if (clickedButton == adminViewBtn) {
+            viewName = "AdminView";
+        } else if (clickedButton == smartMatchmakingBtn) {
+            viewName = "SmartMatchmaking";
+        } else if (clickedButton == gestionMatchBtn) {
+            viewName = "GestionMatch";
+        } else if (clickedButton == gestionAreneBtn) {
+            viewName = "GestionArene";
         }
 
         loadView(viewName);
@@ -158,7 +280,12 @@ public class MainController implements Initializable {
                 "/" + viewName + "View.fxml",
                 "/views/" + viewName + ".fxml",
                 "/fxml/" + viewName + ".fxml",
-                "/" + viewName + ".fxml"
+                "/" + viewName + ".fxml",
+                "/views/AdminReponseView.fxml",
+                "/views/AdminView.fxml",
+                "/views/SmartMatchmaking.fxml",
+                "/views/GestionMatch.fxml",
+                "/views/GestionArene.fxml"
         };
 
         FXMLLoader loader = null;
@@ -180,6 +307,32 @@ public class MainController implements Initializable {
         }
 
         if (view == null) {
+            String fxmlPath = null; // Declare fxmlPath here
+            // Fallback for specific view names if the generic paths didn't work
+            if (viewName.equalsIgnoreCase("AdminReponseView")) {
+                fxmlPath = "/views/AdminReponseView.fxml";
+            } else if (viewName.equalsIgnoreCase("AdminView")) {
+                fxmlPath = "/views/AdminView.fxml";
+            } else if (viewName.equalsIgnoreCase("SmartMatchmaking")) {
+                fxmlPath = "/views/SmartMatchmaking.fxml";
+            } else if (viewName.equalsIgnoreCase("GestionMatch")) {
+                fxmlPath = "/views/GestionMatch.fxml";
+            } else if (viewName.equalsIgnoreCase("GestionArene")) {
+                fxmlPath = "/views/GestionArene.fxml";
+            } else {
+                 throw new IOException("Could not find FXML file for view: " + viewName + " after trying multiple paths.");
+            }
+            try {
+                System.out.println("Trying to load FXML from specific path: " + fxmlPath);
+                loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                view = loader.load();
+                System.out.println("Successfully loaded FXML from specific path: " + fxmlPath);
+            } catch (Exception e) {
+                 throw new IOException("Could not find FXML file for view: " + viewName + " even with specific path " + fxmlPath + ". Error: " + e.getMessage());
+            }
+        }
+
+        if (view == null) { // Double check after specific path attempt
             throw new IOException("Could not find FXML file for view: " + viewName);
         }
 

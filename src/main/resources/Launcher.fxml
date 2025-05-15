@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="200" prefWidth="300" spacing="20" style="-fx-padding: 40;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LauncherController">
+
+    <Button fx:id="areneButton" onAction="#handleOpenArene" text="Gestion des Arènes" />
+    <Button fx:id="matchButton" minHeight="-Infinity" onAction="#handleOpenMatch" text="Gestion des Matchs" />
+    <Button fx:id="smartMatchmakingButton" onAction="#handleOpenSmartMatchmaking" text="Smart Matchmaking" />
+    <Button fx:id="retourneButton" minHeight="-Infinity" onAction="#handleRetourner" prefHeight="42.0" prefWidth="120.0" styleClass="retourner-button" text="Retourner">
+        <font>
+            <Font size="15.0" />
+        </font></Button>
+
+</VBox>

@@ -1,0 +1,77 @@
+{
+    "USA": [
+        "Madison Square Garden",
+        "Crypto.com Arena",
+        "United Center",
+        "TD Garden",
+        "Chase Center"
+    ],
+    "France": [
+        "Stade de France",
+        "Accor Arena",
+        "Parc des Princes",
+        "Groupama Stadium"
+    ],
+    "Germany": [
+        "Allianz Arena",
+        "Mercedes-Benz Arena",
+        "Signal Iduna Park"
+    ],
+    "UK": [
+        "Wembley Stadium",
+        "O2 Arena",
+        "Old Trafford",
+        "Emirates Stadium"
+    ],
+    "Spain": [
+        "Santiago Bernabéu",
+        "Camp Nou",
+        "Wanda Metropolitano"
+    ],
+    "Italy": [
+        "San Siro",
+        "Stadio Olimpico",
+        "Allianz Stadium"
+    ],
+    "Canada": [
+        "Scotiabank Arena",
+        "Bell Centre",
+        "Rogers Place"
+    ],
+    "Japan": [
+        "Tokyo Dome",
+        "Saitama Super Arena",
+        "Osaka Dome"
+    ],
+    "Brazil": [
+        "Maracanã Stadium",
+        "Mineirão",
+        "Arena Corinthians"
+    ],
+    "Australia": [
+        "Rod Laver Arena",
+        "Melbourne Cricket Ground",
+        "Qudos Bank Arena"
+    ],
+    "Argentina": [
+        "Estadio Monumental",
+        "La Bombonera"
+    ],
+    "Russia": [
+        "Luzhniki Stadium",
+        "Gazprom Arena"
+    ],
+    "China": [
+        "Beijing National Stadium",
+        "Mercedes-Benz Arena Shanghai"
+    ],
+    "South Africa": [
+        "FNB Stadium",
+        "Cape Town Stadium"
+    ],
+    "Tunisia": [
+        "Stade Olympique de Radès",
+        "Stade Chedly Zouiten",
+        "Salle Omnisport de Radès"
+    ]
+}

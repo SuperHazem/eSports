@@ -1,0 +1,183 @@
+/* Styles généraux */
+.root {
+    -fx-background-color: #2d2d2d;
+    -fx-font-family: "Arial";
+}
+
+.label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.title-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #00b8d9;
+}
+
+/* Styles pour les boutons */
+.button {
+    -fx-background-color: #00b8d9;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 4px;
+}
+
+.button:hover {
+    -fx-background-color: #0099b8;
+}
+
+/* Styles spécifiques pour les boutons d'action */
+.details-button {
+    -fx-background-color: #00b8d9;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-padding: 4px 8px;
+}
+
+.save-button {
+    -fx-background-color: #00b8d9;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-padding: 4px 8px;
+}
+
+.delete-button {
+    -fx-background-color: #00b8d9;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-padding: 4px 8px;
+}
+
+.modifier-button {
+    -fx-background-color: #00b8d9;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-padding: 4px 8px;
+}
+
+/* Styles pour les champs de texte */
+.text-field,
+.text-area {
+    -fx-background-color: #3d3d3d;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #aaaaaa;
+    -fx-border-color: #555555;
+    -fx-border-radius: 4px;
+}
+
+.text-area .content {
+    -fx-background-color: #3d3d3d;
+}
+
+/* Styles pour les ComboBox */
+.combo-box {
+    -fx-background-color: #3d3d3d;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #aaaaaa;
+    -fx-border-color: #555555;
+    -fx-border-radius: 4px;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #3d3d3d;
+    -fx-text-fill: white;
+}
+
+.combo-box .list-view {
+    -fx-background-color: #3d3d3d;
+    -fx-border-color: #555555;
+}
+
+.combo-box .list-view .list-cell:hover {
+    -fx-background-color: #00b8d9;
+}
+
+/* Styles pour DatePicker */
+.date-picker {
+    -fx-background-color: #3d3d3d;
+    -fx-text-fill: white;
+    -fx-border-color: #555555;
+    -fx-border-radius: 4px;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #00b8d9;
+}
+
+.date-picker .text-field {
+    -fx-background-color: #3d3d3d;
+    -fx-text-fill: white;
+}
+
+/* Styles pour TableView */
+.table-view {
+    -fx-background-color: #3d3d3d;
+    -fx-table-cell-border-color: #555555;
+}
+
+.table-view .column-header {
+    -fx-background-color: #00b8d9;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: white;
+    -fx-alignment: center-left;
+    -fx-padding: 5px;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #3d3d3d;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #2d2d2d;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #00b8d9;
+}
+
+/* Styles pour les statuts */
+.statut-en-cours {
+    -fx-text-fill: #ffc107; /* Jaune */
+}
+
+.statut-resolu {
+    -fx-text-fill: #4caf50; /* Vert */
+}
+
+.statut-rejete {
+    -fx-text-fill: #00b8d9; /* Rouge */
+}
+
+/* Styles pour les popups */
+.dialog-pane {
+    -fx-background-color: #2d2d2d;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #00b8d9;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .content {
+    -fx-text-fill: white;
+}
+
+.dialog-pane .button-bar .button {
+    -fx-background-color: #00b8d9;
+    -fx-text-fill: white;
+}

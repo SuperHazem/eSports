@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="profileContainer" spacing="20" styleClass="content-area" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ProfileController" >
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30" />
+    </padding>
+    
+    <!-- Profile Header -->
+    <HBox styleClass="header-container" alignment="CENTER_LEFT" spacing="20" VBox.vgrow="NEVER">
+        <VBox spacing="8" alignment="CENTER" styleClass="profile-image-vbox" minHeight="150.0">
+            <ImageView fx:id="profileImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" styleClass="user-avatar">
+                <Image url="@images/logo.png" />
+            </ImageView>
+            <Button fx:id="uploadPhotoButton" text="Changer la photo" onAction="#handleUploadPhoto" visible="true" managed="true" style="-fx-border-color: red; -fx-border-width: 2px;" />
+        </VBox>
+        <VBox>
+            <Label fx:id="profileNameLabel" text="Nom Complet" styleClass="title" />
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="profileRoleLabel" text="Rôle" styleClass="role-badge" />
+                <Label fx:id="profileEmailLabel" text="email@example.com" styleClass="subtitle" />
+            </HBox>
+        </VBox>
+    </HBox>
+    
+    <!-- Profile Information Sections -->
+    <VBox VBox.vgrow="ALWAYS">
+        <TabPane fx:id="profileTabPane" styleClass="profile-tabs" VBox.vgrow="ALWAYS">
+        <!-- Personal Information Tab -->
+        <Tab text="Informations Personnelles" closable="false">
+            <VBox spacing="20" styleClass="profile-section">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20" />
+                </padding>
+                
+                <GridPane hgap="20" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="100" prefWidth="150" maxWidth="200" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="300" />
+                    </columnConstraints>
+                    
+                    <!-- Common Fields for All Users -->
+                    <Label text="Prénom:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                    <TextField fx:id="firstNameField" styleClass="input-field" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                    
+                    <Label text="Nom:" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                    <TextField fx:id="lastNameField" styleClass="input-field" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                    
+                    <Label text="Email:" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                    <TextField fx:id="emailField" styleClass="input-field" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                    
+                    <Label text="Téléphone:" styleClass="field-label" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                    <TextField fx:id="phoneField" styleClass="input-field" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                    
+                    <Label text="Date de Naissance:" styleClass="field-label" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+                    <DatePicker fx:id="birthDatePicker" styleClass="input-field" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+                    
+                    <Label text="Adresse:" styleClass="field-label" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+                    <TextArea fx:id="addressField" styleClass="input-field" prefHeight="80" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+                </GridPane>
+                
+                <!-- Role-specific Fields -->
+                <VBox fx:id="adminSpecificFields" spacing="15" visible="false" managed="false">
+                    <Label text="Informations Administrateur" styleClass="section-title" />
+                    <GridPane hgap="20" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="100" prefWidth="150" maxWidth="200" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="300" />
+                        </columnConstraints>
+                        
+                        <Label text="Niveau d'Accès:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                        <ComboBox fx:id="adminAccessLevelCombo" styleClass="role-combo" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        
+                        <Label text="Département:" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                        <TextField fx:id="adminDepartmentField" styleClass="input-field" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                    </GridPane>
+                </VBox>
+                
+                <VBox fx:id="coachSpecificFields" spacing="15" visible="false" managed="false">
+                    <Label text="Informations Entraîneur" styleClass="section-title" />
+                    <GridPane hgap="20" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="100" prefWidth="150" maxWidth="200" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="300" />
+                        </columnConstraints>
+                        
+                        <Label text="Spécialité:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                        <TextField fx:id="coachSpecialtyField" styleClass="input-field" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        
+                        <Label text="Expérience (années):" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                        <TextField fx:id="coachExperienceField" styleClass="input-field" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                        
+                        <Label text="Équipe Actuelle:" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                        <ComboBox fx:id="coachTeamCombo" styleClass="role-combo" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                    </GridPane>
+                </VBox>
+                
+                <VBox fx:id="playerSpecificFields" spacing="15" visible="false" managed="false">
+                    <Label text="Informations Joueur" styleClass="section-title" />
+                    <GridPane hgap="20" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="100" prefWidth="150" maxWidth="200" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="300" />
+                        </columnConstraints>
+                        
+                        <Label text="Pseudo:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                        <TextField fx:id="playerNicknameField" styleClass="input-field" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        
+                        <Label text="Jeu Principal:" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                        <TextField fx:id="playerMainGameField" styleClass="input-field" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                        
+                        <Label text="Équipe:" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                        <ComboBox fx:id="playerTeamCombo" styleClass="role-combo" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                    </GridPane>
+                </VBox>
+                
+                <VBox fx:id="spectatorSpecificFields" spacing="15" visible="false" managed="false">
+                    <Label text="Informations Spectateur" styleClass="section-title" />
+                    <GridPane hgap="20" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="100" prefWidth="150" maxWidth="200" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="300" />
+                        </columnConstraints>
+                        
+                        <Label text="Jeux Favoris:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                        <TextField fx:id="spectatorFavoriteGamesField" styleClass="input-field" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        
+                        <Label text="Abonnement:" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                        <ComboBox fx:id="spectatorSubscriptionCombo" styleClass="role-combo" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                    </GridPane>
+                </VBox>
+            </VBox>
+        </Tab>
+        
+        <!-- Security Tab -->
+        <Tab text="Sécurité" closable="false">
+            <VBox spacing="20" styleClass="profile-section">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20" />
+                </padding>
+                
+                <Label text="Changer le Mot de Passe" styleClass="section-title" />
+                <GridPane hgap="20" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="100" prefWidth="200" maxWidth="250" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="300" />
+                    </columnConstraints>
+                    
+                    <Label text="Mot de Passe Actuel:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                    <PasswordField fx:id="currentPasswordField" styleClass="input-field" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                    
+                    <Label text="Nouveau Mot de Passe:" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                    <PasswordField fx:id="newPasswordField" styleClass="input-field" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                    
+                    <Label text="Confirmer Mot de Passe:" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                    <PasswordField fx:id="confirmPasswordField" styleClass="input-field" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                </GridPane>
+            </VBox>
+        </Tab>
+        
+        <!-- Preferences Tab -->
+        <Tab text="Préférences" closable="false">
+            <VBox spacing="20" styleClass="profile-section">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20" />
+                </padding>
+                
+                <Label text="Préférences d'Affichage" styleClass="section-title" />
+                <GridPane hgap="20" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="100" prefWidth="200" maxWidth="250" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="200" prefWidth="300" />
+                    </columnConstraints>
+                    
+                    <Label text="Thème:" styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                    <ComboBox fx:id="themeCombo" styleClass="role-combo" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                    
+                    <Label text="Langue:" styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                    <ComboBox fx:id="languageCombo" styleClass="role-combo" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                    
+                    <Label text="Notifications:" styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                    <CheckBox fx:id="notificationsCheckbox" text="Activer les notifications" selected="true" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                </GridPane>
+            </VBox>
+        </Tab>
+    </TabPane>
+    
+
+        <!-- Action Buttons -->
+        <HBox spacing="15" alignment="CENTER_RIGHT" VBox.vgrow="NEVER">
+            <padding>
+                <Insets top="20.0" />
+            </padding>
+        <Button fx:id="cancelButton" text="Annuler" styleClass="cancel-button" onAction="#handleCancel" />
+        <Button fx:id="saveButton" text="Enregistrer" styleClass="primary-button" onAction="#handleSave" />
+    </HBox>
+    </VBox>
+</VBox>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import java.net.URL?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" styleClass="root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.TicketPopupController">
+    <stylesheets>
+        <URL value="@/styles/Ticket-style.css" />
+    </stylesheets>
+    <top>
+        <VBox alignment="CENTER" spacing="10.0" styleClass="header-container">
+            <Label text="Réservation de Place" styleClass="main-title">
+                <font>
+                    <Font name="System Bold" size="24.0" />
+                </font>
+            </Label>
+            <Label fx:id="placesLibresLabel" styleClass="places-libres-label" text="X places libres" />
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </VBox>
+    </top>
+    <center>
+        <VBox alignment="CENTER" spacing="20.0" styleClass="content-container">
+            <Label text="Sélectionnez votre siège" styleClass="section-title" />
+
+            <VBox alignment="CENTER" spacing="10.0" styleClass="sieges-container">
+                <Label text="Catégorie A - Premium" styleClass="categorie-label" />
+                <FlowPane fx:id="siegesCategorieA" alignment="CENTER" hgap="5.0" vgap="5.0" styleClass="sieges-flowpane" />
+
+                <Label text="Catégorie B - Standard" styleClass="categorie-label" />
+                <FlowPane fx:id="siegesCategorieB" alignment="CENTER" hgap="5.0" vgap="5.0" styleClass="sieges-flowpane" />
+
+                <Label text="Catégorie C - Économique" styleClass="categorie-label" />
+                <FlowPane fx:id="siegesCategorieC" alignment="CENTER" hgap="5.0" vgap="5.0" styleClass="sieges-flowpane" />
+            </VBox>
+
+            <VBox alignment="CENTER" spacing="10.0" styleClass="info-container">
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Label text="Siège sélectionné:" styleClass="info-label" />
+                    <TextField fx:id="siegeField" editable="false" prefWidth="100.0" promptText="Aucun" />
+                    <Label fx:id="siegeErrorLabel" styleClass="error-label" text="Veuillez sélectionner un siège" visible="false" />
+                </HBox>
+
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Label text="Catégorie:" styleClass="info-label" />
+                    <Label fx:id="categorieLabel" styleClass="categorie-value" text="Non sélectionné" />
+                </HBox>
+
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Label text="Prix:" styleClass="info-label" />
+                    <TextField fx:id="prixField" editable="false" prefWidth="100.0" promptText="0.00 dt" />
+                    <Label fx:id="prixErrorLabel" styleClass="error-label" text="Prix invalide" visible="false" />
+                </HBox>
+            </VBox>
+
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER" spacing="20.0" styleClass="buttons-container">
+            <Button fx:id="confirmerButton" defaultButton="true" styleClass="confirmer-button" text="Confirmer" />
+            <Button fx:id="annulerButton" cancelButton="true" styleClass="annuler-button" text="Annuler" />
+            <padding>
+                <Insets bottom="15.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </HBox>
+    </bottom>
+</BorderPane>

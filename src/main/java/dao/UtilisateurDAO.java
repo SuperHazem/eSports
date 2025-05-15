@@ -1,5 +1,6 @@
 package dao;
 
+import enums.UserStatus;
 import models.*;
 import enums.Role;
 import utils.DatabaseConnection;
@@ -66,32 +67,65 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
                 break;
 
             case COACH:
-                String coachQuery = "INSERT INTO coach (utilisateur_id, strategie) VALUES (?, ?)";
-                try (PreparedStatement stmt = connection.prepareStatement(coachQuery)) {
-                    stmt.setInt(1, userId);
-                    stmt.setString(2, ((Coach) utilisateur).getStrategie());
-                    stmt.executeUpdate();
+                if (utilisateur instanceof Coach) {
+                    String coachQuery = "INSERT INTO coach (utilisateur_id, strategie) VALUES (?, ?)";
+                    try (PreparedStatement stmt = connection.prepareStatement(coachQuery)) {
+                        stmt.setInt(1, userId);
+                        stmt.setString(2, ((Coach) utilisateur).getStrategie());
+                        stmt.executeUpdate();
+                    }
+                } else {
+                    // Gérer le cas où l'utilisateur n'est pas un Coach
+                    String coachQuery = "INSERT INTO coach (utilisateur_id, strategie) VALUES (?, ?)";
+                    try (PreparedStatement stmt = connection.prepareStatement(coachQuery)) {
+                        stmt.setInt(1, userId);
+                        stmt.setString(2, ""); // Valeur par défaut
+                        stmt.executeUpdate();
+                    }
                 }
                 break;
 
             case JOUEUR:
-                String joueurQuery = "INSERT INTO joueur (utilisateur_id, pseudo_jeu, rank, win_rate) VALUES (?, ?, ?, ?)";
-                try (PreparedStatement stmt = connection.prepareStatement(joueurQuery)) {
-                    stmt.setInt(1, userId);
-                    stmt.setString(2, ((Joueur) utilisateur).getPseudoJeu());
-                    stmt.setString(3, ((Joueur) utilisateur).getRank());
-                    stmt.setDouble(4, ((Joueur) utilisateur).getWinRate());
-                    stmt.executeUpdate();
+                if (utilisateur instanceof Joueur) {
+                    String joueurQuery = "INSERT INTO joueur (utilisateur_id, pseudo_jeu, rank, win_rate) VALUES (?, ?, ?, ?)";
+                    try (PreparedStatement stmt = connection.prepareStatement(joueurQuery)) {
+                        stmt.setInt(1, userId);
+                        stmt.setString(2, ((Joueur) utilisateur).getPseudoJeu());
+                        stmt.setString(3, ((Joueur) utilisateur).getRank());
+                        stmt.setDouble(4, ((Joueur) utilisateur).getWinRate());
+                        stmt.executeUpdate();
+                    }
+                } else {
+                    // Gérer le cas où l'utilisateur n'est pas un Joueur
+                    String joueurQuery = "INSERT INTO joueur (utilisateur_id, pseudo_jeu, rank, win_rate) VALUES (?, ?, ?, ?)";
+                    try (PreparedStatement stmt = connection.prepareStatement(joueurQuery)) {
+                        stmt.setInt(1, userId);
+                        stmt.setString(2, ""); // Valeur par défaut
+                        stmt.setString(3, ""); // Valeur par défaut
+                        stmt.setDouble(4, 0.0); // Valeur par défaut
+                        stmt.executeUpdate();
+                    }
                 }
                 break;
 
             case SPECTATEUR:
-                String spectateurQuery = "INSERT INTO spectateur (utilisateur_id, date_inscription) VALUES (?, ?)";
-                try (PreparedStatement stmt = connection.prepareStatement(spectateurQuery)) {
-                    stmt.setInt(1, userId);
-                    java.sql.Date sqlDate = new java.sql.Date(((Spectateur) utilisateur).getDateInscription().getTime());
-                    stmt.setDate(2, sqlDate);
-                    stmt.executeUpdate();
+                if (utilisateur instanceof Spectateur) {
+                    String spectateurQuery = "INSERT INTO spectateur (utilisateur_id, date_inscription) VALUES (?, ?)";
+                    try (PreparedStatement stmt = connection.prepareStatement(spectateurQuery)) {
+                        stmt.setInt(1, userId);
+                        java.sql.Date sqlDate = new java.sql.Date(((Spectateur) utilisateur).getDateInscription().getTime());
+                        stmt.setDate(2, sqlDate);
+                        stmt.executeUpdate();
+                    }
+                } else {
+                    // Gérer le cas où l'utilisateur n'est pas un Spectateur
+                    String spectateurQuery = "INSERT INTO spectateur (utilisateur_id, date_inscription) VALUES (?, ?)";
+                    try (PreparedStatement stmt = connection.prepareStatement(spectateurQuery)) {
+                        stmt.setInt(1, userId);
+                        java.sql.Date sqlDate = new java.sql.Date(new Date().getTime()); // Date actuelle
+                        stmt.setDate(2, sqlDate);
+                        stmt.executeUpdate();
+                    }
                 }
                 break;
         }
@@ -116,16 +150,46 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
                 String telephone = rs.getString("telephone");
                 Date dateNaissanceSQL = rs.getDate("date_naissance");
                 String profilePicturePath = rs.getString("profile_picture_path");
-                
+
                 // Create the basic Utilisateur with parameters in the correct order
                 Utilisateur utilisateur = new Utilisateur(userId, email, motDePasseHash, role, nom, prenom);
-                
+
                 // Set the additional fields
                 if (adresse != null) utilisateur.setAdresse(adresse);
                 if (telephone != null) utilisateur.setTelephone(telephone);
                 if (dateNaissanceSQL != null) utilisateur.setDateNaissance(((java.sql.Date) dateNaissanceSQL).toLocalDate());
                 if (profilePicturePath != null) utilisateur.setProfilePicturePath(profilePicturePath);
-                
+
+                // Retrieve and set status fields
+                String statusStr = rs.getString("status");
+                if (statusStr != null) {
+                    try {
+                        utilisateur.setStatus(UserStatus.valueOf(statusStr));
+                    } catch (IllegalArgumentException e) {
+                        // Handle cases where statusStr might not be a valid enum constant
+                        System.err.println("Invalid status value in database: " + statusStr + " for user ID: " + userId);
+                        // Optionally set a default status or handle as an error
+                        utilisateur.setStatus(UserStatus.ACTIF); // Example: default to ACTIF
+                    }
+                } else {
+                     utilisateur.setStatus(UserStatus.ACTIF); // Default to ACTIF if status is null in DB
+                }
+
+                java.sql.Date suspensionDebutSQL = rs.getDate("suspension_debut");
+                if (suspensionDebutSQL != null) {
+                    utilisateur.setSuspensionDebut(suspensionDebutSQL.toLocalDate());
+                }
+
+                java.sql.Date suspensionFinSQL = rs.getDate("suspension_fin");
+                if (suspensionFinSQL != null) {
+                    utilisateur.setSuspensionFin(suspensionFinSQL.toLocalDate());
+                }
+
+                String suspensionRaison = rs.getString("suspension_raison");
+                if (suspensionRaison != null) {
+                    utilisateur.setSuspensionRaison(suspensionRaison);
+                }
+
                 return utilisateur;
             }
         } catch (SQLException e) {
@@ -168,7 +232,7 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
 
     @Override
     public void modifier(Utilisateur utilisateur) {
-        String query = "UPDATE utilisateur SET email = ?, motDePasseHash = ?, role = ?, nom = ?, prenom = ?, adresse = ?, telephone = ?, date_naissance = ?, profile_picture_path = ? WHERE id = ?";
+        String query = "UPDATE utilisateur SET email = ?, motDePasseHash = ?, role = ?, nom = ?, prenom = ?, adresse = ?, telephone = ?, date_naissance = ?, profile_picture_path = ?, status = ?, suspension_debut = ?, suspension_fin = ?, suspension_raison = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, utilisateur.getEmail());
             stmt.setString(2, utilisateur.getMotDePasseHash());
@@ -179,7 +243,14 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
             stmt.setString(7, utilisateur.getTelephone());
             stmt.setDate(8, utilisateur.getDateNaissance() != null ? java.sql.Date.valueOf(utilisateur.getDateNaissance()) : null);
             stmt.setString(9, utilisateur.getProfilePicturePath());
-            stmt.setInt(10, utilisateur.getId());
+            
+            // Add status fields
+            stmt.setString(10, utilisateur.getStatus() != null ? utilisateur.getStatus().toString() : null);
+            stmt.setDate(11, utilisateur.getSuspensionDebut() != null ? java.sql.Date.valueOf(utilisateur.getSuspensionDebut()) : null);
+            stmt.setDate(12, utilisateur.getSuspensionFin() != null ? java.sql.Date.valueOf(utilisateur.getSuspensionFin()) : null);
+            stmt.setString(13, utilisateur.getSuspensionRaison());
+            
+            stmt.setInt(14, utilisateur.getId());
             stmt.executeUpdate();
 
             // Update role-specific data
@@ -238,6 +309,12 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
         String telephone = rs.getString("telephone");
         Date dateNaissanceSQL = rs.getDate("date_naissance");
         String profilePicturePath = rs.getString("profile_picture_path");
+        
+        // Récupérer les informations de statut
+        String statusStr = rs.getString("status");
+        Date suspensionDebutSQL = rs.getDate("suspension_debut");
+        Date suspensionFinSQL = rs.getDate("suspension_fin");
+        String suspensionRaison = rs.getString("suspension_raison");
 
         Utilisateur utilisateur;
 
@@ -271,6 +348,28 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
         if (telephone != null) utilisateur.setTelephone(telephone);
         if (dateNaissanceSQL != null) utilisateur.setDateNaissance(((java.sql.Date) dateNaissanceSQL).toLocalDate());
         if (profilePicturePath != null) utilisateur.setProfilePicturePath(profilePicturePath);
+        
+        // Set status fields
+        if (statusStr != null) {
+            try {
+                utilisateur.setStatus(UserStatus.valueOf(statusStr));
+            } catch (IllegalArgumentException e) {
+                System.err.println("Invalid status value in database: " + statusStr + " for user ID: " + id);
+                utilisateur.setStatus(UserStatus.ACTIF); // Default to ACTIF
+            }
+        } else {
+            utilisateur.setStatus(UserStatus.ACTIF); // Default to ACTIF if status is null in DB
+        }
+
+        if (suspensionDebutSQL != null) {
+            utilisateur.setSuspensionDebut(((java.sql.Date) suspensionDebutSQL).toLocalDate());
+        }
+        if (suspensionFinSQL != null) {
+            utilisateur.setSuspensionFin(((java.sql.Date) suspensionFinSQL).toLocalDate());
+        }
+        if (suspensionRaison != null) {
+            utilisateur.setSuspensionRaison(suspensionRaison);
+        }
 
         return utilisateur;
     }
@@ -329,6 +428,120 @@ public class UtilisateurDAO implements GenericDAO<Utilisateur, Integer> {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to update password: " + e.getMessage());
+        }
+    }
+    
+    public Utilisateur findByEmail(String email) {
+        String query = "SELECT * FROM utilisateur WHERE email = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return extractUtilisateurWithRoleData(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    /**
+     * Bannir un utilisateur de façon permanente
+     * @param utilisateurId ID de l'utilisateur à bannir
+     * @param raison Raison du bannissement
+     * @return true si le bannissement a réussi, false sinon
+     */
+    public boolean bannirUtilisateur(int utilisateurId, String raison) {
+        Utilisateur utilisateur = lire(utilisateurId);
+        if (utilisateur == null) return false;
+        
+        utilisateur.setStatus(UserStatus.BANNI);
+        utilisateur.setSuspensionRaison(raison);
+        utilisateur.setSuspensionDebut(LocalDate.now());
+        utilisateur.setSuspensionFin(null); // Pas de date de fin pour un bannissement permanent
+        
+        try {
+            modifier(utilisateur);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * Débannir un utilisateur précédemment banni
+     * @param utilisateurId ID de l'utilisateur à débannir
+     * @return true si le débannissement a réussi, false sinon
+     */
+    public boolean debannirUtilisateur(int utilisateurId) {
+        Utilisateur utilisateur = lire(utilisateurId);
+        if (utilisateur == null || utilisateur.getStatus() != UserStatus.BANNI) return false;
+        
+        utilisateur.setStatus(UserStatus.ACTIF);
+        utilisateur.setSuspensionRaison(null);
+        utilisateur.setSuspensionDebut(null);
+        utilisateur.setSuspensionFin(null);
+        
+        try {
+            modifier(utilisateur);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * Suspendre temporairement un utilisateur (time-out)
+     * @param utilisateurId ID de l'utilisateur à suspendre
+     * @param raison Raison de la suspension
+     * @param dureeJours Durée de la suspension en jours
+     * @return true si la suspension a réussi, false sinon
+     */
+    public boolean suspendreUtilisateur(int utilisateurId, String raison, int dureeJours) {
+        if (dureeJours <= 0) return false;
+        
+        Utilisateur utilisateur = lire(utilisateurId);
+        if (utilisateur == null) return false;
+        
+        LocalDate dateDebut = LocalDate.now();
+        LocalDate dateFin = dateDebut.plusDays(dureeJours);
+        
+        utilisateur.setStatus(UserStatus.SUSPENDU);
+        utilisateur.setSuspensionRaison(raison);
+        utilisateur.setSuspensionDebut(dateDebut);
+        utilisateur.setSuspensionFin(dateFin);
+        
+        try {
+            modifier(utilisateur);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * Lever la suspension d'un utilisateur avant la date de fin prévue
+     * @param utilisateurId ID de l'utilisateur dont la suspension doit être levée
+     * @return true si la levée de suspension a réussi, false sinon
+     */
+    public boolean leverSuspension(int utilisateurId) {
+        Utilisateur utilisateur = lire(utilisateurId);
+        if (utilisateur == null || utilisateur.getStatus() != UserStatus.SUSPENDU) return false;
+        
+        utilisateur.setStatus(UserStatus.ACTIF);
+        utilisateur.setSuspensionRaison(null);
+        utilisateur.setSuspensionDebut(null);
+        utilisateur.setSuspensionFin(null);
+        
+        try {
+            modifier(utilisateur);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

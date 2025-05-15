@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.AdminModificationTicketController"
+      spacing="15"
+      style="-fx-background-color: #1a1a1a; -fx-padding: 20;"
+      prefWidth="400"
+      prefHeight="350">
+
+    <Label text="Modifier un ticket"
+           style="-fx-font-size: 24px; -fx-text-fill: #00b8d9; -fx-font-weight: bold;" />
+
+    <GridPane hgap="10" vgap="15">
+        <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="100" />
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+        <Label text="Siège:"
+               style="-fx-text-fill: white;"
+               GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="siegeField"
+                   GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Prix (dt):"
+               style="-fx-text-fill: white;"
+               GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="prixField"
+                   GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="Date d'achat:"
+               style="-fx-text-fill: white;"
+               GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <DatePicker fx:id="datePicker"
+                    GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label text="Statut:"
+               style="-fx-text-fill: white;"
+               GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <ComboBox fx:id="statutComboBox"
+                  GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    </GridPane>
+
+    <Region VBox.vgrow="ALWAYS" />
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="annulerButton"
+                text="Annuler"
+                style="-fx-background-color: #333333; -fx-text-fill: white;"
+                prefWidth="100" />
+        <Button fx:id="confirmerButton"
+                text="Confirmer"
+                style="-fx-background-color: #00b8d9; -fx-text-fill: white;"
+                prefWidth="100" />
+    </HBox>
+</VBox>

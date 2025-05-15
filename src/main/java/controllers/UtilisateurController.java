@@ -2,6 +2,7 @@ package controllers;
 
 import dao.UtilisateurDAO;
 import enums.Role;
+import enums.UserStatus;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,13 +10,16 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import models.*;
 
 import java.io.IOException;
@@ -71,6 +75,34 @@ public class UtilisateurController {
     }
     
     private void setupTableColumns() {
+        // Ajouter une colonne pour le statut de l'utilisateur
+        TableColumn<Utilisateur, String> statusColumn = new TableColumn<>("Statut");
+        statusColumn.setCellValueFactory(cellData -> {
+            Utilisateur utilisateur = cellData.getValue();
+            String statusText = "";
+            
+            switch (utilisateur.getStatus()) {
+                case ACTIF:
+                    statusText = "Actif";
+                    break;
+                case SUSPENDU:
+                    statusText = "Suspendu";
+                    if (utilisateur.getSuspensionFin() != null) {
+                        statusText += " (jusqu'au " + utilisateur.getSuspensionFin() + ")";
+                    }
+                    break;
+                case BANNI:
+                    statusText = "Banni";
+                    break;
+            }
+            
+            return new SimpleStringProperty(statusText);
+        });
+        statusColumn.setPrefWidth(150);
+        statusColumn.getStyleClass().add("column");
+        
+        // Ajouter la colonne à la table
+        utilisateurTable.getColumns().add(3, statusColumn); // Ajouter après la colonne de rôle
         // Merge nom and prenom into a single column
         nomPrenomColumn.setCellValueFactory(cellData -> {
             Utilisateur utilisateur = cellData.getValue();
@@ -119,11 +151,17 @@ public class UtilisateurController {
         actionsColumn.setCellFactory(param -> new TableCell<>() {
             private final Button modifierButton = new Button("Modifier");
             private final Button supprimerButton = new Button("Supprimer");
+            private final Button bannirButton = new Button("Bannir");
+            private final Button suspendreButton = new Button("Suspendre");
+            private final Button activerButton = new Button("Activer");
 
             {
                 // Apply CSS styles to the buttons
                 modifierButton.getStyleClass().add("button-modifier");
                 supprimerButton.getStyleClass().add("button-supprimer");
+                bannirButton.getStyleClass().add("button-bannir");
+                suspendreButton.getStyleClass().add("button-suspendre");
+                activerButton.getStyleClass().add("button-activer");
 
                 // Set action handlers for the buttons
                 modifierButton.setOnAction(event -> {
@@ -143,8 +181,29 @@ public class UtilisateurController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    HBox hbox = new HBox(modifierButton, supprimerButton);
+                    Utilisateur utilisateur = getTableView().getItems().get(getIndex());
+                    HBox hbox = new HBox();
                     hbox.setSpacing(10); // Add spacing between buttons
+                    
+                    // Toujours afficher les boutons modifier et supprimer
+                    hbox.getChildren().addAll(modifierButton, supprimerButton);
+                    
+                    // Afficher les boutons en fonction du statut de l'utilisateur
+                    if (utilisateur.getStatus() == enums.UserStatus.ACTIF) {
+                        // Pour un utilisateur actif, on peut le bannir ou le suspendre
+                        bannirButton.setOnAction(event -> bannirUtilisateur(utilisateur));
+                        suspendreButton.setOnAction(event -> suspendreUtilisateur(utilisateur));
+                        hbox.getChildren().addAll(bannirButton, suspendreButton);
+                    } else if (utilisateur.getStatus() == enums.UserStatus.BANNI) {
+                        // Pour un utilisateur banni, on peut le réactiver
+                        activerButton.setOnAction(event -> debannirUtilisateur(utilisateur));
+                        hbox.getChildren().add(activerButton);
+                    } else if (utilisateur.getStatus() == enums.UserStatus.SUSPENDU) {
+                        // Pour un utilisateur suspendu, on peut le réactiver
+                        activerButton.setOnAction(event -> leverSuspension(utilisateur));
+                        hbox.getChildren().add(activerButton);
+                    }
+                    
                     setGraphic(hbox);
                 }
             }
@@ -310,4 +369,226 @@ public class UtilisateurController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    
+    /**
+     * Bannir un utilisateur de façon permanente
+     */
+    private void bannirUtilisateur(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            showError("Erreur de sélection", "Aucun utilisateur sélectionné pour bannissement.");
+            return;
+        }
+        
+        // Créer une boîte de dialogue pour saisir la raison du bannissement
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Bannissement d'utilisateur");
+        dialog.setHeaderText("Bannir l'utilisateur " + utilisateur.getNom() + " " + utilisateur.getPrenom());
+        dialog.setContentText("Raison du bannissement:");
+        
+        dialog.showAndWait().ifPresent(raison -> {
+            if (raison.trim().isEmpty()) {
+                showError("Erreur", "Vous devez spécifier une raison pour le bannissement.");
+                return;
+            }
+            
+            try {
+                boolean success = utilisateurDAO.bannirUtilisateur(utilisateur.getId(), raison);
+                if (success) {
+                    loadUtilisateurs(); // Rafraîchir la table
+                    applyFiltering(); // Réappliquer les filtres
+                    
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Succès");
+                    alert.setHeaderText(null);
+                    alert.setContentText("L'utilisateur a été banni avec succès.");
+                    alert.showAndWait();
+                } else {
+                    showError("Erreur", "Impossible de bannir l'utilisateur.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Erreur", "Une erreur est survenue lors du bannissement de l'utilisateur.");
+            }
+        });
+    }
+    
+    /**
+     * Débannir un utilisateur précédemment banni
+     */
+    private void debannirUtilisateur(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            showError("Erreur de sélection", "Aucun utilisateur sélectionné pour débannissement.");
+            return;
+        }
+        
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Débannir l'utilisateur " + utilisateur.getNom() + " " + utilisateur.getPrenom());
+        alert.setContentText("Êtes-vous sûr de vouloir débannir cet utilisateur ?");
+        
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    boolean success = utilisateurDAO.debannirUtilisateur(utilisateur.getId());
+                    if (success) {
+                        loadUtilisateurs(); // Rafraîchir la table
+                        applyFiltering(); // Réappliquer les filtres
+                        
+                        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                        successAlert.setTitle("Succès");
+                        successAlert.setHeaderText(null);
+                        successAlert.setContentText("L'utilisateur a été débanni avec succès.");
+                        successAlert.showAndWait();
+                    } else {
+                        showError("Erreur", "Impossible de débannir l'utilisateur.");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Erreur", "Une erreur est survenue lors du débannissement de l'utilisateur.");
+                }
+            }
+        });
+    }
+    
+    /**
+     * Suspendre temporairement un utilisateur
+     */
+    private void suspendreUtilisateur(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            showError("Erreur de sélection", "Aucun utilisateur sélectionné pour suspension.");
+            return;
+        }
+        
+        // Créer une boîte de dialogue personnalisée pour la suspension
+        Dialog<Pair<String, Integer>> dialog = new Dialog<>();
+        dialog.setTitle("Suspension temporaire");
+        dialog.setHeaderText("Suspendre l'utilisateur " + utilisateur.getNom() + " " + utilisateur.getPrenom());
+        
+        // Boutons
+        ButtonType suspendreButtonType = new ButtonType("Suspendre", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(suspendreButtonType, ButtonType.CANCEL);
+        
+        // Créer la grille pour le formulaire
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+        
+        // Champs du formulaire
+        TextArea raisonField = new TextArea();
+        raisonField.setPromptText("Raison de la suspension");
+        raisonField.setPrefRowCount(3);
+        
+        ComboBox<String> dureeComboBox = new ComboBox<>();
+        dureeComboBox.getItems().addAll(
+            "24 heures", "48 heures", "3 jours", "7 jours", "14 jours", "30 jours"
+        );
+        dureeComboBox.setValue("24 heures");
+        
+        grid.add(new Label("Raison:"), 0, 0);
+        grid.add(raisonField, 1, 0);
+        grid.add(new Label("Durée:"), 0, 1);
+        grid.add(dureeComboBox, 1, 1);
+        
+        dialog.getDialogPane().setContent(grid);
+        
+        // Convertir le résultat en paire raison/durée
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == suspendreButtonType) {
+                String raison = raisonField.getText();
+                String dureeSel = dureeComboBox.getValue();
+                
+                // Convertir la durée sélectionnée en nombre de jours
+                int jours;
+                switch (dureeSel) {
+                    case "24 heures": jours = 1; break;
+                    case "48 heures": jours = 2; break;
+                    case "3 jours": jours = 3; break;
+                    case "7 jours": jours = 7; break;
+                    case "14 jours": jours = 14; break;
+                    case "30 jours": jours = 30; break;
+                    default: jours = 1;
+                }
+                
+                return new Pair<>(raison, jours);
+            }
+            return null;
+        });
+        
+        // Afficher la boîte de dialogue et traiter le résultat
+        dialog.showAndWait().ifPresent(result -> {
+            String raison = result.getKey();
+            int jours = result.getValue();
+            
+            if (raison.trim().isEmpty()) {
+                showError("Erreur", "Vous devez spécifier une raison pour la suspension.");
+                return;
+            }
+            
+            try {
+                // Appeler la méthode pour suspendre l'utilisateur
+                boolean success = utilisateurDAO.suspendreUtilisateur(utilisateur.getId(), raison, jours);
+                
+                if (success) {
+                    loadUtilisateurs(); // Rafraîchir la table
+                    applyFiltering(); // Réappliquer les filtres
+                    
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Succès");
+                    alert.setHeaderText(null);
+                    alert.setContentText("L'utilisateur a été suspendu avec succès pour " + jours + " jour(s).");
+                    alert.showAndWait();
+                } else {
+                    showError("Erreur", "Impossible de suspendre l'utilisateur.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Erreur", "Une erreur est survenue lors de la suspension de l'utilisateur.");
+            }
+        });
+    }
+    
+    /**
+     * Lever une suspension avant sa date de fin prévue
+     */
+    private void leverSuspension(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            showError("Erreur de sélection", "Aucun utilisateur sélectionné pour lever la suspension.");
+            return;
+        }
+        
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Lever la suspension de l'utilisateur " + utilisateur.getNom() + " " + utilisateur.getPrenom());
+        alert.setContentText("Êtes-vous sûr de vouloir lever la suspension de cet utilisateur avant sa date de fin prévue ?");
+        
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    // Appeler la méthode pour lever la suspension
+                    boolean success = utilisateurDAO.leverSuspension(utilisateur.getId());
+                    
+                    if (success) {
+                        loadUtilisateurs(); // Rafraîchir la table
+                        applyFiltering(); // Réappliquer les filtres
+                        
+                        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                        successAlert.setTitle("Succès");
+                        successAlert.setHeaderText(null);
+                        successAlert.setContentText("La suspension de l'utilisateur a été levée avec succès.");
+                        successAlert.showAndWait();
+                    } else {
+                        showError("Erreur", "Impossible de lever la suspension de l'utilisateur.");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Erreur", "Une erreur est survenue lors de la levée de suspension de l'utilisateur.");
+                }
+            }
+        });
+    }
+    
+
+    
+
 }

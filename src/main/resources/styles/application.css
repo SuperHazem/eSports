@@ -198,12 +198,45 @@
     -fx-alignment: CENTER;
 }
 
+.small-button {
+    -fx-font-size: 12px;
+    -fx-padding: 5px 10px;
+    -fx-background-radius: 4px;
+    -fx-min-width: 100px;
+    -fx-max-width: 120px;
+    -fx-alignment: center;
+    -fx-background-color: -fx-primary-dark;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-opacity: 1.0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+
+
+.small-button:hover {
+    -fx-background-color: -fx-primary;
+    -fx-effect: dropshadow(gaussian, rgba(0, 247, 255, 0.5), 8, 0, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-translate-y: -1px;
+}
+
+.small-button:pressed {
+    -fx-background-color: -fx-primary-dark;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 2, 0, 0, 1);
+}
+
 .user-avatar {
     -fx-background-radius: 50%;
     -fx-border-radius: 50%;
     -fx-border-width: 2px;
     -fx-border-color: #00F7FF;
     -fx-effect: dropshadow(gaussian, rgba(0, 247, 255, 0.3), 5, 0, 0, 0);
+    -fx-clip: rectangle(0, 0, 100%, 100%);
 }
 
 .user-profile-section {
@@ -215,6 +248,7 @@
     -fx-border-color: transparent;
     -fx-border-radius: 8px;
     -fx-transition: all 0.2s ease;
+    -fx-alignment: CENTER_LEFT;
 }
 
 .user-profile-section:hover {
@@ -243,6 +277,25 @@
     -fx-border-width: 1px;
     -fx-border-color: #333333;
     -fx-border-radius: 12px;
+}
+
+#uploadPhotoButton {
+    -fx-background-color: rgba(0, 247, 255, 0.2);
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-background-radius: 15px;
+    -fx-padding: 5px 10px;
+    -fx-border-color: rgba(0, 247, 255, 0.5);
+    -fx-border-radius: 15px;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 247, 255, 0.2), 3, 0, 0, 0);
+}
+
+#uploadPhotoButton:hover {
+    -fx-background-color: rgba(0, 247, 255, 0.3);
+    -fx-border-color: rgba(0, 247, 255, 0.7);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 247, 255, 0.3), 5, 0, 0, 0);
 }
 
 .profile-tabs .tab-header-area .tab-header-background {
@@ -598,6 +651,61 @@
     -fx-translate-y: 1px;
 }
 
+/* Styles pour les boutons de gestion des utilisateurs */
+.button-bannir {
+    -fx-background-color: #FF5252; /* Rouge pour bannissement */
+    -fx-text-fill: white;
+    -fx-padding: 8px 15px;
+}
+
+.button-bannir:hover {
+    -fx-background-color: #FF7070;
+    -fx-effect: dropshadow(three-pass-box, rgba(255,82,82,0.4), 10, 0, 0, 0);
+    -fx-translate-y: -1px;
+}
+
+.button-bannir:pressed {
+    -fx-background-color: #D32F2F;
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 2, 0, 0, 1);
+}
+
+.button-suspendre {
+    -fx-background-color: #FFC107; /* Jaune pour suspension */
+    -fx-text-fill: black;
+    -fx-padding: 8px 15px;
+}
+
+.button-suspendre:hover {
+    -fx-background-color: #FFCA28;
+    -fx-effect: dropshadow(three-pass-box, rgba(255,193,7,0.4), 10, 0, 0, 0);
+    -fx-translate-y: -1px;
+}
+
+.button-suspendre:pressed {
+    -fx-background-color: #FFA000;
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 2, 0, 0, 1);
+}
+
+.button-activer {
+    -fx-background-color: #4CAF50; /* Vert pour activation */
+    -fx-text-fill: white;
+    -fx-padding: 8px 15px;
+}
+
+.button-activer:hover {
+    -fx-background-color: #66BB6A;
+    -fx-effect: dropshadow(three-pass-box, rgba(76,175,80,0.4), 10, 0, 0, 0);
+    -fx-translate-y: -1px;
+}
+
+.button-activer:pressed {
+    -fx-background-color: #388E3C;
+    -fx-translate-y: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 2, 0, 0, 1);
+}
+
 .cancel-button {
     -fx-background-color: #444444;
     -fx-text-fill: white;
@@ -823,7 +931,7 @@
     -fx-background-color: #1a1a1a;
     -fx-background-radius: 20px;
     -fx-border-radius: 20px;
-    -fx-padding: 30px;
+    /* -fx-padding: 30px; */
     -fx-spacing: 20px;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 20, 0, 0, 10);
     -fx-border-width: 1px;
