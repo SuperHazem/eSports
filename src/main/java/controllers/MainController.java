@@ -72,6 +72,14 @@ public class MainController implements Initializable {
     private Button gestionMatchBtn;
     @FXML
     private Button gestionAreneBtn;
+    @FXML
+    private Button publicationBtn;
+    @FXML
+    private Button eventSocialBtn;
+    @FXML
+    private Button reportedPublicationBtn;
+    @FXML
+    private Button eventParticipantBtn;
 
     private Map<String, Parent> cachedViews = new HashMap<>();
     private Button currentActiveButton;
@@ -258,6 +266,14 @@ public class MainController implements Initializable {
             viewName = "GestionMatch";
         } else if (clickedButton == gestionAreneBtn) {
             viewName = "GestionArenes";
+        } else if (clickedButton == publicationBtn) {
+            viewName = "publication";
+        } else if (clickedButton == eventSocialBtn) {
+            viewName = "eventSocial";
+        } else if (clickedButton == reportedPublicationBtn) {
+            viewName = "ReportedPublicationsView";
+        } else if (clickedButton == eventParticipantBtn) {
+            viewName = "EventParticipationView";
         }
 
         loadView(viewName);
@@ -319,6 +335,10 @@ public class MainController implements Initializable {
                 fxmlPath = "/views/GestionMatch.fxml";
             } else if (viewName.equalsIgnoreCase("GestionArene")) {
                 fxmlPath = "/views/GestionArene.fxml";
+            } else if (viewName.equalsIgnoreCase("publication")) {
+                fxmlPath = "/views/PublicationView.fxml";
+            } else if (viewName.equalsIgnoreCase("eventSocial")) {
+                fxmlPath = "/views/EventSocialView.fxml";
             } else {
                  throw new IOException("Could not find FXML file for view: " + viewName + " after trying multiple paths.");
             }

@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import java.net.URL?>
 
-<BorderPane fx:id="mainBorderPane" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
+<BorderPane fx:id="mainBorderPane" styleClass="main-container" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
     <stylesheets>
         <URL value="@styles/application.css" />
     </stylesheets>
@@ -31,10 +31,11 @@
             </HBox>
 
             <!-- Navigation Items -->
-            <VBox spacing="5" VBox.vgrow="ALWAYS">
-                <padding>
-                    <Insets top="10" right="10" bottom="10" left="10" />
-                </padding>
+            <ScrollPane fitToWidth="true" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS" style="-fx-background-color: #2c2c2c;">
+                <VBox spacing="5" style="-fx-background-color: #2c2c2c;">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10" />
+                    </padding>
 
                 <Button fx:id="tournoiBtn" styleClass="nav-button" onAction="#handleNavigation" text="Tournois" maxWidth="Infinity">
                     <graphic>
@@ -115,7 +116,40 @@
                         </ImageView>
                     </graphic>
                 </Button>
-            </VBox>
+
+                <Button fx:id="publicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Publications" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/user.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="eventSocialBtn" styleClass="nav-button" onAction="#handleNavigation" text="Événements Sociaux" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/user.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="reportedPublicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Reported Publications" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/user.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="eventParticipantBtn" styleClass="nav-button" onAction="#handleNavigation" text="Event Participation" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/user.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                </VBox>
+            </ScrollPane>
 
             <!-- User Profile Section -->
             <VBox styleClass="sidebar-footer">
