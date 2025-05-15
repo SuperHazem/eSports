@@ -53,6 +53,8 @@ public class MainController implements Initializable {
     @FXML
     private Button eventSocialBtn;
     @FXML
+    private Button eventParticipationBtn;
+    @FXML
     private Button publicationBtn;
 
     private Map<String, Parent> cachedViews = new HashMap<>();

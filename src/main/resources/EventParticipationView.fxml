@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.EventParticipationController"
+      spacing="10" alignment="TOP_CENTER"
+      stylesheets="@styles/application.css"
+      prefWidth="1280" prefHeight="720">
+
+   <!-- Title Section -->
+   <StackPane styleClass="header-container">
+      <VBox alignment="CENTER" spacing="5">
+         <Label text="Événements Sociaux" styleClass="title" />
+         <Label text="Consultez et participez aux événements sociaux." styleClass="subtitle" />
+      </VBox>
+   </StackPane>
+
+   <!-- Search and Display Buttons -->
+   <HBox spacing="10" alignment="CENTER_LEFT">
+      <Label text="Rechercher par nom:" styleClass="field-label" />
+      <TextField fx:id="searchNameField" promptText="Entrez le nom" styleClass="input-field" HBox.hgrow="ALWAYS" />
+      <Label text="Date:" styleClass="field-label" />
+      <DatePicker fx:id="searchDateField" styleClass="date-picker" />
+      <Button text="Rechercher" onAction="#rechercherEvent" styleClass="search-button" />
+      <Button text="Afficher Tous" onAction="#afficherTousEvents" styleClass="display-button" />
+   </HBox>
+
+   <!-- Table View -->
+   <VBox VBox.vgrow="ALWAYS" styleClass="table-container">
+      <TableView fx:id="eventTable" VBox.vgrow="ALWAYS" styleClass="user-table">
+         <columns>
+            <TableColumn fx:id="nomColumn" text="Nom" prefWidth="200" styleClass="column" />
+            <TableColumn fx:id="dateColumn" text="Date" prefWidth="150" styleClass="column" />
+            <TableColumn fx:id="lieuColumn" text="Lieu" prefWidth="200" styleClass="column" />
+            <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="300" styleClass="column" />
+            <TableColumn fx:id="capaciteColumn" text="Capacité" prefWidth="100" styleClass="column" />
+            <TableColumn fx:id="participantsColumn" text="Participants" prefWidth="150" styleClass="column" />
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150" styleClass="column" />
+         </columns>
+      </TableView>
+   </VBox>
+</VBox> 

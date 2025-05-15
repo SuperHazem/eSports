@@ -84,6 +84,14 @@
                     </graphic>
                 </Button>
 
+                <Button fx:id="eventParticipationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Participation aux Événements" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/event.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
                 <Button fx:id="publicationBtn" styleClass="nav-button" onAction="#handleNavigation" text="Publications" maxWidth="Infinity">
                     <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
