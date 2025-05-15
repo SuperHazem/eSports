@@ -12,10 +12,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.Publication;
 import models.Commentaire;
+import models.PublicationInteraction;
+import models.PublicationReport;
+import models.Utilisateur;
 import dao.PublicationDAO;
 import dao.CommentaireDAO;
+import dao.PublicationInteractionDAO;
+import dao.PublicationReportDAO;
 import dao.PublicationDAOImpl;
 import dao.CommentaireDAOImpl;
+import dao.PublicationInteractionDAOImpl;
+import dao.PublicationReportDAOImpl;
 import utils.BadWordsAPI;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,21 +35,27 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class PublicationController {
     private static final int CURRENT_USER_ID = 1;
     private final PublicationDAO publicationDAO = new PublicationDAOImpl();
     private final CommentaireDAO commentaireDAO = new CommentaireDAOImpl();
+    private final PublicationInteractionDAO interactionDAO = new PublicationInteractionDAOImpl();
+    private final PublicationReportDAO reportDAO = new PublicationReportDAOImpl();
     private Publication publicationSelectionnee;
     private ObservableList<Publication> publications;
     private FilteredList<Publication> publicationsFiltered;
+    private Utilisateur currentUser;
 
     @FXML private TableView<Publication> publicationTable;
     @FXML private TableColumn<Publication, Void> imageCol;
     @FXML private TableColumn<Publication, String> titreCol;
     @FXML private TableColumn<Publication, String> contenuCol;
     @FXML private TableColumn<Publication, String> dateCol;
+    @FXML private TableColumn<Publication, String> likesCol;
+    @FXML private TableColumn<Publication, String> dislikesCol;
     @FXML private TableColumn<Publication, Void> actionsCol;
 
     @FXML private TableView<Commentaire> commentaireTable;
@@ -161,32 +174,57 @@ public class PublicationController {
             return new SimpleStringProperty("");
         });
         
+        // Configure likes column
+        likesCol.setCellValueFactory(cellData -> {
+            Publication publication = cellData.getValue();
+            return new SimpleStringProperty(String.valueOf(interactionDAO.nombreLikes(publication)));
+        });
+
+        // Configure dislikes column
+        dislikesCol.setCellValueFactory(cellData -> {
+            Publication publication = cellData.getValue();
+            return new SimpleStringProperty(String.valueOf(interactionDAO.nombreDislikes(publication)));
+        });
+
+        // Configure actions column
         actionsCol.setCellFactory(param -> new TableCell<>() {
-            private final Button modifierBtn = new Button("Modifier");
-            private final Button supprimerBtn = new Button("Supprimer");
-            private final HBox boutons = new HBox(10, modifierBtn, supprimerBtn);
+            private final Button likeButton = new Button("👍");
+            private final Button dislikeButton = new Button("👎");
+            private final Button reportButton = new Button("⚠️");
+            private final Button editButton = new Button("✏️");
+            private final Button deleteButton = new Button("🗑️");
+            private final HBox boutons = new HBox(5, likeButton, dislikeButton, reportButton, editButton, deleteButton);
 
             {
-                modifierBtn.getStyleClass().add("button-modifier");
-                supprimerBtn.getStyleClass().add("button-supprimer");
-                boutons.setStyle("-fx-alignment: CENTER;");
-                
-                modifierBtn.setOnAction(event -> {
+                likeButton.getStyleClass().add("like-button");
+                dislikeButton.getStyleClass().add("dislike-button");
+                reportButton.getStyleClass().add("report-button");
+                editButton.getStyleClass().add("edit-button");
+                deleteButton.getStyleClass().add("delete-button");
+
+                likeButton.setOnAction(event -> {
                     Publication publication = getTableView().getItems().get(getIndex());
-                    if (publication.getAuteur() == CURRENT_USER_ID) {
-                        modifierPublication(publication);
-                    } else {
-                        afficherAlerte("Action non autorisée", "Vous ne pouvez modifier que vos propres publications.");
-                    }
+                    handleLike(publication);
                 });
 
-                supprimerBtn.setOnAction(event -> {
+                dislikeButton.setOnAction(event -> {
                     Publication publication = getTableView().getItems().get(getIndex());
-                    if (publication.getAuteur() == CURRENT_USER_ID) {
-                        supprimerPublication(publication);
-                    } else {
-                        afficherAlerte("Action non autorisée", "Vous ne pouvez supprimer que vos propres publications.");
-                    }
+                    handleDislike(publication);
+                });
+
+                reportButton.setOnAction(event -> {
+                    Publication publication = getTableView().getItems().get(getIndex());
+                    handleReport(publication);
+                });
+
+                editButton.setOnAction(event -> {
+                    Publication publication = getTableView().getItems().get(getIndex());
+                    modifierPublication(publication);
+                });
+
+                deleteButton.setOnAction(event -> {
+                    Publication publication = getTableView().getItems().get(getIndex());
+                    supprimerPublication(publication);
                 });
             }
 
@@ -197,11 +235,17 @@ public class PublicationController {
                     setGraphic(null);
                 } else {
                     Publication publication = getTableView().getItems().get(getIndex());
+                    HBox buttons = new HBox(5);
+                    
+                    // Add like/dislike/report buttons for all users
+                    buttons.getChildren().addAll(likeButton, dislikeButton, reportButton);
+                    
+                    // Add edit/delete buttons only for the author
                     if (publication.getAuteur() == CURRENT_USER_ID) {
-                        setGraphic(boutons);
-                    } else {
-                        setGraphic(null);
+                        buttons.getChildren().addAll(editButton, deleteButton);
                     }
+                    
+                    setGraphic(buttons);
                 }
             }
         });
@@ -414,5 +458,77 @@ public class PublicationController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public void setCurrentUser(Utilisateur user) {
+        this.currentUser = user;
+    }
+
+    private void handleLike(Publication publication) {
+        if (currentUser == null) {
+            afficherAlerte("Erreur", "Vous devez être connecté pour aimer une publication.");
+            return;
+        }
+
+        try {
+            if (interactionDAO.existeInteraction(currentUser, publication)) {
+                interactionDAO.supprimerInteraction(currentUser, publication);
+            }
+            PublicationInteraction interaction = new PublicationInteraction(publication, currentUser, PublicationInteraction.InteractionType.LIKE);
+            interactionDAO.ajouter(interaction);
+            chargerPublications();
+        } catch (Exception e) {
+            afficherAlerte("Erreur", "Une erreur est survenue lors de l'ajout du like.");
+        }
+    }
+
+    private void handleDislike(Publication publication) {
+        if (currentUser == null) {
+            afficherAlerte("Erreur", "Vous devez être connecté pour ne pas aimer une publication.");
+            return;
+        }
+
+        try {
+            if (interactionDAO.existeInteraction(currentUser, publication)) {
+                interactionDAO.supprimerInteraction(currentUser, publication);
+            }
+            PublicationInteraction interaction = new PublicationInteraction(publication, currentUser, PublicationInteraction.InteractionType.DISLIKE);
+            interactionDAO.ajouter(interaction);
+            chargerPublications();
+        } catch (Exception e) {
+            afficherAlerte("Erreur", "Une erreur est survenue lors de l'ajout du dislike.");
+        }
+    }
+
+    private void handleReport(Publication publication) {
+        if (currentUser == null) {
+            afficherAlerte("Erreur", "Vous devez être connecté pour signaler une publication.");
+            return;
+        }
+
+        try {
+            if (reportDAO.existeReport(currentUser, publication)) {
+                afficherAlerte("Information", "Vous avez déjà signalé cette publication.");
+                return;
+            }
+
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Signaler une publication");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Veuillez indiquer la raison du signalement:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(raison -> {
+                try {
+                    PublicationReport report = new PublicationReport(publication, currentUser, raison);
+                    reportDAO.ajouter(report);
+                    afficherAlerte("Succès", "La publication a été signalée avec succès.");
+                } catch (Exception e) {
+                    afficherAlerte("Erreur", "Une erreur est survenue lors du signalement.");
+                }
+            });
+        } catch (Exception e) {
+            afficherAlerte("Erreur", "Une erreur est survenue lors du signalement.");
+        }
     }
 } 

@@ -410,3 +410,38 @@
     -fx-text-fill: white;
     -fx-effect: dropshadow(gaussian, rgba(0, 247, 255, 0.3), 5, 0, 0, 0);
 }
+
+.like-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-min-width: 40px;
+    -fx-min-height: 30px;
+}
+
+.dislike-button {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-min-width: 40px;
+    -fx-min-height: 30px;
+}
+
+.report-button {
+    -fx-background-color: #ff9800;
+    -fx-text-fill: white;
+    -fx-min-width: 40px;
+    -fx-min-height: 30px;
+}
+
+.edit-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-min-width: 40px;
+    -fx-min-height: 30px;
+}
+
+.delete-button {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-min-width: 40px;
+    -fx-min-height: 30px;
+}

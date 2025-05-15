@@ -52,7 +52,9 @@
                 <TableColumn fx:id="titreCol" text="Titre" prefWidth="200" styleClass="column"/>
                 <TableColumn fx:id="contenuCol" text="Contenu" prefWidth="400" styleClass="column"/>
                 <TableColumn fx:id="dateCol" text="Date" prefWidth="150" styleClass="column"/>
-                <TableColumn fx:id="actionsCol" text="Actions" prefWidth="200" styleClass="column"/>
+                <TableColumn fx:id="likesCol" text="Likes" prefWidth="100" styleClass="column"/>
+                <TableColumn fx:id="dislikesCol" text="Dislikes" prefWidth="100" styleClass="column"/>
+                <TableColumn fx:id="actionsCol" text="Actions" prefWidth="300" styleClass="column"/>
             </columns>
         </TableView>
     </VBox>
