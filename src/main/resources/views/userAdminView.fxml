@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.lang.String?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.UserAdminController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    
+    <Label styleClass="section-title" text="Gestion des Utilisateurs" />
+    
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" promptText="Rechercher par nom ou prénom" HBox.hgrow="ALWAYS" />
+        <Button fx:id="searchButton" text="Rechercher" styleClass="action-button" />
+        <Button fx:id="refreshButton" text="Actualiser" styleClass="action-button" />
+    </HBox>
+    
+    <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="50" />
+            <TableColumn fx:id="nomColumn" text="Nom" prefWidth="100" />
+            <TableColumn fx:id="prenomColumn" text="Prénom" prefWidth="100" />
+            <TableColumn fx:id="emailColumn" text="Email" prefWidth="200" />
+            <TableColumn fx:id="roleColumn" text="Rôle" prefWidth="100" />
+            <TableColumn fx:id="statusColumn" text="Statut" prefWidth="100" />
+            <TableColumn fx:id="suspensionFinColumn" text="Fin de suspension" prefWidth="120" />
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="200" />
+        </columns>
+    </TableView>
+    
+    <stylesheets>
+        <String fx:value="/styles/user_admin.css.css" />
+    </stylesheets>
+</VBox>

@@ -1,0 +1,26 @@
+.root {
+    -fx-background-color: white;
+}
+
+.label {
+    -fx-font-family: "System";
+}
+
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 4;
+}
+
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+#qrImageView {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-padding: 5;
+}

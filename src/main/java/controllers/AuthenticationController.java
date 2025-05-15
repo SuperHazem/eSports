@@ -255,7 +255,7 @@ public class AuthenticationController {
     @FXML
     public void handleLogin() {
         String email = loginEmail.getText().trim();
-        String password = loginPassword.getText();
+        String password = loginPassword.isVisible() ? loginPasswordText.getText() : loginPassword.getText();
 
         // Validate inputs
         if (email.isEmpty() || password.isEmpty()) {
@@ -292,6 +292,25 @@ public class AuthenticationController {
                 // Authentication successful with direct comparison
                 authenticatedUser = user;
                 
+                // Vérifier si l'utilisateur peut se connecter (n'est pas banni ou suspendu)
+                if (!authenticatedUser.peutSeConnecter()) {
+                    String message;
+                    if (authenticatedUser.estBanni()) {
+                        message = "Votre compte a été banni. Raison : " + 
+                                 (authenticatedUser.getSuspensionRaison() != null ? 
+                                  authenticatedUser.getSuspensionRaison() : "Non spécifiée");
+                    } else if (authenticatedUser.estSuspendu()) {
+                        message = "Votre compte est temporairement suspendu jusqu'au " + 
+                                 authenticatedUser.getSuspensionFin() + ". Raison : " + 
+                                 (authenticatedUser.getSuspensionRaison() != null ? 
+                                  authenticatedUser.getSuspensionRaison() : "Non spécifiée");
+                    } else {
+                        message = "Votre compte n'est pas autorisé à se connecter actuellement.";
+                    }
+                    showError("Accès refusé", message);
+                    return;
+                }
+                
                 // Save credentials if remember password is checked
                 if (rememberPasswordCheckbox.isSelected()) {
                     utils.CredentialManager.saveCredentials(email, password);
@@ -318,6 +337,25 @@ public class AuthenticationController {
             if (passwordMatches) {
                 // Authentication successful
                 authenticatedUser = user;
+                
+                // Vérifier si l'utilisateur peut se connecter (n'est pas banni ou suspendu)
+                if (!authenticatedUser.peutSeConnecter()) {
+                    String message;
+                    if (authenticatedUser.estBanni()) {
+                        message = "Votre compte a été banni. Raison : " + 
+                                 (authenticatedUser.getSuspensionRaison() != null ? 
+                                  authenticatedUser.getSuspensionRaison() : "Non spécifiée");
+                    } else if (authenticatedUser.estSuspendu()) {
+                        message = "Votre compte est temporairement suspendu jusqu'au " + 
+                                 authenticatedUser.getSuspensionFin() + ". Raison : " + 
+                                 (authenticatedUser.getSuspensionRaison() != null ? 
+                                  authenticatedUser.getSuspensionRaison() : "Non spécifiée");
+                    } else {
+                        message = "Votre compte n'est pas autorisé à se connecter actuellement.";
+                    }
+                    showError("Accès refusé", message);
+                    return;
+                }
                 
                 // Save credentials if remember password is checked
                 if (rememberPasswordCheckbox.isSelected()) {
@@ -654,27 +692,45 @@ public class AuthenticationController {
 
     private void loadMainApplication() {
         try {
-            // Load the main layout with sidebar
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainLayout.fxml"));
-            Parent root = loader.load();
+            String fxmlPath;
+            Object controller;
 
-            // Get the controller and set the authenticated user
-            MainController mainController = loader.getController();
-            // Set user in UserSession
-            UserSession.getInstance().setUser(authenticatedUser);
-            mainController.setCurrentUser(authenticatedUser);
-
-            // Get current stage
-            Stage stage = (Stage) loginEmail.getScene().getWindow();
-
-            // Create new scene
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
-
-            // Set the scene
-            stage.setScene(scene);
-            stage.setTitle("eSports Arena Manager");
-            stage.setMaximized(true);
+            if (authenticatedUser.getRole() == Role.SPECTATEUR) {
+                fxmlPath = "/views/SpectateurLayout.fxml";
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Parent root = loader.load();
+                SpectateurController spectateurController = loader.getController();
+                UserSession.getInstance().setCurrentUser(authenticatedUser); // Corrected method name
+                spectateurController.setCurrentUser(authenticatedUser);
+                controller = spectateurController;
+                // Get current stage
+                Stage stage = (Stage) loginEmail.getScene().getWindow();
+                // Create new scene
+                Scene scene = new Scene(root);
+                // Make sure your CSS path is correct, adjust if necessary
+                // scene.getStylesheets().add(getClass().getResource("/css/main.css").toExternalForm()); 
+                stage.setScene(scene);
+                stage.setTitle("eSports Arena - Spectateur");
+                stage.setMaximized(true);
+            } else {
+                // For ADMIN and any other roles, load the main admin view
+                fxmlPath = "/MainLayout.fxml"; // Assuming MainLayout.fxml is for Admin
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Parent root = loader.load();
+                MainController mainController = loader.getController();
+                UserSession.getInstance().setCurrentUser(authenticatedUser); // Corrected method name
+                mainController.setCurrentUser(authenticatedUser);
+                controller = mainController;
+                // Get current stage
+                Stage stage = (Stage) loginEmail.getScene().getWindow();
+                // Create new scene
+                Scene scene = new Scene(root);
+                // Make sure your CSS path is correct, adjust if necessary
+                // scene.getStylesheets().add(getClass().getResource("/styles/application.css").toExternalForm());
+                stage.setScene(scene);
+                stage.setTitle("eSports Arena Manager - Admin");
+                stage.setMaximized(true);
+            }
 
         } catch (IOException e) {
             showError("Erreur de chargement", "Impossible de charger l'application principale: " + e.getMessage());

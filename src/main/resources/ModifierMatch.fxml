@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="630" prefWidth="560.0" spacing="15" styleClass="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ModifierMatchController">
+
+    <Label styleClass="title" text="Modifier le Match" />
+
+    <GridPane alignment="CENTER" hgap="10" vgap="15">
+        <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+
+        <Label managed="false" styleClass="field-label" text="ID:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <Label fx:id="idLabel" managed="false" text="0" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label styleClass="field-label" text="Date du match:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <DatePicker fx:id="datePicker" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <HBox spacing="10" />
+
+        <Label styleClass="field-label" text="Équipe 1:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <ComboBox fx:id="equipe1ComboBox" styleClass="role-combo" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label styleClass="field-label" text="Équipe 2:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <ComboBox fx:id="equipe2ComboBox" styleClass="role-combo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+        <Label styleClass="field-label" text="Tournoi:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <ComboBox fx:id="tournoiComboBox" styleClass="role-combo" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+        <Label styleClass="field-label" text="Arène:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+        <ComboBox fx:id="areneComboBox" styleClass="role-combo" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+        <Label styleClass="field-label" text="Score Équipe 1:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+        <TextField fx:id="scoreEquipe1Field" styleClass="search-field" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+        <Label styleClass="field-label" text="Score Équipe 2:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+        <TextField fx:id="scoreEquipe2Field" styleClass="search-field" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+        <Label styleClass="field-label" text="Vainqueur:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+        <ComboBox fx:id="vainqueurComboBox" styleClass="role-combo" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+
+        <Label styleClass="field-label" text="Durée (min):" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+        <TextField fx:id="dureeField" styleClass="search-field" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+
+        <Label styleClass="field-label" text="Nom du jeu:" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+        <TextField fx:id="nomJeuField" styleClass="search-field" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+
+        <Label styleClass="field-label" text="Statut:" GridPane.columnIndex="0" GridPane.rowIndex="11" />
+        <ComboBox fx:id="statutComboBox" styleClass="role-combo" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+         <Spinner fx:id="hourSpinner" editable="true" prefWidth="70" GridPane.columnIndex="3" GridPane.rowIndex="1">
+
+         </Spinner>
+         <Spinner fx:id="minuteSpinner" editable="true" prefWidth="70" GridPane.columnIndex="5" GridPane.rowIndex="1">
+
+         </Spinner>
+         <Label text="Heure:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+
+    </GridPane>
+
+    <HBox alignment="CENTER" spacing="10">
+        <Button onAction="#handleCancel" styleClass="cancel-button" text="Annuler" />
+        <Button onAction="#handleSave" styleClass="add-button" text="Enregistrer" />
+    </HBox>
+</VBox>

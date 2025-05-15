@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.AdminController"
+            prefWidth="1200"
+            prefHeight="800"
+            style="-fx-background-color: #1a1a1a;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #121212; -fx-padding: 15;">
+            <Label text="E-Sport Manager - Administration"
+                   style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;" />
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <Button fx:id="retourButton"
+                    text="Retour à l'accueil"
+                    style="-fx-background-color: #333333; -fx-text-fill: white;" />
+        </HBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE" style="-fx-background-color: #1a1a1a;">
+            <Tab text="Gestion des Tickets">
+                <BorderPane>
+                    <top>
+                        <VBox spacing="10" style="-fx-padding: 10;">
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="Rechercher par siège:" style="-fx-text-fill: white;" />
+                                <TextField fx:id="rechercheField" prefWidth="150" promptText="Ex: A1, B2..." />
+
+                                <Label text="Date:" style="-fx-text-fill: white;" />
+                                <DatePicker fx:id="rechercheDatePicker" prefWidth="150" />
+
+                                <Button fx:id="rechercherButton"
+                                        text="Rechercher"
+                                        style="-fx-background-color: #00b8d9; -fx-text-fill: white;" />
+
+                                <Button fx:id="afficherTousButton"
+                                        text="Afficher Tout"
+                                        style="-fx-background-color: #333333; -fx-text-fill: white;" />
+                            </HBox>
+                        </VBox>
+                    </top>
+
+                    <center>
+                        <TableView fx:id="ticketTableView" style="-fx-background-color: #222222;">
+                            <columns>
+                                <TableColumn fx:id="siegeColumn" text="Siège" prefWidth="100" />
+                                <TableColumn fx:id="prixColumn" text="Prix (dt)" prefWidth="100" />
+                                <TableColumn fx:id="dateColumn" text="Date d'achat" prefWidth="150" />
+                                <TableColumn fx:id="statutPaiementColumn" text="Statut de Paiement" prefWidth="150" />
+                                <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="250" />
+                            </columns>
+                        </TableView>
+                    </center>
+
+                    <bottom>
+                        <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 10;">
+                            <Button fx:id="reponseButton"
+                                    text="Gérer Réponses"
+                                    prefWidth="150"
+                                    style="-fx-background-color: #00b8d9; -fx-text-fill: white;" />
+
+                            <Button fx:id="ajouterSiegeButton"
+                                    text="Ajouter Siège"
+                                    prefWidth="150"
+                                    style="-fx-background-color: #00b8d9; -fx-text-fill: white;" />
+                        </HBox>
+                    </bottom>
+                </BorderPane>
+            </Tab>
+
+            <Tab text="Statistiques">
+                <GridPane hgap="20" vgap="20" style="-fx-padding: 20;">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50" />
+                        <ColumnConstraints percentWidth="50" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints percentHeight="50" />
+                        <RowConstraints percentHeight="50" />
+                    </rowConstraints>
+
+                    <!-- Statistiques des ventes par catégorie -->
+                    <VBox GridPane.columnIndex="0" GridPane.rowIndex="0"
+                          style="-fx-background-color: #222222; -fx-padding: 15; -fx-background-radius: 5;">
+                        <Label text="Ventes par catégorie"
+                               style="-fx-font-size: 18px; -fx-text-fill: white; -fx-font-weight: bold;" />
+                        <PieChart fx:id="ventesCategorieChart" legendVisible="true"
+                                  style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" />
+                    </VBox>
+
+                    <!-- Statistiques des revenus -->
+                    <VBox GridPane.columnIndex="1" GridPane.rowIndex="0"
+                          style="-fx-background-color: #222222; -fx-padding: 15; -fx-background-radius: 5;">
+                        <Label text="Revenus par jour"
+                               style="-fx-font-size: 18px; -fx-text-fill: white; -fx-font-weight: bold;" />
+                        <BarChart fx:id="revenusChart" legendVisible="false"
+                                  style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT" />
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+
+                    <!-- Résumé des statistiques -->
+                    <GridPane GridPane.columnIndex="0" GridPane.rowIndex="1"
+                              style="-fx-background-color: #222222; -fx-padding: 15; -fx-background-radius: 5;"
+                              hgap="15" vgap="15">
+                        <Label text="Résumé des ventes"
+                               style="-fx-font-size: 18px; -fx-text-fill: white; -fx-font-weight: bold;"
+                               GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" />
+
+                        <Label text="Total des tickets vendus:"
+                               style="-fx-text-fill: white;"
+                               GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <Label fx:id="totalTicketsLabel"
+                               style="-fx-text-fill: white; -fx-font-weight: bold;"
+                               GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label text="Tickets payés:"
+                               style="-fx-text-fill: white;"
+                               GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <Label fx:id="ticketsPayesLabel"
+                               style="-fx-text-fill: white; -fx-font-weight: bold;"
+                               GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                        <Label text="Tickets non payés:"
+                               style="-fx-text-fill: white;"
+                               GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                        <Label fx:id="ticketsNonPayesLabel"
+                               style="-fx-text-fill: white; -fx-font-weight: bold;"
+                               GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                        <Label text="Revenus totaux:"
+                               style="-fx-text-fill: white;"
+                               GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                        <Label fx:id="revenusTotauxLabel"
+                               style="-fx-text-fill: white; -fx-font-weight: bold;"
+                               GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                    </GridPane>
+
+                    <!-- Actions -->
+                    <VBox GridPane.columnIndex="1" GridPane.rowIndex="1"
+                          style="-fx-background-color: #222222; -fx-padding: 15; -fx-background-radius: 5;"
+                          spacing="15">
+                        <Label text="Actions rapides"
+                               style="-fx-font-size: 18px; -fx-text-fill: white; -fx-font-weight: bold;" />
+
+                        <Button fx:id="genererRapportButton"
+                                text="Générer rapport PDF"
+                                prefWidth="200"
+                                style="-fx-background-color: #00b8d9; -fx-text-fill: white;" />
+                    </VBox>
+                </GridPane>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>

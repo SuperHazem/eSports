@@ -4,15 +4,28 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import models.Utilisateur;
+import utils.IconGenerator;
 import utils.UserSession;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class ProfileController implements Initializable {
 
@@ -21,6 +34,39 @@ public class ProfileController implements Initializable {
     @FXML private Label profileNameLabel;
     @FXML private Label profileRoleLabel;
     @FXML private Label profileEmailLabel;
+    @FXML private Button uploadPhotoButton;
+    
+    /**
+     * Generate a profile icon for users without a profile picture
+     * This is especially useful for Google-authenticated users
+     */
+    private void generateProfileIcon(Utilisateur user) {
+        try {
+            // Use the IconGenerator utility to create an avatar based on user's initials
+            String initials = String.valueOf(user.getPrenom().charAt(0)) + 
+                             (user.getNom() != null && !user.getNom().isEmpty() ? 
+                              String.valueOf(user.getNom().charAt(0)) : "");
+            
+            // Generate a color based on the user's name for consistency
+            String fullName = user.getPrenom() + user.getNom();
+            int hash = fullName.hashCode();
+            // Generate a bright, saturated color (avoid dark colors for visibility)
+            Color avatarColor = Color.hsb(
+                (hash % 360), // Hue: 0-359 degrees
+                0.8,          // Saturation: 80%
+                0.9           // Brightness: 90%
+            );
+            
+            // Create the image and set it to the avatar
+            Image generatedIcon = IconGenerator.createTextIcon(initials.toUpperCase(), avatarColor);
+            profileImageView.setImage(generatedIcon);
+            
+            System.out.println("Profile view - Generated profile icon for user: " + user.getEmail());
+        } catch (Exception e) {
+            System.err.println("Error generating profile icon: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     
     // Common Fields
     @FXML private TextField firstNameField;
@@ -143,11 +189,51 @@ public class ProfileController implements Initializable {
                 break;
         }
         
+        // Check if this is a Google-authenticated user
+        boolean isGoogleUser = currentUser.getMotDePasseHash() != null && currentUser.getMotDePasseHash().equals("google-oauth");
+        
+        System.out.println("Profile view - User authentication type check: " + currentUser.getEmail() + ", isGoogleUser=" + isGoogleUser);
+        
+        // Load profile picture if available
+        if (currentUser.getProfilePicturePath() != null && !currentUser.getProfilePicturePath().isEmpty()) {
+            try {
+                File imageFile = new File(currentUser.getProfilePicturePath());
+                if (imageFile.exists()) {
+                    Image image = new Image(imageFile.toURI().toString());
+                    profileImageView.setImage(image);
+                    System.out.println("Profile view - Loaded profile picture from: " + currentUser.getProfilePicturePath());
+                } else if (isGoogleUser) {
+                    // For Google users, generate an icon if the profile picture file doesn't exist
+                    System.out.println("Profile view - Profile picture file doesn't exist for Google user, generating icon");
+                    generateProfileIcon(currentUser);
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading profile image: " + e.getMessage());
+                if (isGoogleUser) {
+                    // For Google users, generate an icon if there's an error loading the profile picture
+                    System.out.println("Profile view - Error loading profile image for Google user, generating icon");
+                    generateProfileIcon(currentUser);
+                }
+            }
+        } else if (isGoogleUser) {
+            // For Google users without a profile picture path, generate an icon
+            System.out.println("Profile view - No profile picture path for Google user, generating icon");
+            generateProfileIcon(currentUser);
+        } else {
+            // For non-Google users without a profile picture, also generate an icon
+            System.out.println("Profile view - No profile picture for regular user, generating icon");
+            generateProfileIcon(currentUser);
+        }
+        
+
+        
         // Set common fields
-        firstNameField.setText(currentUser.getPrenom());
-        lastNameField.setText(currentUser.getNom());
-        emailField.setText(currentUser.getEmail());
-        phoneField.setText(currentUser.getTelephone());
+    firstNameField.setText(currentUser.getPrenom());
+    lastNameField.setText(currentUser.getNom());
+    emailField.setText(currentUser.getEmail());
+    phoneField.setText(currentUser.getTelephone());
+        
+
         
         // Set birth date if available
         if (currentUser.getDateNaissance() != null) {
@@ -238,24 +324,37 @@ public class ProfileController implements Initializable {
         // Handle password change if needed
         if (!currentPasswordField.getText().isEmpty()) {
             if (validatePasswordChange()) {
-                // In a real app, you would hash the password and update it in the database
-                System.out.println("Password would be updated here");
+                // Hash the password and update it in the database
+                // In a real app, you would use a proper hashing algorithm
+                String hashedPassword = newPasswordField.getText(); // Replace with actual hashing
+                currentUser.setMotDePasseHash(hashedPassword);
             }
         }
         
         // Save role-specific data
         saveRoleSpecificData();
         
-        // In a real application, you would save to database here
-        // For now, just show a success message
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Profil Mis à Jour");
-        alert.setHeaderText("Vos informations ont été mises à jour avec succès");
-        alert.showAndWait();
-        
-        // Update the profile header
-        profileNameLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
-        profileEmailLabel.setText(currentUser.getEmail());
+        // Save to database using UtilisateurDAO
+        try {
+            dao.UtilisateurDAO utilisateurDAO = new dao.UtilisateurDAO();
+            utilisateurDAO.modifier(currentUser);
+            
+            // Update the session user
+            UserSession.getInstance().setCurrentUser(currentUser);
+            
+            // Show success message
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Profil Mis à Jour");
+            alert.setHeaderText("Vos informations ont été mises à jour avec succès");
+            alert.showAndWait();
+            
+            // Update the profile header
+            profileNameLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
+            profileEmailLabel.setText(currentUser.getEmail());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Erreur lors de la mise à jour du profil: " + e.getMessage());
+        }
     }
     
     private boolean validateInputs() {
@@ -359,5 +458,62 @@ public class ProfileController implements Initializable {
         alert.setTitle("Modifications Annulées");
         alert.setHeaderText("Vos modifications ont été annulées");
         alert.showAndWait();
+    }
+    
+    @FXML
+    private void handleUploadPhoto() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionner une photo de profil");
+        fileChooser.getExtensionFilters().addAll(
+            new ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+        
+        File selectedFile = fileChooser.showOpenDialog(profileImageView.getScene().getWindow());
+        if (selectedFile != null) {
+            try {
+                // Create directory for profile pictures if it doesn't exist
+                String uploadDir = "src/main/resources/images/profiles/";
+                Path uploadPath = Paths.get(uploadDir);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                
+                // Generate unique filename to avoid conflicts
+                String fileName = UUID.randomUUID().toString() + "-" + selectedFile.getName();
+                Path targetPath = uploadPath.resolve(fileName);
+                
+                // Copy the file to the target location
+                Files.copy(selectedFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                
+                // Update the user's profile picture path
+                String profilePicturePath = targetPath.toString();
+                currentUser.setProfilePicturePath(profilePicturePath);
+                
+                // Update the image view
+                Image image = new Image(targetPath.toUri().toString());
+                profileImageView.setImage(image);
+                
+                // Save the changes to the database
+                try {
+                    dao.UtilisateurDAO utilisateurDAO = new dao.UtilisateurDAO();
+                    utilisateurDAO.modifier(currentUser);
+                    
+                    // Update the session user
+                    UserSession.getInstance().setCurrentUser(currentUser);
+                    
+                    // Show success message
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Photo de Profil");
+                    alert.setHeaderText("Votre photo de profil a été mise à jour avec succès");
+                    alert.showAndWait();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    showError("Erreur lors de la mise à jour de la photo de profil: " + e.getMessage());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                showError("Erreur lors du téléchargement de l'image: " + e.getMessage());
+            }
+        }
     }
 }

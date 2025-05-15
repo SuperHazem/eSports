@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.MainLauncherController"
+      alignment="CENTER"
+      spacing="20"
+      style="-fx-padding: 40;"
+      prefWidth="400" prefHeight="300">
+
+    <Text text="E-Sport Manager" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <Button text="ADMIN" fx:id="adminButton" onAction="#handleOpenAdmin" prefWidth="200"/>
+    <Button text="USER" fx:id="userButton" onAction="#handleOpenUser" prefWidth="200"/>
+
+</VBox>

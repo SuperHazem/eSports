@@ -75,6 +75,46 @@
                         </ImageView>
                     </graphic>
                 </Button>
+
+                <Button fx:id="adminReponseBtn" styleClass="nav-button" onAction="#handleNavigation" text="Admin Réponses" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/user.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="adminViewBtn" styleClass="nav-button" onAction="#handleNavigation" text="Admin Panel" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/user.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="smartMatchmakingBtn" styleClass="nav-button" onAction="#handleNavigation" text="Smart Matchmaking" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/tournament.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="gestionMatchBtn" styleClass="nav-button" onAction="#handleNavigation" text="Gestion Matchs" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/tournament.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="gestionAreneBtn" styleClass="nav-button" onAction="#handleNavigation" text="Gestion Arènes" maxWidth="Infinity">
+                    <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/sponsor.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
             </VBox>
 
             <!-- User Profile Section -->
@@ -83,10 +123,10 @@
                     <Insets top="10" right="15" bottom="15" left="15" />
                 </padding>
                 <HBox fx:id="userProfileSection" alignment="CENTER_LEFT" spacing="10" styleClass="user-profile-section" onMouseClicked="#openProfileView">
-                    <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" styleClass="user-avatar">
+                    <ImageView fx:id="userAvatarImage" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" styleClass="user-avatar">
                         <Image url="@../images/logo.png" />
                     </ImageView>
-                    <VBox>
+                    <VBox alignment="CENTER_LEFT">
                         <Label fx:id="userNameLabel" text="Admin" styleClass="user-name" />
                         <Label fx:id="userRoleLabel" text="Administrateur" styleClass="user-role" />
                     </VBox>

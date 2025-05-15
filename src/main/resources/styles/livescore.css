@@ -1,0 +1,63 @@
+/* Livescore table styling */
+.livescore-table {
+    -fx-background-color: white;
+    -fx-border-color: #dddddd;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);
+}
+
+/* Column headers */
+.livescore-table .column-header {
+    -fx-background-color: #f8f9fa;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 5px;
+    -fx-border-color: transparent transparent #dddddd transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Table rows */
+.livescore-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-text-fill: black;
+}
+
+/* Ensure text is visible in all table cells */
+.livescore-table .table-row-cell .table-cell {
+    -fx-text-fill: black;
+}
+
+/* Row hover effect */
+.livescore-table .table-row-cell:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.08);
+    -fx-cursor: hand;
+}
+
+/* Status-specific text colors */
+.status-live {
+    -fx-text-fill: #dc3545;
+    -fx-font-weight: bold;
+}
+
+.status-finished {
+    -fx-text-fill: #28a745;
+    -fx-font-weight: bold;
+}
+
+.status-upcoming {
+    -fx-text-fill: #007bff;
+}
+
+/* Table cells */
+.livescore-table .table-cell {
+    -fx-alignment: center-left;
+    -fx-padding: 10px 5px;
+}
+
+/* Center score columns */
+.livescore-table .score-column .table-cell {
+    -fx-alignment: center;
+}

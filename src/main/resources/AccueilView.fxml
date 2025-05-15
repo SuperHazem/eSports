@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.AccueilController"
+      alignment="CENTER"
+      spacing="30"
+      prefWidth="600"
+      prefHeight="400"
+      style="-fx-background-color: #1a1a1a;">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Label text="E-Sport Manager"
+           style="-fx-font-size: 36px; -fx-text-fill: white; -fx-font-weight: bold;" />
+
+    <VBox spacing="20" alignment="CENTER" maxWidth="400">
+        <Button fx:id="adminButton"
+                text="ADMIN"
+                prefWidth="400"
+                prefHeight="60"
+                style="-fx-font-size: 20px; -fx-background-color: #00b8d9; -fx-text-fill: white; -fx-background-radius: 5;" />
+
+        <Button fx:id="userButton"
+                text="USER"
+                prefWidth="400"
+                prefHeight="60"
+                style="-fx-font-size: 20px; -fx-background-color: #e0e0e0; -fx-text-fill: #333333; -fx-background-radius: 5;" />
+    </VBox>
+</VBox>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="800" prefWidth="700" style="-fx-background-color: #1a1a1a;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AdminAjoutSiegeController">
+    <children>
+        <!-- Titre -->
+        <Label layoutX="30" layoutY="20" text="Ajouter un nouveau siège" textFill="#00b8d9">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+
+        <!-- Conteneur pour les sièges -->
+        <Pane fx:id="siegesContainer" layoutX="30" layoutY="70" prefHeight="600" prefWidth="640" />
+
+        <!-- Formulaire d'ajout -->
+        <VBox layoutX="30" layoutY="680" prefHeight="100" prefWidth="640" style="-fx-background-color: #2a2a2a; -fx-padding: 10;">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <children>
+                        <Label text="Catégorie:" textFill="white" />
+                        <ComboBox fx:id="categorieComboBox" prefWidth="150" promptText="Sélectionner" />
+                    </children>
+                    <padding>
+                        <Insets bottom="5" top="5" />
+                    </padding>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <children>
+                        <Label text="Prochain numéro:" textFill="white" />
+                        <Label fx:id="prochainNumeroLabel" textFill="white" />
+                    </children>
+                    <padding>
+                        <Insets bottom="5" top="5" />
+                    </padding>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <children>
+                        <Label text="Prix:" textFill="white" />
+                        <Label fx:id="prixLabel" textFill="white" />
+                    </children>
+                    <padding>
+                        <Insets bottom="5" top="5" />
+                    </padding>
+                </HBox>
+
+                <HBox alignment="CENTER_RIGHT" spacing="10">
+                    <children>
+                        <Button fx:id="supprimerButton" text="Supprimer" style="-fx-background-color: #ff5252; -fx-text-fill: white;" />
+                        <Button fx:id="annulerButton" text="Annuler" style="-fx-background-color: #555555; -fx-text-fill: white;" />
+                        <Button fx:id="confirmerButton" text="Confirmer" style="-fx-background-color: #00b8d9; -fx-text-fill: white;" />
+                    </children>
+                    <padding>
+                        <Insets top="10" />
+                    </padding>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

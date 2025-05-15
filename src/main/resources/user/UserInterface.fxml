@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.UserInterfaceController"
+      alignment="CENTER"
+      prefWidth="1300" prefHeight="800" stylesheets="/styles/styles.css"
+      styleClass="root">
+
+
+
+    <!-- TabPane Content -->
+    <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" styleClass="tab-pane">
+        <tabs>
+            <Tab text="Calendrier">
+                <AnchorPane fx:id="calendarTabContainer"/>
+            </Tab>
+            <Tab text="Live Score">
+                <AnchorPane fx:id="liveScoreTabContainer"/>
+            </Tab>
+        </tabs>
+    </TabPane>
+    <!-- Bottom Buttons -->
+    <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 40;">
+        <Button onAction="#handleRetourner" styleClass="retourner-button" text="Retourner" >
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Button>
+    </HBox>
+</VBox>
