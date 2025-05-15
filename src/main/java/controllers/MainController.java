@@ -78,7 +78,8 @@ public class MainController implements Initializable {
     private Button eventSocialBtn;
     @FXML
     private Button reportedPublicationBtn;
-
+    @FXML
+    private Button dashboardBtn; // Dashboard button
 
     private Map<String, Parent> cachedViews = new HashMap<>();
     private Button currentActiveButton;
@@ -88,13 +89,13 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Style the logo
         styleLogoImage();
-        
+
         // Style the user avatar
         styleUserAvatar();
 
         // Set the initial active button
         currentActiveButton = utilisateurBtn;
-        
+
         // Load user data from session if available
         UserSession session = UserSession.getInstance();
         if (session.isLoggedIn()) {
@@ -132,7 +133,7 @@ public class MainController implements Initializable {
             logoImageView.setCache(true);
         }
     }
-    
+
     /**
      * Apply styling to make the user avatar circular
      */
@@ -142,7 +143,7 @@ public class MainController implements Initializable {
             double radius = Math.min(userAvatarImage.getFitWidth(), userAvatarImage.getFitHeight()) / 2;
             Circle clip = new Circle(radius, radius, radius);
             userAvatarImage.setClip(clip);
-            
+
             // Set image properties
             userAvatarImage.setPreserveRatio(true);
             userAvatarImage.setSmooth(true);
@@ -158,12 +159,12 @@ public class MainController implements Initializable {
         if (user != null) {
             userNameLabel.setText(user.getPrenom() + " " + user.getNom());
             userRoleLabel.setText(user.getRole().toString());
-            
+
             // Check if this is a Google-authenticated user
             boolean isGoogleUser = user.getMotDePasseHash() != null && user.getMotDePasseHash().equals("google-oauth");
-            
+
             System.out.println("User authentication type check: " + user.getEmail() + ", isGoogleUser=" + isGoogleUser + ", hash=" + user.getMotDePasseHash());
-            
+
             // Load profile picture if available
             if (user.getProfilePicturePath() != null && !user.getProfilePicturePath().isEmpty()) {
                 try {
@@ -196,7 +197,7 @@ public class MainController implements Initializable {
             }
         }
     }
-    
+
     /**
      * Generate a profile icon for users without a profile picture
      * This is especially useful for Google-authenticated users
@@ -204,24 +205,24 @@ public class MainController implements Initializable {
     private void generateProfileIcon(Utilisateur user) {
         try {
             // Use the IconGenerator utility to create an avatar based on user's initials
-            String initials = String.valueOf(user.getPrenom().charAt(0)) + 
-                             (user.getNom() != null && !user.getNom().isEmpty() ? 
-                              String.valueOf(user.getNom().charAt(0)) : "");
-            
+            String initials = String.valueOf(user.getPrenom().charAt(0)) +
+                    (user.getNom() != null && !user.getNom().isEmpty() ?
+                            String.valueOf(user.getNom().charAt(0)) : "");
+
             // Generate a color based on the user's name for consistency
             String fullName = user.getPrenom() + user.getNom();
             int hash = fullName.hashCode();
             // Generate a bright, saturated color (avoid dark colors for visibility)
             Color avatarColor = Color.hsb(
-                (hash % 360), // Hue: 0-359 degrees
-                0.8,          // Saturation: 80%
-                0.9           // Brightness: 90%
+                    (hash % 360), // Hue: 0-359 degrees
+                    0.8,          // Saturation: 80%
+                    0.9           // Brightness: 90%
             );
-            
+
             // Create the image and set it to the avatar
             Image generatedIcon = IconGenerator.createTextIcon(initials.toUpperCase(), avatarColor);
             userAvatarImage.setImage(generatedIcon);
-            
+
             System.out.println("Generated profile icon for Google user: " + user.getEmail());
         } catch (Exception e) {
             System.err.println("Error generating profile icon: " + e.getMessage());
@@ -230,8 +231,8 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void handleNavigation() throws IOException {
-        Button clickedButton = (Button) mainBorderPane.getScene().getFocusOwner();
+    public void handleNavigation(ActionEvent event) throws IOException {
+        Button clickedButton = (Button) event.getSource();
 
         // Update active button styling
         if (currentActiveButton != null) {
@@ -271,6 +272,8 @@ public class MainController implements Initializable {
             viewName = "eventSocial";
         } else if (clickedButton == reportedPublicationBtn) {
             viewName = "ReportedPublicationsView";
+        } else if (clickedButton == dashboardBtn) {
+            viewName = "dashboard";
         }
 
         loadView(viewName);
@@ -298,7 +301,8 @@ public class MainController implements Initializable {
                 "/views/AdminView.fxml",
                 "/views/SmartMatchmaking.fxml",
                 "/views/GestionMatch.fxml",
-                "/views/GestionArenes.fxml"
+                "/views/GestionArenes.fxml",
+                "/views/DashboardView.fxml"
         };
 
         FXMLLoader loader = null;
@@ -310,8 +314,6 @@ public class MainController implements Initializable {
                 loader = new FXMLLoader(getClass().getResource(path));
                 view = loader.load();
                 System.out.println("Successfully loaded FXML from: " + path);
-
-
                 break;
             } catch (Exception e) {
                 // Continue to next path
@@ -336,8 +338,10 @@ public class MainController implements Initializable {
                 fxmlPath = "/views/PublicationView.fxml";
             } else if (viewName.equalsIgnoreCase("eventSocial")) {
                 fxmlPath = "/views/EventSocialView.fxml";
+            } else if (viewName.equalsIgnoreCase("dashboard")) {
+                fxmlPath = "/views/DashboardView.fxml";
             } else {
-                 throw new IOException("Could not find FXML file for view: " + viewName + " after trying multiple paths.");
+                throw new IOException("Could not find FXML file for view: " + viewName + " after trying multiple paths.");
             }
             try {
                 System.out.println("Trying to load FXML from specific path: " + fxmlPath);
@@ -345,7 +349,7 @@ public class MainController implements Initializable {
                 view = loader.load();
                 System.out.println("Successfully loaded FXML from specific path: " + fxmlPath);
             } catch (Exception e) {
-                 throw new IOException("Could not find FXML file for view: " + viewName + " even with specific path " + fxmlPath + ". Error: " + e.getMessage());
+                throw new IOException("Could not find FXML file for view: " + viewName + " even with specific path " + fxmlPath + ". Error: " + e.getMessage());
             }
         }
 
@@ -366,7 +370,7 @@ public class MainController implements Initializable {
         try {
             // Load the profile view
             loadView("profile");
-            
+
             // Update the active button styling
             if (currentActiveButton != null) {
                 currentActiveButton.getStyleClass().remove("active-nav-button");
@@ -375,7 +379,7 @@ public class MainController implements Initializable {
         } catch (IOException e) {
             System.err.println("Error loading profile view: " + e.getMessage());
             e.printStackTrace();
-            
+
             // Show error alert
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -384,7 +388,7 @@ public class MainController implements Initializable {
             alert.showAndWait();
         }
     }
-    
+
     @FXML
     void logout(ActionEvent event) throws IOException {
         // Create confirmation alert
@@ -424,5 +428,3 @@ public class MainController implements Initializable {
         }
     }
 }
-
-

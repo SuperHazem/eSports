@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.DashboardController"
+      spacing="20" alignment="TOP_CENTER"
+      stylesheets="@styles/application.css"
+      styleClass="main-container"
+      prefWidth="1280" prefHeight="720">
+
+    <StackPane styleClass="header-container">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+        <VBox spacing="5">
+            <Label text="Tableau de Bord" styleClass="title" />
+            <Label text="Statistiques et analyses de la plateforme eSportsArena" styleClass="subtitle" />
+        </VBox>
+        <Button fx:id="exportPdfButton" text="Exporter en PDF" styleClass="primary-button" StackPane.alignment="CENTER_RIGHT" />
+    </StackPane>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+        <VBox spacing="20">
+            <padding>
+                <Insets top="10" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Key Metrics Cards -->
+            <HBox spacing="15" alignment="CENTER">
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="Total Utilisateurs" styleClass="stat-title" />
+                    <Label fx:id="totalUsersLabel" text="0" styleClass="stat-value" />
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="Utilisateurs Actifs" styleClass="stat-title" />
+                    <Label fx:id="activeUsersLabel" text="0" styleClass="stat-value" />
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="Utilisateurs Suspendus" styleClass="stat-title" />
+                    <Label fx:id="suspendedUsersLabel" text="0" styleClass="stat-value" />
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="Utilisateurs Bannis" styleClass="stat-title" />
+                    <Label fx:id="bannedUsersLabel" text="0" styleClass="stat-value" />
+                </VBox>
+            </HBox>
+
+            <!-- Charts Section -->
+            <HBox spacing="15">
+                <!-- User Role Distribution -->
+                <VBox styleClass="chart-container" HBox.hgrow="ALWAYS">
+                    <Label text="Distribution par Rôle" styleClass="chart-title" />
+                    <PieChart fx:id="userRoleChart" VBox.vgrow="ALWAYS" />
+                </VBox>
+
+                <!-- User Status Distribution -->
+                <VBox styleClass="chart-container" HBox.hgrow="ALWAYS">
+                    <Label text="Statut des Utilisateurs" styleClass="chart-title" />
+                    <PieChart fx:id="userStatusChart" VBox.vgrow="ALWAYS" />
+                </VBox>
+            </HBox>
+
+            <!-- User Activity Chart -->
+            <VBox styleClass="chart-container">
+                <Label text="Activité des Utilisateurs" styleClass="chart-title" />
+                <BarChart fx:id="userActivityChart" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <CategoryAxis label="Mois" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Nombre d'inscriptions" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+            <!-- Detailed Statistics -->
+            <GridPane fx:id="statsGridPane" styleClass="stats-grid" hgap="20" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+                </columnConstraints>
+
+                <Label text="Statistiques par Rôle" styleClass="section-title"
+                       GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" />
+
+                <Label text="Administrateurs:" styleClass="stat-label"
+                       GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <Label fx:id="adminCountLabel" text="0" styleClass="stat-data"
+                       GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                <Label text="Coachs:" styleClass="stat-label"
+                       GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <Label fx:id="coachCountLabel" text="0" styleClass="stat-data"
+                       GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                <Label text="Joueurs:" styleClass="stat-label"
+                       GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <Label fx:id="playerCountLabel" text="0" styleClass="stat-data"
+                       GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <Label text="Spectateurs:" styleClass="stat-label"
+                       GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <Label fx:id="spectatorCountLabel" text="0" styleClass="stat-data"
+                       GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                <Label text="Autres Statistiques" styleClass="section-title"
+                       GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2" />
+
+                <Label text="Dernier utilisateur inscrit:" styleClass="stat-label"
+                       GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                <Label fx:id="lastRegisteredLabel" text="Aucun" styleClass="stat-data"
+                       GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                <Label text="Taux de victoire moyen:" styleClass="stat-label"
+                       GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                <Label fx:id="avgWinRateLabel" text="0%" styleClass="stat-data"
+                       GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            </GridPane>
+        </VBox>
+    </ScrollPane>
+</VBox>
